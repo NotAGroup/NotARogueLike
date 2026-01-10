@@ -179,48 +179,61 @@ public class DungeonCreator : MonoBehaviour
         return opponentClass;
     }
 
+    float SampleExponential(float lambda) {
+            return -(float)Math.Log(UnityEngine.Random.Range(0f, 1f)) / lambda;
+    }
+
+    private void CreateEncounter(List<Node> listOfRooms, int index, int enemyCount) 
+    {
+	Node room = listOfRooms[index];
+
+        // make enemy count follow a poisson distribution
+	for (int i = 0; i < enemyCount; i++) {
+            int opponentClass = SelectRandomOpponentClass();
+    
+            int enemyPosX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.BottomRightAreaCorner.x - 1);
+            int enemyPosY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopLeftAreaCorner.y - 1);
+            Vector3 enemyPos = new Vector3(enemyPosX, 1, enemyPosY);
+    
+            GameObject foe = Instantiate(opponentDefinitions.classes[opponentClass].prefab, enemyPos, Quaternion.identity, dungeonSegments[index].area.transform);
+            foe.name = opponentDefinitions.classes[opponentClass].prefab.name;
+            Opponent opponent = foe.GetComponent<Opponent>();
+            opponent.spawnRoom = room;
+    
+            OpponentStats stats = foe.GetComponent<OpponentStats>();
+            stats.ComputeFrom(opponentDefinitions.classes[opponentClass], (int)properties[DungeonPropertyKey.EnemyLevel]);
+        }
+    }
+
     private void CreateEnemy(List<Node> listOfRooms)
     {
-        int actualEnemyAmount = (int)(enemyAmount * properties[DungeonPropertyKey.EnemyCount]);
+        int enemiesPerEncounter = (int)(enemyAmount * properties[DungeonPropertyKey.EnemyCount] * properties[DungeonPropertyKey.Size] * properties[DungeonPropertyKey.Size]);
+	    int encounters = (int) (properties[DungeonPropertyKey.Size] * properties[DungeonPropertyKey.Size]);
 
         bool isEnoughEnemies = false;
-        int counter = 0;
+        float counter = 0f;
 
         while (!isEnoughEnemies)
         {
-            for (int i = 0; i < listOfRooms.Count; i++)
+	    int i = (int)UnityEngine.Random.Range(0.0f, listOfRooms.Count);
+            Node room = listOfRooms[i];
+
+            if (room.Type == "room")
             {
-                Node room = listOfRooms[i];
-
-                if (room.Type == "room")
+                if (UnityEngine.Random.Range(0.0f, 1.0f) > 0.5f)
                 {
-                    if (UnityEngine.Random.Range(0.0f, 1.0f) > 0.5f)
-                    {
-                        int opponentClass = SelectRandomOpponentClass();
+	    	    int num = (int)UnityEngine.Random.Range(0f, enemiesPerEncounter);
+	    	    CreateEncounter(listOfRooms, i, num);
+            	    counter += SampleExponential(encounters);
+                }
 
-                        int enemyPosX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.BottomRightAreaCorner.x - 1);
-                        int enemyPosY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopLeftAreaCorner.y - 1);
-                        Vector3 enemyPos = new Vector3(enemyPosX, 1, enemyPosY);
-
-                        GameObject foe = Instantiate(opponentDefinitions.classes[opponentClass].prefab, enemyPos, Quaternion.identity, dungeonSegments[i].area.transform);
-                        foe.name = opponentDefinitions.classes[opponentClass].prefab.name;
-                        Opponent opponent = foe.GetComponent<Opponent>();
-                        opponent.spawnRoom = room;
-
-                        OpponentStats stats = foe.GetComponent<OpponentStats>();
-                        stats.ComputeFrom(opponentDefinitions.classes[opponentClass], (int)properties[DungeonPropertyKey.EnemyLevel]);
-
-                        counter++;
-                    }
-
-                    if (counter >= actualEnemyAmount)
-                    {
-                        break;
-                    }
+                isEnoughEnemies = counter >= 1f;
+                if (isEnoughEnemies)
+                {
+                    break;
                 }
             }
 
-            isEnoughEnemies = counter >= actualEnemyAmount;
         }
     }
 
@@ -419,7 +432,7 @@ public class DungeonCreator : MonoBehaviour
         {
             Quaternion rotation = Quaternion.Euler(0.0f, UnityEngine.Random.Range(0, 4) * 90.0f, 0.0f);
 
-            GameObject pillar = Instantiate(pillarPrefab, position, Quaternion.identity, parent.transform);
+            GameObject pillar = Instantiate(pillarPrefab, position, rotation, parent.transform);
             pillar.name = pillarPrefab.name;
         }
     }
