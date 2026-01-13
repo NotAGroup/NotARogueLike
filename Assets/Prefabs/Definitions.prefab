@@ -492,7 +492,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   classes:
-  - className: base opponent
+  - className: Melee Skeleton
     spawnProbability: 0.1
     prefab: {fileID: 8282398908945130151, guid: 2466d15c19041db4fba290b6fc587695, type: 3}
     stats:
@@ -517,12 +517,12 @@ MonoBehaviour:
           cyclic: 0
       - key: SwingDuration
         def:
-          baseValue: 0.5
+          baseValue: 0.05
           points: []
           cyclic: 0
       - key: StrikeDuration
         def:
-          baseValue: 0.3
+          baseValue: 1.45
           points: []
           cyclic: 0
       - key: ReturnDuration
@@ -580,7 +580,103 @@ MonoBehaviour:
           cyclic: 0
       - key: MemoryDuration
         def:
+          baseValue: 1
+          points: []
+          cyclic: 0
+      - key: DetectionRange
+        def:
+          baseValue: 20
+          points: []
+          cyclic: 0
+  - className: Ranged Skeleton
+    spawnProbability: 0.1
+    prefab: {fileID: 8282398908945130151, guid: b2f353518050c5e4387c48f25a9229f2, type: 3}
+    stats:
+      definitions:
+      - key: HitRate
+        def:
+          baseValue: 2
+          points:
+          - level: 0
+            value: 1
+          - level: 1
+            value: 2
+          cyclic: 0
+      - key: StunDuration
+        def:
+          baseValue: 0.6
+          points:
+          - level: 0
+            value: 1
+          - level: 0
+            value: 0.5
+          cyclic: 0
+      - key: SwingDuration
+        def:
+          baseValue: 0.05
+          points: []
+          cyclic: 0
+      - key: StrikeDuration
+        def:
+          baseValue: 1.45
+          points: []
+          cyclic: 0
+      - key: ReturnDuration
+        def:
+          baseValue: 0.2
+          points: []
+          cyclic: 0
+      - key: AttackRange
+        def:
+          baseValue: 3
+          points: []
+          cyclic: 0
+      - key: AttackDamage
+        def:
+          baseValue: 30
+          points:
+          - level: 0
+            value: 1
+          - level: 10
+            value: 2
+          cyclic: 0
+      - key: MaxHealth
+        def:
+          baseValue: 100
+          points:
+          - level: 0
+            value: 1
+          - level: 10
+            value: 5
+          cyclic: 0
+      - key: HealthRegRate
+        def:
           baseValue: 5
+          points: []
+          cyclic: 0
+      - key: WanderInterval
+        def:
+          baseValue: 3
+          points: []
+          cyclic: 0
+      - key: WanderRadius
+        def:
+          baseValue: 5
+          points: []
+          cyclic: 0
+      - key: RotationSpeed
+        def:
+          baseValue: 90
+          points: []
+          cyclic: 0
+      - key: MovementSpeed
+        def:
+          baseValue: 3
+          points: []
+          cyclic: 0
+      - key: MemoryDuration
+        def:
+          baseValue: 1
           points: []
           cyclic: 0
       - key: DetectionRange
