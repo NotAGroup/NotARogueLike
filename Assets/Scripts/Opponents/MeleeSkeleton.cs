@@ -8,6 +8,7 @@ public class MeleeSkeleton : Opponent
 
     protected override void Combat()
     {
+        navMeshAgent.isStopped = false;
         navMeshAgent.updateRotation = false;
 
         float distance = Vector3.Distance(playerTransform.position, transform.position);
@@ -33,6 +34,7 @@ public class MeleeSkeleton : Opponent
 
     protected override void Idle()
     {
+        navMeshAgent.isStopped = false;
         navMeshAgent.updateRotation = true;
 
         Wander();
@@ -80,8 +82,6 @@ public class MeleeSkeleton : Opponent
 
     void Wander()
     {
-        navMeshAgent.isStopped = false;
-
         if (navMeshAgent.remainingDistance < 1)
         {
             wanderTimer -= Time.deltaTime;

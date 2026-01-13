@@ -66,17 +66,19 @@ public abstract class Opponent : MonoBehaviour
             velocity = Vector3.zero;
             UpdateMovementAnimation();
 
-            if (transform.rotation != rotation)
+            if (Quaternion.Angle(transform.rotation, rotation) > 1.0f)
             {
                 RotateTowards(direction);
                 return;
             }
 
-            if (!stunned && transform.rotation == rotation)
+            if (!stunned)
             {
                 hit = false;
                 stunned = true;
                 stunCooldown = stats.stunDuration * 2.0f;
+
+                navMeshAgent.isStopped = false;
             }
         }
 
