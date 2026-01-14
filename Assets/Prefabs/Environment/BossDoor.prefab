@@ -80,10 +80,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -4456793195314128844, guid: 866b47b5a1aacafd4883eeeb8335777c, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: b110fabb8f3a3d4d18445e49072689f3, type: 2}
     - target: {fileID: 919132149155446097, guid: 866b47b5a1aacafd4883eeeb8335777c, type: 3}
       propertyPath: m_Name
       value: boss-door
       objectReference: {fileID: 0}
+    - target: {fileID: 1248713561317796605, guid: 866b47b5a1aacafd4883eeeb8335777c, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: b110fabb8f3a3d4d18445e49072689f3, type: 2}
+    - target: {fileID: 1248713561317796605, guid: 866b47b5a1aacafd4883eeeb8335777c, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 4694f9aa3056629c485f838b10e9025f, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 4961963969083368656, guid: 866b47b5a1aacafd4883eeeb8335777c, type: 3}
