@@ -106,15 +106,20 @@ public class MeleeSkeleton : Opponent
 
         if (!wandering && navPoints != null)
         {
-            Vector3 targetPos = navPoints[nextNavPointID].transform.position;
+            NavPoint navPoint = navPoints[nextNavPointID];
 
-            NavMeshHit navHit;
-            NavMesh.SamplePosition(targetPos, out navHit, stats.wanderRadius, NavMesh.AllAreas);
+            if (navPoint.type == "corner")
+            {
+                Vector3 targetPos = navPoint.transform.position;
 
-            navMeshAgent.SetDestination(navHit.position);
+                NavMeshHit navHit;
+                NavMesh.SamplePosition(targetPos, out navHit, stats.wanderRadius, NavMesh.AllAreas);
 
-            wanderTimer = Random.Range(stats.wanderInterval * 0.5f, stats.wanderInterval * 2.0f);
-            wandering = true;
+                navMeshAgent.SetDestination(navHit.position);
+
+                wanderTimer = Random.Range(stats.wanderInterval * 0.5f, stats.wanderInterval * 2.0f);
+                wandering = true;
+            }
 
             nextNavPointID++;
             nextNavPointID %= navPoints.Count;
