@@ -69,17 +69,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemDefinitions
   definitions:
   - name: health_fruit
+    type: 1
     displayName: Health Fruit
+    description: Restores health when eaten
     itemModel: {fileID: 5994598806465713049, guid: 4aed6631bfdec9c9fb8bc0e542fa7be5, type: 3}
     itemModelUI: {fileID: 5994598806465713049, guid: 4aed6631bfdec9c9fb8bc0e542fa7be5, type: 3}
-    dropProbability: 0.092
-    shopProbability: 0.098
+    dropProbability: 0.157
+    shopProbability: 0.151
     cost: 2
     maxPerShopSlot: 1
     weight: 0
     maxPerInventorySlot: 1
+    itemBuffs:
+      definitions: []
   - name: stamina_fruit
+    type: 1
     displayName: Stamina Fruit
+    description: Restores stamina when eaten
     itemModel: {fileID: 1662156151352070245, guid: 78b72048a27746fa39395f10735ff60d, type: 3}
     itemModelUI: {fileID: 1662156151352070245, guid: 78b72048a27746fa39395f10735ff60d, type: 3}
     dropProbability: 0.301
@@ -88,26 +94,62 @@ MonoBehaviour:
     maxPerShopSlot: 2
     weight: 0
     maxPerInventorySlot: 4
+    itemBuffs:
+      definitions: []
   - name: mana_fruit
+    type: 1
     displayName: Mana Fruit
+    description: Restores mana when eaten
     itemModel: {fileID: 8399732216031229202, guid: e9625c90e3b36bfbf829a333b7333109, type: 3}
     itemModelUI: {fileID: 8399732216031229202, guid: e9625c90e3b36bfbf829a333b7333109, type: 3}
-    dropProbability: 0.331
-    shopProbability: 0.202
+    dropProbability: 0.126
+    shopProbability: 0.063
     cost: 2
     maxPerShopSlot: 4
     weight: 0
     maxPerInventorySlot: 10
+    itemBuffs:
+      definitions: []
   - name: BowAmmo
+    type: 2
     displayName: Arrow
+    description: 
     itemModel: {fileID: 6937730135751535858, guid: 4bc641c7358486c479b67cdc7d794936, type: 3}
     itemModelUI: {fileID: 6937730135751535858, guid: 4bc641c7358486c479b67cdc7d794936, type: 3}
-    dropProbability: 0.39
-    shopProbability: 0.31
+    dropProbability: 0.18
+    shopProbability: 0.145
     cost: 2
     maxPerShopSlot: 4
     weight: 0
     maxPerInventorySlot: 4
+    itemBuffs:
+      definitions: []
+  - name: swiftness_rune
+    type: 4
+    displayName: Rune of Swiftness
+    description: Makes its owner faster
+    itemModel: {fileID: 5994598806465713049, guid: cb2cc647910d12c0db740d8ff661c926, type: 3}
+    itemModelUI: {fileID: 5994598806465713049, guid: cb2cc647910d12c0db740d8ff661c926, type: 3}
+    dropProbability: 0.031
+    shopProbability: 0.23
+    cost: 100
+    maxPerShopSlot: 1
+    weight: 0
+    maxPerInventorySlot: 1
+    itemBuffs:
+      definitions:
+      - key: WalkSpeed
+        def:
+          operation: 1
+          value: 1.2
+      - key: RunSpeed
+        def:
+          operation: 1
+          value: 1.5
+      - key: SneakSpeed
+        def:
+          operation: 1
+          value: 1.5
 --- !u!114 &8408705079164422734
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using System;
+using TMPro;
+using System.Text;
 
 public class InventoryUI : MonoBehaviour
 {
@@ -10,10 +12,22 @@ public class InventoryUI : MonoBehaviour
 
     [Header("Rendering")]
     public GameObject slotPrefab;
+    public Transform slotParent;
 
-    public Vector2 slotPositionOrigin;
-    public Vector2 slotPositionRight;
-    public Vector2 slotPositionBottom;
+    // transforms that define slot positions
+    public RectTransform slotPositionBotLeft;
+    public RectTransform slotPositionBotRight;
+    public RectTransform slotPositionTopLeft;
+
+    // positions
+    private Vector2 slotPositionOrigin;
+    private Vector2 slotPositionRight;
+    private Vector2 slotPositionBottom;
+
+    [Header("Selected Item")]
+    public TMP_Text itemNameText;
+    public TMP_Text itemDescriptionText;
+    public TMP_Text itemBuffText;
     
     public int  numColumns;
     private int numHotbarSlots;
@@ -26,19 +40,56 @@ public class InventoryUI : MonoBehaviour
     // instantiated slots
     private GameObject[] slots = null;
 
+    void UpdateSelectedItem(ItemDefinition item, int count)
+    {
+        if (item == null)
+        {
+            return;
+        }
+
+        // name and count
+        if (count > 1) 
+        {
+            itemNameText.text = String.Format("{0}x {1}", count, item.displayName);
+        } 
+        else 
+        {
+            itemNameText.text = item.displayName;
+        }
+
+
+        // description
+        itemDescriptionText.text = item.description;
+
+        // buffs
+        StringBuilder builder = new();
+        if (item.itemBuffs != null && item.itemBuffs.definitions.Length > 0)
+        {
+            foreach (var pair in item.itemBuffs.definitions)
+            {
+                string stat = pair.key;
+                float value = pair.def.value;
+                char op = pair.def.operation == ScalingFormula.Operation.Multiplication ? 'x' : '+';
+                builder.AppendFormat("\n\t{0}: {1}{2}", stat, op, value);
+            }
+        }
+        itemBuffText.text = builder.ToString();
+    }
+
     void InitializeSlots() {
         numSlots = inventory.numItemSlots;
         numHotbarSlots = inventory.numHotbarSlots;
         slots = new GameObject[numSlots];
 
         for (int i = 0; i < numSlots; i++) {
-            slots[i] = Instantiate(slotPrefab, transform);
+            slots[i] = Instantiate(slotPrefab, slotParent);
             // left-to-right
-            float right = (float)(i % numColumns) / numColumns;
+            float right = (float)(i % numColumns) / (numColumns - 1);
             Vector2 pos = slotPositionOrigin + slotPositionRight * right;
             // top-to-bottom
-            float down = (float)(i / numColumns) / (float)Math.Ceiling((double)numSlots / numColumns);
+            float down = (float)(i / numColumns) / (float)Math.Ceiling((double)numSlots / numColumns - 1);
             pos += slotPositionBottom * down;
+            // slots[i].GetComponent<RectTransform>().anchoredPosition = pos;
             slots[i].transform.localPosition = pos;
         }
     }
@@ -51,6 +102,9 @@ public class InventoryUI : MonoBehaviour
             s.SetSelected(i == currentSlot);
             slot.GetComponent<Button>().onClick.AddListener(delegate { OnClick(i); });
         }
+
+        ItemSlot selected = inventory.container[currentSlot];
+        UpdateSelectedItem(selected.storedItem, selected.count);
     }
 
     void OnClick(int slot) {
@@ -80,6 +134,14 @@ public class InventoryUI : MonoBehaviour
     void Start() {
         player = GameObject.Find("Player").GetComponent<Player>();
         inventory = GameObject.Find("Player").GetComponent<Inventory>();
+    }
+
+    void Awake() {
+        slotPositionOrigin = slotPositionBotLeft.localPosition;
+        slotPositionRight  = slotPositionBotRight.localPosition;
+        slotPositionRight -= slotPositionOrigin;
+        slotPositionBottom = slotPositionTopLeft.localPosition;
+        slotPositionBottom-= slotPositionOrigin;
     }
 
     // Update is called once per frame

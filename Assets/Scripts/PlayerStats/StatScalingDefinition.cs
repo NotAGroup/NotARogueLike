@@ -85,7 +85,6 @@ public class KeyValueStore<Key, Value>
         // check for missing definitions
         for (int i = 0; i < _defs.Length; i++) {
             if (_defs[i] == null) {
-                Debug.LogError("scaling undefined for " + Enum.GetValues(typeof(Key)).GetValue(i));
                 _defs[i] = default;
             }
         }
@@ -124,6 +123,22 @@ public class ScalingFormula {
         if (scalingInBaseStat != null) {
             foreach (Operand s in scalingInBaseStat) {
                 int level = upgradeLevels[s.stat];
+                float value = s.value.ComputeFrom(level);
+                if (operation == Operation.Multiplication) {
+                    result *= value;
+                } else {
+                    result += value;
+                }
+            }
+        }
+        return result;
+    }
+
+    public float ComputeWithOverride(PlayerUpgradeState upgradeLevels, BaseStatKey baseStat, int overrideLevel) {
+        float result = baseValue;
+        if (scalingInBaseStat != null) {
+            foreach (Operand s in scalingInBaseStat) {
+                int level = (s.stat != baseStat) ? upgradeLevels[s.stat] : overrideLevel;
                 float value = s.value.ComputeFrom(level);
                 if (operation == Operation.Multiplication) {
                     result *= value;

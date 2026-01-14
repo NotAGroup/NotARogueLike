@@ -1,5 +1,8 @@
 using UnityEngine;
 using System;
+using System.Text;
+
+using TMPro;
 
 public class UpgradeUI : MonoBehaviour
 {
@@ -8,11 +11,16 @@ public class UpgradeUI : MonoBehaviour
     public Vector2 origin;
     public Vector2 offset;
 
+    [Header("Stat information")]
+    public TMP_Text statNameText;
+    public TMP_Text statInfoText;
+
     private int selectedIndex;
     public BaseStatKey selectedStat { get => (BaseStatKey)stats.GetValue(selectedIndex); }
 
     private GameObject[] uiInstances;
     private UpgradeCostDefinitions defs;
+    private StatScalingDefinitions scalingDefs;
     private GameObject player;
 
     // get array of stats
@@ -27,6 +35,7 @@ public class UpgradeUI : MonoBehaviour
     void Awake()
     {
         defs = GameObject.Find("Definitions").GetComponent<UpgradeCostDefinitions>();
+        scalingDefs = GameObject.Find("Definitions").GetComponent<StatScalingDefinitions>();
         player = GameObject.Find("Player");
 
         // clear old ui objects
@@ -37,6 +46,7 @@ public class UpgradeUI : MonoBehaviour
             uiInstances = new GameObject[stats.Length];
         }
 
+        // 
         int index = 0;
         foreach(BaseStatKey key in stats) {
             var obj = Instantiate(statUIPrefab, transform);
@@ -64,9 +74,35 @@ public class UpgradeUI : MonoBehaviour
 
             index++;
         }
+
+        BaseStatKey selection = selectedStat;
+        statNameText.text = Enum.GetName(typeof(BaseStatKey), selection);
+        statInfoText.text = ComputeUpgradeDescription(selection);
+    }
+    
+    private string ComputeUpgradeDescription(BaseStatKey baseStat) {
+        StringBuilder builder = new();
+
+        // iterate through different stats
+        foreach (StatKey key in Enum.GetValues(typeof(StatKey))) {
+            var upgrades = player.GetComponent<PlayerUpgrades>();
+
+            var definition = scalingDefs[key];
+            float current   = definition.ComputeFrom(upgrades.levels);
+            float upgraded  = definition.ComputeWithOverride(upgrades.levels, baseStat, upgrades[baseStat] + 1);
+
+            // skip if not changed by upgrade
+            if (current == upgraded) continue;
+
+            // show relative change if upgraded
+            builder.AppendFormat("x{1:0.00} {0,-20}\n", key.ToString(), current / upgraded); 
+        }
+
+        return builder.ToString();
     }
 
     void Update() {
+        // TODO: extract to player script
         UpdateUpgrades();
     }
 }
