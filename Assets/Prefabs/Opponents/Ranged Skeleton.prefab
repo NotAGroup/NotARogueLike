@@ -108,7 +108,7 @@ Animator:
   m_GameObject: {fileID: 475543288245891742}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: f3d5d500492484b4180400302ff2595e, type: 3}
-  m_Controller: {fileID: 9100000, guid: d730ce3e6e6e41043a5bf530ee40a124, type: 2}
+  m_Controller: {fileID: 9100000, guid: ad5be9892b7e68848bc1c96cfda2c7ce, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -989,72 +989,6 @@ Transform:
   - {fileID: 2370682827848685243}
   m_Father: {fileID: 5023032708942129230}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &4684604119530872090
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1966500508371224329}
-  - component: {fileID: 5024042621987797317}
-  - component: {fileID: 2615748330894058864}
-  m_Layer: 0
-  m_Name: HitZone
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1966500508371224329
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4684604119530872090}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8522380153375536634}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &5024042621987797317
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4684604119530872090}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 2, y: 2, z: 2}
-  m_Center: {x: 0, y: 0, z: 1}
---- !u!114 &2615748330894058864
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4684604119530872090}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cfd9b49e21c55604e9374d1961b8eec8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
 --- !u!1 &4838296068849069965
 GameObject:
   m_ObjectHideFlags: 0
@@ -1863,7 +1797,7 @@ GameObject:
   - component: {fileID: 4975561014754260319}
   - component: {fileID: 7261524907011688642}
   - component: {fileID: 2069591081605510192}
-  - component: {fileID: 2506817616126039836}
+  - component: {fileID: 3371453016842928542}
   - component: {fileID: 7685539837612636914}
   m_Layer: 0
   m_Name: Ranged Skeleton
@@ -1885,7 +1819,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1966500508371224329}
   - {fileID: 3404461001335474892}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1979,7 +1912,7 @@ MonoBehaviour:
   swingDuration: 0
   strikeDuration: 0.3
   returnDuration: 0.6
-  attackRange: 3
+  attackRange: 9
   attackDamage: 0
   maxHealth: 100
   healthRegRate: 5
@@ -1989,7 +1922,7 @@ MonoBehaviour:
   movementSpeed: 0
   memoryDuration: 5
   detectionRange: 20
---- !u!114 &2506817616126039836
+--- !u!114 &3371453016842928542
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1998,12 +1931,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8282398908945130151}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26eca20a2ebcb2d40a7b9dad62ee364d, type: 3}
+  m_Script: {fileID: 11500000, guid: f483d122eb2d641409603f2aa0fc68f9, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Opponent
-  hitZone: {fileID: 2615748330894058864}
+  m_EditorClassIdentifier: Assembly-CSharp::RangedSkeleton
   playerGotHit: 0
-  viewAngle: 60
+  viewAngle: 90
 --- !u!114 &7685539837612636914
 MonoBehaviour:
   m_ObjectHideFlags: 0
