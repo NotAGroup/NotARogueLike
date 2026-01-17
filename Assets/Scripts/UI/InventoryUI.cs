@@ -44,6 +44,9 @@ public class InventoryUI : MonoBehaviour
     {
         if (item == null)
         {
+            itemNameText.text = "";
+            itemDescriptionText.text = "";
+            itemBuffText.text = "";
             return;
         }
 
