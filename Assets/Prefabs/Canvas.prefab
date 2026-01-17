@@ -3090,8 +3090,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c14fd3552390f8459b3ab55ffa9158f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UserInput
-  mouseSensitivity: 0.1
-  stickSensitivity: 150
+  lookSensitivity: 1
+  uiNavigateRepeatRate: 5
 --- !u!114 &1174493148950342287
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3104,6 +3104,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9238566f73bd5d5df8f0abf244b9260d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIManager
+  uiElements:
+  - uiElement: {fileID: 8027994548421002953}
+    visibleIn: 128
+  - uiElement: {fileID: 4574222539688569164}
+    visibleIn: 1
+  - uiElement: {fileID: 7117123524355538582}
+    visibleIn: 1
+  - uiElement: {fileID: 5786376151969999228}
+    visibleIn: 1
+  - uiElement: {fileID: 7052077407146181751}
+    visibleIn: 13
+  - uiElement: {fileID: 2511870870496133509}
+    visibleIn: 4
+  - uiElement: {fileID: 5818486263990359388}
+    visibleIn: 8
+  cursorUnlocked: 204
+  actionMaps:
+  - name: Player
+    enabledIn: 1
+  - name: UI
+    enabledIn: 204
+  actions:
+  - name: ToggleUI
+    enabledIn: 77
+  - name: TogglePause
+    enabledIn: 65
+  - name: ToggleInventory
+    enabledIn: 13
+  - name: ToggleUpgrades
+    enabledIn: 13
+  - name: Cancel
+    enabledIn: 76
 --- !u!1 &7052077407146181751
 GameObject:
   m_ObjectHideFlags: 0
