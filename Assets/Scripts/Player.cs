@@ -105,9 +105,6 @@ public class Player : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         rb = GetComponent<Rigidbody>();
         animator = GetComponentInChildren<Animator>();
-
-        //leftShoulderTransform = GameObject.Find("Left Shoulder").GetComponent<Transform>();
-        //rightShoulderTransform = GameObject.Find("Right Shoulder").GetComponent<Transform>();
     }
 
     // Update is called once per frame
@@ -171,8 +168,6 @@ public class Player : MonoBehaviour
 
             float ratio = Mathf.Clamp(hitTime / duration, 0.0f, 1.0f);
 
-            //rightShoulderTransform.localRotation = Quaternion.Slerp(startRotation, endRotation, ratio);
-
             if (ratio >= 1.0f)
             {
                 switch (hitState)
@@ -198,7 +193,6 @@ public class Player : MonoBehaviour
                         hitState = HitState.Idle;
                         hitCooldown = 1.0f / stats.hitRate;
 
-                        //weapon.gameObject.SetActive(false);
                         hitZone.gameObject.SetActive(false);
                         opponentGotHit = false;
                         break;
@@ -289,20 +283,24 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void ChangeAttack(AttackType attackType)
+    {
+        this.attackType = attackType;
+        weapon.gameObject.SetActive(attackType == AttackType.Hit);
+
+        RunData.Instance.selectedAttack = attackType;
+    }
+
     public void ChangeAttack()
     {
         if (attackType == AttackType.Hit)
         {
-            attackType = AttackType.Shoot;
-            weapon.gameObject.SetActive(false);
+            ChangeAttack(AttackType.Shoot);
         }
         else
         {
-            attackType = AttackType.Hit;
-            weapon.gameObject.SetActive(true);
+            ChangeAttack(AttackType.Hit);
         }
-
-        RunData.Instance.selectedAttack = attackType;
     }
 
     private void Die()
@@ -318,9 +316,10 @@ public class Player : MonoBehaviour
 
     public void StartGame()
     {
-        attackType = AttackType.Shoot;
+        attackType = RunData.Instance.selectedAttack;
+        ChangeAttack(attackType);
+
         hitState = HitState.Idle;
-        weapon.gameObject.SetActive(false);
 
         fireCooldown = 0.0f;
         hitCooldown = 0.0f;
@@ -331,18 +330,12 @@ public class Player : MonoBehaviour
 
         defaultYScale = transform.localScale.y;
 
-        //weapon.gameObject.SetActive(false);
         hitZone.gameObject.SetActive(false);
         opponentGotHit = false;
 
-        attackType = RunData.Instance.selectedAttack;
-        if(attackType == AttackType.Hit)
-        {
-            weapon.gameObject.SetActive(true);
-        }
-
         isDead = false;
         characterController.enabled = true;
+
         OnInventoryChanged();
         OnStatUpgrade();
     }
@@ -481,28 +474,6 @@ public class Player : MonoBehaviour
 
         motion.x = movement.x * speed;
         motion.z = movement.z * speed;
-
-        float ratio = Time.deltaTime * 5.0f;
-
-        if (hitState == HitState.Idle && (direction.x != 0.0f || direction.y != 0.0f) && !slide)
-        {
-            float amplitude = 2.0f * speed;
-            float frequency = 5.0f;
-
-            float wave = Mathf.Sin(Time.time * frequency) * amplitude;
-
-            //leftShoulderTransform.localRotation = Quaternion.Slerp(leftShoulderTransform.localRotation,
-            //    Quaternion.Euler(wave, 0.0f, 0.0f), ratio);
-            //rightShoulderTransform.localRotation = Quaternion.Slerp(rightShoulderTransform.localRotation,
-            //    Quaternion.Euler(-wave, 0.0f, 0.0f), ratio);
-        }
-        else
-        {
-            //leftShoulderTransform.localRotation = Quaternion.Slerp(leftShoulderTransform.localRotation,
-            //    Quaternion.Euler(0.0f, 0.0f, 0.0f), ratio);
-            //rightShoulderTransform.localRotation = Quaternion.Slerp(rightShoulderTransform.localRotation,
-            //    Quaternion.Euler(0.0f, 0.0f, 0.0f), ratio);
-        }
     }
 
     public void Run(bool value)
@@ -530,9 +501,6 @@ public class Player : MonoBehaviour
     {
         ItemContainer items = inventory.container;
         int bowAmmoSlot = items.GetSlotContaining(itemDefinitions[3], 1);
-
-        Debug.Log("Bow Ammo Slot: " + bowAmmoSlot);
-        items.PrintState();
 
         if (fireCooldown > 0.0f || projectiles.Length == 0 || bowAmmoSlot == -1)
         {
