@@ -486,14 +486,28 @@ public class Player : MonoBehaviour
         run = value;
     }
 
+    // store euler angles of looking direction around x and y axis
+    private float angleY = 0f;
+    private float angleX = 0f;
+
+    public float minAngleX = -80f;
+    public float maxAngleX =  90f;
+
+    // rotates the player by the given rotation delta 
     public void Rotate(Vector2 rotation)
     {
+        rotation *= currentFOV / normalFOV;
+
+        // y-coordinate of rotation controls rotation around x-axis and vice versa
+        angleX += rotation.y;
+        angleY += rotation.x;
+
         // Player
-        transform.localRotation = Quaternion.AngleAxis(rotation.x, Vector3.up);
+        transform.localRotation = Quaternion.AngleAxis(angleY, Vector3.up);
 
         // Camera
-        float angle = Mathf.Clamp(rotation.y * 2, -90, 90.0f);
-        cameraTransform.localRotation = Quaternion.AngleAxis(angle, Vector3.left);
+        angleX = Mathf.Clamp(angleX, minAngleX, maxAngleX);
+        cameraTransform.localRotation = Quaternion.AngleAxis(angleX, Vector3.left);
     }
 
     public void Shoot()
