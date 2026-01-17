@@ -355,7 +355,7 @@ public class Player : MonoBehaviour
         return constitution.Stamina;
     }
 
-    void Hit()
+    public void Hit()
     {
         if (hitCooldown > 0.0f || hitState != HitState.Idle)
         {
@@ -496,7 +496,7 @@ public class Player : MonoBehaviour
         cameraTransform.localRotation = Quaternion.AngleAxis(angle, Vector3.left);
     }
 
-    void Shoot()
+    public void Shoot()
     {
         ItemContainer items = inventory.container;
         int bowAmmoSlot = items.GetSlotContaining(itemDefinitions[3], 1);
