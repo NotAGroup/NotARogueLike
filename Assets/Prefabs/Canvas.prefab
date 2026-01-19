@@ -1077,6 +1077,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4272778915715390304}
   - component: {fileID: 8086221433706150915}
+  - component: {fileID: 2168415538754453025}
   m_Layer: 5
   m_Name: Inventory
   m_TagString: Untagged
@@ -1128,6 +1129,48 @@ MonoBehaviour:
   numColumns: 4
   currentSlot: 0
   grabbed: 0
+--- !u!114 &2168415538754453025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2511870870496133509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de7d6d301437e2417af11a702360e81e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UiNavigationReceiver
+  navigationEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8086221433706150915}
+        m_TargetAssemblyTypeName: InventoryUI, Assembly-CSharp
+        m_MethodName: MoveSelection
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  submitEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8086221433706150915}
+        m_TargetAssemblyTypeName: InventoryUI, Assembly-CSharp
+        m_MethodName: ToggleItemGrabbed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &2595503266069059960
 GameObject:
   m_ObjectHideFlags: 0
@@ -2339,6 +2382,7 @@ GameObject:
   m_Component:
   - component: {fileID: 854983740755527331}
   - component: {fileID: 7883836205666332697}
+  - component: {fileID: 267371259086297132}
   m_Layer: 5
   m_Name: Upgrades
   m_TagString: Untagged
@@ -2383,6 +2427,48 @@ MonoBehaviour:
   offset: {x: 0, y: -80}
   statNameText: {fileID: 6302165386999173938}
   statInfoText: {fileID: 6366769092732951360}
+--- !u!114 &267371259086297132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5818486263990359388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de7d6d301437e2417af11a702360e81e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UINavigationReceiver
+  navigationEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7883836205666332697}
+        m_TargetAssemblyTypeName: UpgradeUI, Assembly-CSharp
+        m_MethodName: MoveSelection
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  submitEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7883836205666332697}
+        m_TargetAssemblyTypeName: UpgradeUI, Assembly-CSharp
+        m_MethodName: TryUpgrade
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &5957937046416454343
 GameObject:
   m_ObjectHideFlags: 0
@@ -3322,6 +3408,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 898759984747337816}
+  - component: {fileID: 6457062277218309348}
   m_Layer: 5
   m_Name: Death Screen
   m_TagString: Untagged
@@ -3350,6 +3437,36 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &6457062277218309348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8027994548421002953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de7d6d301437e2417af11a702360e81e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  navigationEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  submitEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7026903157227739262}
+        m_TargetAssemblyTypeName: Restart, Assembly-CSharp
+        m_MethodName: RestartGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &8830944126593913855
 GameObject:
   m_ObjectHideFlags: 0
