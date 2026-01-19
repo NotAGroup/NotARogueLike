@@ -138,18 +138,14 @@ public class UserInput : MonoBehaviour
             Vector2 uiDirection = uiMoveAction.ReadValue<Vector2>();
             if (uiDirection != Vector2.zero && uiNavigateTimer <= 0f) 
             {
-                // control upgrades ui
-                if (uiController.upgradesOpen) 
+                if (uiController.TryGetFocusedWindow(out GameObject obj)) 
                 {
-                    upgradeUI.MoveSelection(uiDirection);
-                    uiNavigateTimer = 1f / uiNavigateRepeatRate;
-                }
-    
-                // control inventory ui
-                if (uiController.inventoryOpen) 
-                {
-                    inventoryUI.MoveSelection(uiDirection);
-                    uiNavigateTimer = 1f / uiNavigateRepeatRate;
+                    if (obj.TryGetComponent<UINavigationReceiver>(out UINavigationReceiver receiver)) 
+                    {
+                        // control active ui
+                        receiver.Navigate(uiDirection);
+                        uiNavigateTimer = 1f / uiNavigateRepeatRate;
+                    }
                 }
             }
 
@@ -158,81 +154,79 @@ public class UserInput : MonoBehaviour
         } 
 
         // items
-        if (item1Action.WasPerformedThisFrame()) { this.player.UseItem(0); }
-        if (item2Action.WasPerformedThisFrame()) { this.player.UseItem(1); }
-        if (item3Action.WasPerformedThisFrame()) { this.player.UseItem(2); }
-        if (item4Action.WasPerformedThisFrame()) { this.player.UseItem(3); }
+        if (item1Action.WasPerformedThisFrame()) { player.UseItem(0); }
+        if (item2Action.WasPerformedThisFrame()) { player.UseItem(1); }
+        if (item3Action.WasPerformedThisFrame()) { player.UseItem(2); }
+        if (item4Action.WasPerformedThisFrame()) { player.UseItem(3); }
 
-        if (jumpAction.WasPerformedThisFrame()) { this.player.Jump(); }
+        if (jumpAction.WasPerformedThisFrame()) { player.Jump(); }
 
-        if (interactAction.WasPerformedThisFrame()) {this.player.Interact(); }
+        if (interactAction.WasPerformedThisFrame()) {player.Interact(); }
 
         // input using selected attack
-        if (changeAttackAction.WasPerformedThisFrame()) {this.player.ChangeAttack(); }
-        if (attackAction.WasPerformedThisFrame()) {this.player.Attack(); }
+        if (changeAttackAction.WasPerformedThisFrame()) {player.ChangeAttack(); }
+        if (attackAction.WasPerformedThisFrame()) {player.Attack(); }
 
         // attack-type-specific inputs 
         if (strikeAction.WasPerformedThisFrame()) {
-            this.player.ChangeAttack(Player.AttackType.Hit);
-            this.player.Attack();
+            player.ChangeAttack(Player.AttackType.Hit);
+            player.Attack();
         }
         if (shootAction.WasPerformedThisFrame()) {
-            this.player.ChangeAttack(Player.AttackType.Shoot);
-            this.player.Attack();
+            player.ChangeAttack(Player.AttackType.Shoot);
+            player.Attack();
         }
 
 
         if (uiSelectAction.WasPerformedThisFrame()) {
-            if (this.uiController.upgradesOpen) 
+            if (uiController.TryGetFocusedWindow(out GameObject obj)) 
             {
-                // control upgrades ui
-                this.playerUpgrades.TryUpgrade(this.upgradeUI.selectedStat);
-            }
-            else if (this.uiController.inventoryOpen) 
-            {
-                // control inventory ui
-                this.inventoryUI.ToggleItemGrabbed();
+                if (obj.TryGetComponent<UINavigationReceiver>(out UINavigationReceiver receiver)) 
+                {
+                    // control active ui
+                    receiver.Submit();
+                }
             }
         }
 
         if (switchUIAction.WasPerformedThisFrame()) {
             // handle switching between UIs
             if (uiController.upgradesOpen) {
-                this.uiController.SwitchToInventory();
+                uiController.SwitchToInventory();
             } else if (uiController.inventoryOpen) {
-                this.uiController.SwitchToUpgrades();
+                uiController.SwitchToUpgrades();
             }
         }
         
         if (uiCloseAction.WasPerformedThisFrame()) {
             // handle closing of ui
-            this.uiController.SwitchToGameplay();
+            uiController.SwitchToGameplay();
         }
 
         if (toggleUIAction.WasPerformedThisFrame()) {
             // handle toggling of ui
-            if (this.uiController.upgradesOpen || this.uiController.inventoryOpen) {
-                this.uiController.SwitchToGameplay();
+            if (uiController.upgradesOpen || uiController.inventoryOpen) {
+                uiController.SwitchToGameplay();
             } else {
-                this.uiController.SwitchToInventory();
+                uiController.SwitchToInventory();
             }
         }
 
         if (toggleUpgradesAction.WasPerformedThisFrame()) {
             // toggle upgrade ui
-            if (this.uiController.upgradesOpen) {
-                this.uiController.SwitchToGameplay();
+            if (uiController.upgradesOpen) {
+                uiController.SwitchToGameplay();
             } else {
-                this.uiController.SwitchToUpgrades();
+                uiController.SwitchToUpgrades();
             }
         }
 
         if (toggleInventoryAction.WasPerformedThisFrame()) {
             // toggle inventory ui
-            if (this.uiController.inventoryOpen) {
-                this.uiController.SwitchToGameplay();
+            if (uiController.inventoryOpen) {
+                uiController.SwitchToGameplay();
             } else {
-                this.uiController.SwitchToInventory();
+                uiController.SwitchToInventory();
             }
         }
 

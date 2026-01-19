@@ -21,14 +21,21 @@ public class UpgradeUI : MonoBehaviour
     private GameObject[] uiInstances;
     private UpgradeCostDefinitions defs;
     private StatScalingDefinitions scalingDefs;
+    private PlayerUpgrades upgrades;
     private GameObject player;
 
     // get array of stats
     private Array stats = Enum.GetValues(typeof(BaseStatKey));
 
     // 
-    public void MoveSelection(Vector2 delta) {
+    public void MoveSelection(Vector2 delta) 
+    {
         selectedIndex = (selectedIndex - (int)delta.y + stats.Length) % stats.Length;
+    }
+
+    public void TryUpgrade() 
+    {  
+        upgrades.TryUpgrade(selectedStat);
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -37,6 +44,7 @@ public class UpgradeUI : MonoBehaviour
         defs = GameObject.Find("Definitions").GetComponent<UpgradeCostDefinitions>();
         scalingDefs = GameObject.Find("Definitions").GetComponent<StatScalingDefinitions>();
         player = GameObject.Find("Player");
+        upgrades = player.GetComponent<PlayerUpgrades>();
 
         // clear old ui objects
         if (uiInstances != null) {
@@ -85,8 +93,6 @@ public class UpgradeUI : MonoBehaviour
 
         // iterate through different stats
         foreach (StatKey key in Enum.GetValues(typeof(StatKey))) {
-            var upgrades = player.GetComponent<PlayerUpgrades>();
-
             var definition = scalingDefs[key];
             float current   = definition.ComputeFrom(upgrades.levels);
             float upgraded  = definition.ComputeWithOverride(upgrades.levels, baseStat, upgrades[baseStat] + 1);

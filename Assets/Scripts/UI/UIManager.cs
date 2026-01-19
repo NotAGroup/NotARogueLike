@@ -17,6 +17,7 @@ public class UIManager : MonoBehaviour
 
     public bool inventoryOpen { get => inventoryUI != null && inventoryUI.activeInHierarchy; }
     public bool upgradesOpen { get => upgradesUI != null && upgradesUI.activeInHierarchy; }
+    public bool deathScreenOpen { get => deathScreen != null && deathScreen.activeInHierarchy; }
 
     // for configuring ui element visibility
     [System.Serializable]
@@ -66,6 +67,25 @@ public class UIManager : MonoBehaviour
     }
     public UIState currentState { get; private set; }
 
+
+    // 
+    public bool TryGetFocusedWindow(out GameObject gameObject) {
+        switch (currentState) {
+            case UIState.Inventory:
+                gameObject = inventoryUI;
+                return true;
+            case UIState.Upgrades:
+                gameObject = upgradesUI;
+                return true;
+            case UIState.Death:
+                gameObject = deathScreen;
+                return true;
+            case UIState.Pause:
+            default: 
+                gameObject = null;
+                return false;
+        }
+    }
 
     public void SwitchToGameplay() {
         currentState = UIState.Gameplay;
