@@ -11,7 +11,7 @@
    inkscape:export-xdpi="192"
    inkscape:export-ydpi="192"
    inkscape:version="1.4.3 (0d15f75042, 2025-12-25)"
-   sodipodi:docname="ui_element.svg"
+   sodipodi:docname="ui_element_framed.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -622,7 +622,7 @@
        inkscape:path-effect="#path-effect4"
        inkscape:label="corners_thick" />
     <path
-       style="display:none;fill:none;fill-opacity:0.655898;stroke:#a1a1a1;stroke-width:12;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+       style="display:inline;fill:none;fill-opacity:0.655898;stroke:#a1a1a1;stroke-width:12;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
        d="M 40,160 V 80 c 0,-6.402893 2.543539,-12.543539 7.071068,-17.071068 L 62.928932,47.071068 C 67.456461,42.543539 73.597107,40 80,40 h 90 m 222,0 h 90 c 6.40289,0 12.54354,2.543539 17.07107,7.071068 l 15.85786,15.857864 C 519.45646,67.456461 522,73.597107 522,80 v 80 M 170,522 H 80 c -6.402893,0 -12.543539,-2.54354 -17.071068,-7.07107 L 47.071068,499.07107 C 42.543539,494.54354 40,488.40289 40,482 v -80 m 482,0 v 80 c 0,6.40289 -2.54354,12.54354 -7.07107,17.07107 l -15.85786,15.85786 C 494.54354,519.45646 488.40289,522 482,522 h -90"
        id="path6"
        inkscape:label="border"
