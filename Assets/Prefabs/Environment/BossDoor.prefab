@@ -84,6 +84,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: b110fabb8f3a3d4d18445e49072689f3, type: 2}
+    - target: {fileID: 697116270645158163, guid: 866b47b5a1aacafd4883eeeb8335777c, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: cd3fdd63547e98f0b8754d1793dab414, type: 2}
     - target: {fileID: 919132149155446097, guid: 866b47b5a1aacafd4883eeeb8335777c, type: 3}
       propertyPath: m_Name
       value: boss-door
