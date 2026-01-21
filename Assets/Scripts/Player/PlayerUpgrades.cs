@@ -26,13 +26,13 @@ public class PlayerUpgrades : MonoBehaviour
         var inventory = GetComponent<Inventory>();
 
         int level = levels[stat];
-        int[] costs = defs[stat];
-        if (level < defs.MaxLevel(stat)) {
-            cost = costs[levels[stat]];
-        } else {
+        if (level >= defs.MaxLevel(stat)) {
             cost = -1;
-        }
-
+            return false;
+        } 
+        
+        int[] costs = defs[stat];
+        cost = costs[levels[stat]];
         return inventory.currency[Currency.XP] >= costs[levels[stat]];
     }
 

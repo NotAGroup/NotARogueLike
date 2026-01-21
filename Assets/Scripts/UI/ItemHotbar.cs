@@ -30,7 +30,7 @@ public class ItemHotbar : MonoBehaviour
 
         for (int i = 0; i < numSlots; i++) {
             slots[i] = Instantiate(slotPrefab, transform);
-            slots[i].transform.localPosition = Vector2.Lerp(slotPositionLeft, slotPositionRight, (float)i / numSlots);
+            slots[i].transform.localPosition = Vector2.Lerp(slotPositionLeft, slotPositionRight, (float)i / (numSlots - 1));
         }
     }
 

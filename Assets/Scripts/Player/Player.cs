@@ -105,9 +105,6 @@ public class Player : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         rb = GetComponent<Rigidbody>();
         animator = GetComponentInChildren<Animator>();
-
-        //leftShoulderTransform = GameObject.Find("Left Shoulder").GetComponent<Transform>();
-        //rightShoulderTransform = GameObject.Find("Right Shoulder").GetComponent<Transform>();
     }
 
     // Update is called once per frame
@@ -170,8 +167,6 @@ public class Player : MonoBehaviour
             duration /= stats.hitRate;
 
             float ratio = Mathf.Clamp(hitTime / duration, 0.0f, 1.0f);
-
-            //rightShoulderTransform.localRotation = Quaternion.Slerp(startRotation, endRotation, ratio);
 
             if (ratio >= 1.0f)
             {
@@ -288,20 +283,24 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void ChangeAttack(AttackType attackType)
+    {
+        this.attackType = attackType;
+        sword.gameObject.SetActive(attackType == AttackType.Hit);
+
+        RunData.Instance.selectedAttack = attackType;
+    }
+
     public void ChangeAttack()
     {
         if (attackType == AttackType.Hit)
         {
-            attackType = AttackType.Shoot;
-            sword.SetActive(false);
+            ChangeAttack(AttackType.Shoot);
         }
         else
         {
-            attackType = AttackType.Hit;
-            sword.SetActive(true);
+            ChangeAttack(AttackType.Hit);
         }
-
-        RunData.Instance.selectedAttack = attackType;
     }
 
     private void Die()
@@ -317,9 +316,10 @@ public class Player : MonoBehaviour
 
     public void StartGame()
     {
-        attackType = AttackType.Shoot;
+        attackType = RunData.Instance.selectedAttack;
+        ChangeAttack(attackType);
+
         hitState = HitState.Idle;
-        sword.SetActive(false);
 
         fireCooldown = 0.0f;
         hitCooldown = 0.0f;
@@ -333,14 +333,11 @@ public class Player : MonoBehaviour
         hitZone.gameObject.SetActive(false);
         opponentGotHit = false;
 
-        attackType = RunData.Instance.selectedAttack;
-        if(attackType == AttackType.Hit)
-        {
-            sword.SetActive(true);
-        }
-
         isDead = false;
         characterController.enabled = true;
+
+        OnInventoryChanged();
+        OnStatUpgrade();
     }
 
     public float GetHealth()
@@ -358,7 +355,7 @@ public class Player : MonoBehaviour
         return constitution.Stamina;
     }
 
-    void Hit()
+    public void Hit()
     {
         if (hitCooldown > 0.0f || hitState != HitState.Idle)
         {
@@ -385,10 +382,12 @@ public class Player : MonoBehaviour
             inventory.currency[Currency.Gold] -= slot.item.cost;
             inventory.container.AddItem(slot.item, slot.count);
             slot.shop.RemoveItem(slot.Index);
+            OnInventoryChanged();
             return true;
         } else if (transform.gameObject.TryGetComponent<DroppedItem>(out DroppedItem item)) {
             inventory.container.AddItem(item.item, item.count);
             item.Disable();
+            OnInventoryChanged();
             return true;
         } else if (transform.gameObject.TryGetComponent<TrapDoor>(out TrapDoor door)){
             door.Interact();
@@ -396,6 +395,16 @@ public class Player : MonoBehaviour
         }
 
         return false;
+    }
+
+    public void OnInventoryChanged()
+    {
+        stats.Recompute();
+    }
+
+    public void OnStatUpgrade()
+    {
+        stats.Recompute();
     }
 
     public void Interact()
@@ -462,28 +471,6 @@ public class Player : MonoBehaviour
 
         motion.x = movement.x * speed;
         motion.z = movement.z * speed;
-
-        float ratio = Time.deltaTime * 5.0f;
-
-        if (hitState == HitState.Idle && (direction.x != 0.0f || direction.y != 0.0f) && !slide)
-        {
-            float amplitude = 2.0f * speed;
-            float frequency = 5.0f;
-
-            float wave = Mathf.Sin(Time.time * frequency) * amplitude;
-
-            //leftShoulderTransform.localRotation = Quaternion.Slerp(leftShoulderTransform.localRotation,
-            //    Quaternion.Euler(wave, 0.0f, 0.0f), ratio);
-            //rightShoulderTransform.localRotation = Quaternion.Slerp(rightShoulderTransform.localRotation,
-            //    Quaternion.Euler(-wave, 0.0f, 0.0f), ratio);
-        }
-        else
-        {
-            //leftShoulderTransform.localRotation = Quaternion.Slerp(leftShoulderTransform.localRotation,
-            //    Quaternion.Euler(0.0f, 0.0f, 0.0f), ratio);
-            //rightShoulderTransform.localRotation = Quaternion.Slerp(rightShoulderTransform.localRotation,
-            //    Quaternion.Euler(0.0f, 0.0f, 0.0f), ratio);
-        }
     }
 
     public void Run(bool value)
@@ -497,23 +484,34 @@ public class Player : MonoBehaviour
         run = value;
     }
 
+    // store euler angles of looking direction around x and y axis
+    private float angleY = 0f;
+    private float angleX = 0f;
+
+    public float minAngleX = -80f;
+    public float maxAngleX =  90f;
+
+    // rotates the player by the given rotation delta 
     public void Rotate(Vector2 rotation)
     {
+        rotation *= currentFOV / normalFOV;
+
+        // y-coordinate of rotation controls rotation around x-axis and vice versa
+        angleX += rotation.y;
+        angleY += rotation.x;
+
         // Player
-        transform.localRotation = Quaternion.AngleAxis(rotation.x, Vector3.up);
+        transform.localRotation = Quaternion.AngleAxis(angleY, Vector3.up);
 
         // Camera
-        float angle = Mathf.Clamp(rotation.y * 2, -90, 90.0f);
-        cameraTransform.localRotation = Quaternion.AngleAxis(angle, Vector3.left);
+        angleX = Mathf.Clamp(angleX, minAngleX, maxAngleX);
+        cameraTransform.localRotation = Quaternion.AngleAxis(angleX, Vector3.left);
     }
 
-    void Shoot()
+    public void Shoot()
     {
         ItemContainer items = inventory.container;
         int bowAmmoSlot = items.GetSlotContaining(itemDefinitions[3], 1);
-
-        Debug.Log("Bow Ammo Slot: " + bowAmmoSlot);
-        items.PrintState();
 
         if (fireCooldown > 0.0f || projectiles.Length == 0 || bowAmmoSlot == -1)
         {
