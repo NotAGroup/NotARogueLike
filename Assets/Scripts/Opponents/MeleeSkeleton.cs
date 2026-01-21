@@ -6,6 +6,19 @@ public class MeleeSkeleton : Opponent
     [Header("Combat")]
     public OpponentHitZone hitZone;
 
+    protected override void Start()
+    {
+        base.Start();
+
+        if (spawnRoom != null)
+        {
+            Vector2Int roomCenter = (spawnRoom.BottomLeftAreaCorner + spawnRoom.TopRightAreaCorner) / 2;
+            spawnRoomCenter = new Vector3(roomCenter.x, 0.0f, roomCenter.y);
+
+            navPoints = spawnRoom.GetCorners();
+        }
+    }
+
     protected override void Combat()
     {
         navMeshAgent.isStopped = false;
@@ -106,20 +119,15 @@ public class MeleeSkeleton : Opponent
 
         if (!wandering && navPoints != null)
         {
-            NavPoint navPoint = navPoints[nextNavPointID];
+            Vector3 targetPos = navPoints[nextNavPointID].transform.position;
 
-            if (navPoint.type == "corner")
-            {
-                Vector3 targetPos = navPoint.transform.position;
+            NavMeshHit navHit;
+            NavMesh.SamplePosition(targetPos, out navHit, stats.wanderRadius, NavMesh.AllAreas);
 
-                NavMeshHit navHit;
-                NavMesh.SamplePosition(targetPos, out navHit, stats.wanderRadius, NavMesh.AllAreas);
+            navMeshAgent.SetDestination(navHit.position);
 
-                navMeshAgent.SetDestination(navHit.position);
-
-                wanderTimer = Random.Range(stats.wanderInterval * 0.5f, stats.wanderInterval * 2.0f);
-                wandering = true;
-            }
+            wanderTimer = Random.Range(stats.wanderInterval * 0.5f, stats.wanderInterval * 2.0f);
+            wandering = true;
 
             nextNavPointID++;
             nextNavPointID %= navPoints.Count;

@@ -19,7 +19,7 @@ public abstract class Opponent : MonoBehaviour
     protected float attackTimer, memoryTimer, wanderTimer;
 
     public Node spawnRoom;
-    protected Vector3Int spawnRoomCenter;
+    protected Vector3 spawnRoomCenter;
     protected int nextNavPointID = 0;
     protected List<NavPoint> navPoints;
 
@@ -44,14 +44,6 @@ public abstract class Opponent : MonoBehaviour
 
         currentHealth = stats.maxHealth;
         wanderTimer = stats.wanderInterval;
-
-        if (spawnRoom != null)
-        {
-            Vector2Int roomCenter = (spawnRoom.BottomLeftAreaCorner + spawnRoom.TopRightAreaCorner) / 2;
-            spawnRoomCenter = new Vector3Int(roomCenter.x, 0, roomCenter.y);
-
-            navPoints = spawnRoom.navPointList;
-        }
     }
 
     protected virtual void Update()
