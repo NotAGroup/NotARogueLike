@@ -36,10 +36,20 @@ public class ItemHotbarSlot : MonoBehaviour
         }
     }
 
-    public void SetCurrency(Currency currency, int count) {
-        itemModel.GetComponent<Image>().sprite = null;
-        itemModel.SetActive(false);
-        itemText.GetComponent<TMP_Text>().text = Enum.GetName(typeof(Currency), currency);
+    public void SetCurrency(CurrencyDefinition currency, int count) {
+        if (currency.currencySprite != null) 
+        {
+            itemModel.GetComponent<Image>().sprite = currency.currencySprite;
+            itemModel.SetActive(true);
+        }
+        else
+        {
+            itemModel.GetComponent<Image>().sprite = null;
+            itemModel.SetActive(false);
+        }
+
+        itemText.GetComponent<TMP_Text>().text = currency.displayName;
+
         if (count > 0) {
             itemCount.GetComponent<TMP_Text>().text = count.ToString();
         } else {
