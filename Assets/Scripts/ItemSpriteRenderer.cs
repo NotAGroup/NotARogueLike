@@ -12,6 +12,11 @@ public class ItemSpriteRenderer : MonoBehaviour
     [Tooltip("This will render a frame to a file. Use at your on risk")]
     public bool enableRendering = false;
 
+    [Tooltip("The color that should be replaced with transparent pixels")]
+    public Color backgroundColor = Color.black;
+    [Tooltip("How much the color may deviate to be counted as background")]
+    public float tolerance = 0.1f;
+
     private GameObject[] items;
     private Camera renderCamera;
     private Texture2D result;
@@ -89,14 +94,39 @@ public class ItemSpriteRenderer : MonoBehaviour
         return Path.Combine(Application.dataPath, "Textures", "Items", items[selection].name + ".png");
     }
 
+    // makes all pixels that are close (where euclidean norm is lower than tolerance) 
+    // to the given color transparent
+    private void MakeColorTransparent(Texture2D texture, Color colorToReplace, float tolerance) 
+    {
+        // get pixels, to overwrite black with transparent
+        Color[] pixels = result.GetPixels();
+        for (int i = 0; i < pixels.Length; i++) 
+        {
+            // make black pixels transparent
+            Color diffColor = pixels[i] - colorToReplace;
+            float diffR = diffColor.r;
+            float diffG = diffColor.g;
+            float diffB = diffColor.b;
+            float diff = diffR * diffR + diffG * diffG + diffB * diffB;
+            if (diff <= tolerance * tolerance)
+            {
+                pixels[i] = Color.black;
+                pixels[i].a = 0;
+            }
+        }
+        result.SetPixels(pixels);
+    }
+
     public void Save() 
     {
+        // make black pixels transparent
+        MakeColorTransparent(result, Color.black, 0.1f);
+
+        // get bytes 
         byte[] bytes = ImageConversion.EncodeToPNG(result);
-        Debug.Log("Got " + bytes.Length + " bytes");
+
         string path  = GetPath();
-
         Debug.Log("saving render texture to: " + path);
-
         File.WriteAllBytes(path, bytes);
     }
 
