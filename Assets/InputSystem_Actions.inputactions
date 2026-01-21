@@ -509,8 +509,8 @@
                 },
                 {
                     "name": "",
-                    "id": "537a94c4-d09f-4295-b73e-af0bf85b3eb2",
-                    "path": "<Gamepad>/dpad/up",
+                    "id": "87c5a3ce-ef41-4f00-98de-d1fe386c02a3",
+                    "path": "<Gamepad>/dpad/left",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -531,8 +531,8 @@
                 },
                 {
                     "name": "",
-                    "id": "9cba7437-fb23-4de7-b8bf-61267930d167",
-                    "path": "<Gamepad>/dpad/right",
+                    "id": "537a94c4-d09f-4295-b73e-af0bf85b3eb2",
+                    "path": "<Gamepad>/dpad/up",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -553,8 +553,8 @@
                 },
                 {
                     "name": "",
-                    "id": "f9485184-301f-43e7-8756-f6ca38890fa3",
-                    "path": "<Gamepad>/dpad/down",
+                    "id": "9cba7437-fb23-4de7-b8bf-61267930d167",
+                    "path": "<Gamepad>/dpad/right",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -575,8 +575,8 @@
                 },
                 {
                     "name": "",
-                    "id": "87c5a3ce-ef41-4f00-98de-d1fe386c02a3",
-                    "path": "<Gamepad>/dpad/left",
+                    "id": "f9485184-301f-43e7-8756-f6ca38890fa3",
+                    "path": "<Gamepad>/dpad/down",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
