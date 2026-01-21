@@ -5,7 +5,10 @@ using UnityEngine.AI;
 public class RangedSkeleton : Opponent
 {
     [Header("Combat")]
-    public GameObject ammunition;
+    public Projectile ammunition;
+    public Transform rightHand;
+
+    private Projectile projectile;
 
     private List<NavPoint> aimPoints;
     private int aimPointIndex = 0;
@@ -53,6 +56,13 @@ public class RangedSkeleton : Opponent
 
             if (attackTimer >= shootDuration)
             {
+                Vector3 direction = (playerTransform.position - transform.position).normalized;
+
+                projectile.SetDamage(stats.attackDamage);
+                projectile.Shoot(direction, "Opponent", 60.0f);
+
+                projectile.transform.parent = null;
+
                 attacking = false;
                 attackCooldown = 1.0f / shootRate;
             }
@@ -174,6 +184,11 @@ public class RangedSkeleton : Opponent
     {
         attacking = true;
         attackTimer = 0.0f;
+
+        projectile = Instantiate(ammunition, rightHand);
+        projectile.transform.localPosition = new Vector3(0.0f, 0.5f, 0.0f);
+        projectile.transform.localRotation = Quaternion.Euler(-90.0f, 0.0f, 0.0f);
+        projectile.name = ammunition.name;
 
         navMeshAgent.isStopped = true;
         animator.SetTrigger("shoot");

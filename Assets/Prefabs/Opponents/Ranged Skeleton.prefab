@@ -1936,7 +1936,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RangedSkeleton
   playerGotHit: 0
   viewAngle: 90
-  ammunition: {fileID: 0}
+  ammunition: {fileID: 7974811766441290857, guid: 60e49ade76f5c004293e0e18fd49dbb0, type: 3}
+  rightHand: {fileID: 3315202231360606}
 --- !u!114 &7685539837612636914
 MonoBehaviour:
   m_ObjectHideFlags: 0

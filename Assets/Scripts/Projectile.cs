@@ -16,9 +16,10 @@ public class Projectile : MonoBehaviour
     Vector3 lastPosition;
 
     private float damage;
+    private bool fired = false;
+    private string ignoreTag;
 
     [Header("Properties")]
-    public float speed;
     public float lifetime;
     public Vector3 tipPosition;
 
@@ -31,25 +32,14 @@ public class Projectile : MonoBehaviour
         bowAmmo = itemDefinitions.definitions[3];
     }
 
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        rigidBody.AddForce(transform.forward * speed, ForceMode.Impulse);
-        lastPosition = transform.position;
-
-        // move one frame ahead already
-        travelDirection = rigidBody.linearVelocity.normalized;
-        transform.rotation = Quaternion.LookRotation(travelDirection);
-        transform.position += travelDirection * Time.deltaTime;
-
-        // Destroy the projectile after its lifetime expires
-        Destroy(this.gameObject, lifetime);
-    }
-
     // Update is called once per frame
     void Update()
     {
+        if (!fired)
+        {
+            return;
+        }
+
         travelDirection = rigidBody.linearVelocity.normalized;
         transform.rotation = Quaternion.LookRotation(travelDirection);
 
@@ -72,6 +62,10 @@ public class Projectile : MonoBehaviour
         string name = hitObject.name;
         string tag = hitObject.tag;
 
+        if (tag.Equals(ignoreTag)) {
+            return;
+        }
+
         Debug.Log("Projectile hit: " + name);
 
         GameObject droppedInstance = null;
@@ -80,6 +74,16 @@ public class Projectile : MonoBehaviour
         if (hit.transform.TryGetComponent<DestroyableObject>(out DestroyableObject destroyableObject)) {
             Debug.Log("Projectile dealing " + damage + " damage to " + name);
             destroyableObject.TakeDamage(damage);
+        }
+
+        // deal damage to player
+        if (hit.transform.TryGetComponent<Player>(out Player player))
+        {
+            Debug.Log("Projectile dealing " + damage + " damage to " + name);
+            player.TakeDamage(damage);
+
+            Destroy(this.gameObject);
+            return;
         }
 
         // deal damage to opponent
@@ -98,7 +102,7 @@ public class Projectile : MonoBehaviour
             droppedInstance.GetComponent<DroppedItem>().SetItem(bowAmmo, 1);
             droppedInstance.name = bowAmmo.name;
         }
-        else
+        else if (ignoreTag == "Player")
         {
             float depthFactor = 0.5f; // 1 means the arrow does not go into the hit object, -1 means it fully goes in
             droppedInstance = Instantiate(droppedItemPrefab, hit.point - transform.TransformVector(tipPosition * depthFactor), transform.GetChild(0).rotation);
@@ -124,8 +128,21 @@ public class Projectile : MonoBehaviour
         this.damage = damage;
     }
 
-    public void SetSpeed(float speed)
+    public void Shoot(Vector3 direction, string ignoreTag, float speed)
     {
-        this.speed = speed;
+        this.ignoreTag = ignoreTag;
+
+        rigidBody.AddForce(direction * speed, ForceMode.Impulse);
+        lastPosition = transform.position;
+
+        fired = true;
+
+        // move one frame ahead already
+        travelDirection = rigidBody.linearVelocity.normalized;
+        transform.rotation = Quaternion.LookRotation(travelDirection);
+        transform.position += travelDirection * Time.deltaTime;
+
+        // Destroy the projectile after its lifetime expires
+        Destroy(this.gameObject, lifetime);
     }
 }
