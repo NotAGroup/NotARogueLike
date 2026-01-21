@@ -17,6 +17,8 @@ public class ItemSpriteRenderer : MonoBehaviour
     [Tooltip("How much the color may deviate to be counted as background")]
     public float tolerance = 0.1f;
 
+    public Vector2Int resolution = new Vector2Int(256,256);
+
     private GameObject[] items;
     private Camera renderCamera;
     private Texture2D result;
@@ -25,6 +27,9 @@ public class ItemSpriteRenderer : MonoBehaviour
     {
         // find objects
         renderCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
+        renderCamera.backgroundColor = backgroundColor;
+
+        // 
         items = new GameObject[transform.childCount];
         for (int i = 0; i < transform.childCount; i++)
         {
@@ -69,7 +74,14 @@ public class ItemSpriteRenderer : MonoBehaviour
 
         Debug.Log("Received Post render callback from " + cam.name);
 
-        if (Application.isEditor && cam == renderCamera) {
+        if (Application.isEditor && cam == renderCamera) 
+        {
+            if (renderCamera.pixelWidth != resolution.x || renderCamera.pixelHeight != resolution.y) 
+            {
+                Debug.LogError("Camera resolution not matching the expected one. Please set it in the \"Game\" tab.");
+                return;
+            }
+
             Render();
             Save();
         }
@@ -87,6 +99,10 @@ public class ItemSpriteRenderer : MonoBehaviour
 
         Debug.Log("read pixels from render camera" + cameraTexture);
         result.ReadPixels(regionSource, xPosTarget, yPosTarget, updateMipMaps);
+
+        // make black pixels transparent
+        Debug.Log("making background color " + renderCamera.backgroundColor + " transparent");
+        MakeColorTransparent(result, renderCamera.backgroundColor, tolerance);
     }
 
     private string GetPath() 
@@ -119,9 +135,6 @@ public class ItemSpriteRenderer : MonoBehaviour
 
     public void Save() 
     {
-        // make black pixels transparent
-        MakeColorTransparent(result, Color.black, 0.1f);
-
         // get bytes 
         byte[] bytes = ImageConversion.EncodeToPNG(result);
 
