@@ -20,7 +20,7 @@ public class PlayerStats : MonoBehaviour
     public float Compute(StatKey stat) {
         float value = def[stat].ComputeFrom(upgrades.levels);
 
-        foreach (var slot in inventory.container.slots)
+        foreach (var slot in inventory.items.slots)
         {
             if (slot.storedItem == null) continue;
             var buff = slot.storedItem.itemBuffs[stat];

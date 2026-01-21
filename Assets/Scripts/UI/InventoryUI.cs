@@ -101,12 +101,12 @@ public class InventoryUI : MonoBehaviour
         for (int i = 0; i < slots.Length; i++) {
             GameObject slot = slots[i];
             ItemHotbarSlot s = slot.GetComponent<ItemHotbarSlot>();
-            s.SetItem(inventory.container[i].storedItem, inventory.container[i].count);
+            s.SetItem(inventory.items[i].storedItem, inventory.items[i].count);
             s.SetSelected(i == currentSlot);
             slot.GetComponent<Button>().onClick.AddListener(delegate { OnClick(i); });
         }
 
-        ItemSlot selected = inventory.container[currentSlot];
+        ItemSlot selected = inventory.items[currentSlot];
         UpdateSelectedItem(selected.storedItem, selected.count);
     }
 
@@ -117,7 +117,7 @@ public class InventoryUI : MonoBehaviour
     private void SwitchSlot(bool right) {
         int newSlot = right ? ((currentSlot + 1 + numSlots) % numSlots) : (currentSlot - 1 + numSlots) % numSlots;
         if (grabbed)
-            inventory.container.SwapItems(currentSlot, newSlot);
+            inventory.items.SwapItems(currentSlot, newSlot);
         currentSlot = newSlot;
     }
 
@@ -126,7 +126,7 @@ public class InventoryUI : MonoBehaviour
         int newSlot = (currentSlot + (int)Math.Round(delta.x) + numSlots) % numSlots;
         newSlot = (newSlot + (int)Math.Round(delta.y) * numColumns + numSlots) % numSlots;
         if (grabbed)
-            inventory.container.SwapItems(currentSlot, newSlot);
+            inventory.items.SwapItems(currentSlot, newSlot);
         currentSlot = newSlot;
     }
 

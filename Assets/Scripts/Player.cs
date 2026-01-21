@@ -381,13 +381,13 @@ public class Player : MonoBehaviour
     public bool InteractWith(Transform transform) {
         if (transform.gameObject.TryGetComponent<ShopItemSlot>(out ShopItemSlot slot)) {
             if (inventory.currency[Currency.Gold] < slot.item.cost) return false;
-            inventory.currency[Currency.Gold] -= slot.item.cost;
-            inventory.container.AddItem(slot.item, slot.count);
+            inventory.AddCurrency(Currency.Gold, -slot.item.cost);
+            inventory.AddItem(slot.item, slot.count);
             slot.shop.RemoveItem(slot.Index);
             OnInventoryChanged();
             return true;
         } else if (transform.gameObject.TryGetComponent<DroppedItem>(out DroppedItem item)) {
-            inventory.container.AddItem(item.item, item.count);
+            inventory.AddItem(item.item, item.count);
             item.Disable();
             OnInventoryChanged();
             return true;
@@ -512,7 +512,7 @@ public class Player : MonoBehaviour
 
     public void Shoot()
     {
-        ItemContainer items = inventory.container;
+        ItemContainer items = inventory.items;
         int bowAmmoSlot = items.GetSlotContaining(itemDefinitions[3], 1);
 
         if (fireCooldown > 0.0f || projectiles.Length == 0 || bowAmmoSlot == -1)
@@ -562,7 +562,7 @@ public class Player : MonoBehaviour
 
     public void UseItem(int itemID)
     {
-        ItemContainer inv = GetComponent<Inventory>().container;
+        ItemContainer inv = GetComponent<Inventory>().items;
         ItemSlot slot = inv[itemID];
         ItemDefinition item = slot.storedItem;
         int count = slot.count;
