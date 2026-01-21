@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 using System;
 using System.Collections.Generic;
 
@@ -18,8 +19,8 @@ public class ItemDefinition {
     public string description;
     // prefab for displaying item in scene (e.g. shop, loot drops)
     public GameObject itemModel;
-    // prefab for displaying item in ui (e.g. hotbar)
-    public GameObject itemModelUI;
+    // texture for displaying item in ui (e.g. hotbar)
+    public Sprite itemSprite;
 
     [Header("Loot")]
     [Range(0f,1f)]
