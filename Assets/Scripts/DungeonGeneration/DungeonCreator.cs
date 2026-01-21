@@ -791,7 +791,7 @@ public class DungeonCreator : MonoBehaviour
 
         foreach (var opening in openings)
         {
-            segment.corridorOpenings.Add(opening[0] + opening[1] / 2);
+            segment.corridorOpenings.Add((opening[0] + opening[1]) / 2);
         }
     }
 }
