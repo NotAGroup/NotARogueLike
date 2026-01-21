@@ -3,11 +3,6 @@ using UnityEngine.Rendering;
 using System;
 using System.Collections.Generic;
 
-public enum Currency {
-    Gold = 0,
-    XP = 1
-}
-
 [System.Serializable]
 public class ItemDefinition {
     [Header("General")]

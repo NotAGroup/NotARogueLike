@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3264794840061447751}
   - component: {fileID: 8351641477545658752}
+  - component: {fileID: 2024699942388069768}
   - component: {fileID: 5196027272824433926}
   - component: {fileID: 8408705079164422734}
   - component: {fileID: -2637577086527989318}
@@ -55,6 +56,34 @@ MonoBehaviour:
   initialGold: 5
   initialXP: 0
   initialAmmo: 16
+--- !u!114 &2024699942388069768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5066985577544289893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecd27f97cd10aaabea7b845e77d5a040, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  data:
+    definitions:
+    - key: Gold
+      def:
+        name: gold
+        displayName: Gold
+        description: Very shiny
+        currencyModel: {fileID: 2081972560401928170, guid: e5d5804ec7c18d42f914316809bdf857, type: 3}
+        currencySprite: {fileID: 21300000, guid: fd36cd716d761805e99b482b6010bbfb, type: 3}
+    - key: XP
+      def:
+        name: xp
+        displayName: XP
+        description: Makes you wiser
+        currencyModel: {fileID: 0}
+        currencySprite: {fileID: 0}
 --- !u!114 &5196027272824433926
 MonoBehaviour:
   m_ObjectHideFlags: 0
