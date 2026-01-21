@@ -15,6 +15,9 @@ public class RangedSkeleton : Opponent
     private float avoidRadius = 1.2f;
     private float minDistance = 3.0f;
 
+    private float shootDuration = 0.3f;
+    private float shootRate = 5.0f;
+
     private Vector3 idlePosition;
 
     protected override void Start()
@@ -38,6 +41,24 @@ public class RangedSkeleton : Opponent
         }
 
         TryGetIdlePosition(2.0f);
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+
+        if (attacking)
+        {
+            attackTimer += Time.deltaTime;
+
+            if (attackTimer >= shootDuration)
+            {
+                attacking = false;
+                attackCooldown = 1.0f / shootRate;
+            }
+
+            return;
+        }
     }
 
     protected override bool CanSeePlayer()
@@ -104,7 +125,7 @@ public class RangedSkeleton : Opponent
         {
             if (attackCooldown == 0.0f && distance <= stats.attackRange)
             {
-                //Attack();
+                Attack();
             }
         }
 
@@ -147,6 +168,15 @@ public class RangedSkeleton : Opponent
         direction.y = 0.0f;
 
         RotateTowards(direction);
+    }
+
+    void Attack()
+    {
+        attacking = true;
+        attackTimer = 0.0f;
+
+        navMeshAgent.isStopped = true;
+        animator.SetTrigger("shoot");
     }
 
     private NavPoint GetNextNavPoint()
