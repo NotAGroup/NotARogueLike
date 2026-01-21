@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 54167740397241764}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalPosition: {x: 0, y: 0.75, z: 0.15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -172,7 +172,7 @@ Transform:
   m_GameObject: {fileID: 309834695554700441}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 59, y: 2, z: 3}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -333,6 +333,8 @@ MonoBehaviour:
   hitZone: {fileID: 8822189346619956698}
   interactionDistance: 10
   isDead: 0
+  minAngleX: -80
+  maxAngleX: 90
 --- !u!114 &8439484915624340096
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -571,6 +573,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 718193872720482655, guid: 2da1f5a64f91194478898a87bd522e31, type: 3}
+      propertyPath: m_UpdateWhenOffscreen
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 2da1f5a64f91194478898a87bd522e31, type: 3}
       propertyPath: m_Name
       value: Warrior
@@ -579,6 +585,14 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 91c566759d91c8740bfede73043a34c4, type: 2}
+    - target: {fileID: 5866666021909216657, guid: 2da1f5a64f91194478898a87bd522e31, type: 3}
+      propertyPath: m_UpdateMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 2da1f5a64f91194478898a87bd522e31, type: 3}
+      propertyPath: m_CullingMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 2da1f5a64f91194478898a87bd522e31, type: 3}
       propertyPath: m_ApplyRootMotion
       value: 0

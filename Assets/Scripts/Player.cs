@@ -73,7 +73,6 @@ public class Player : MonoBehaviour
     public float zoomSpeed = 10.0f;
 
     [Header("Combat")]
-    Vector3 localVelocity;
     Animator animator;
     public Projectile[] projectiles;
     public Weapon weapon;
@@ -131,10 +130,8 @@ public class Player : MonoBehaviour
         SwingAnimSpeed = stats.hitRate;
         animator.SetFloat("SwingAnimSpeed", SwingAnimSpeed);
 
-        localVelocity = transform.InverseTransformDirection(rb.linearVelocity);
-
-        float moveX = localVelocity.x;
-        float moveZ = localVelocity.z;
+        float moveX = Input.GetAxisRaw("Horizontal");
+        float moveZ = Input.GetAxisRaw("Vertical");
         animator.SetFloat("MoveX", moveX, 0.1f, Time.deltaTime);
         animator.SetFloat("MoveZ", moveZ, 0.1f, Time.deltaTime);
 
@@ -299,6 +296,9 @@ public class Player : MonoBehaviour
     {
         this.attackType = attackType;
         weapon.gameObject.SetActive(attackType == AttackType.Hit);
+        quiver.gameObject.SetActive(attackType == AttackType.Shoot);
+        bow.gameObject.SetActive(attackType == AttackType.Shoot);
+        animator.SetBool("hasBow", attackType == AttackType.Shoot);
 
         RunData.Instance.selectedAttack = attackType;
     }
@@ -307,19 +307,11 @@ public class Player : MonoBehaviour
     {
         if (attackType == AttackType.Hit)
         {
-            attackType = AttackType.Shoot;
-            weapon.gameObject.SetActive(false);
-            quiver.gameObject.SetActive(true);
-            bow.gameObject.SetActive(true);
-            animator.SetBool("hasBow", true);
+            ChangeAttack(AttackType.Shoot);
         }
         else
         {
-            attackType = AttackType.Hit;
-            weapon.gameObject.SetActive(true);
-            quiver.gameObject.SetActive(false);
-            bow.gameObject.SetActive(false);
-            animator.SetBool("hasBow", false);
+            ChangeAttack(AttackType.Hit);
         }
     }
 
@@ -340,9 +332,6 @@ public class Player : MonoBehaviour
         ChangeAttack(attackType);
 
         hitState = HitState.Idle;
-        weapon.gameObject.SetActive(false);
-        quiver.gameObject.SetActive(true);
-        bow.gameObject.SetActive(true);
 
         fireCooldown = 0.0f;
         hitCooldown = 0.0f;
@@ -356,19 +345,7 @@ public class Player : MonoBehaviour
         hitZone.gameObject.SetActive(false);
         opponentGotHit = false;
 
-        attackType = RunData.Instance.selectedAttack;
-
-        if(attackType == AttackType.Hit)
-        {
-            weapon.gameObject.SetActive(true);
-            quiver.gameObject.SetActive(false);
-            bow.gameObject.SetActive(false);
-        } else if(attackType == AttackType.Shoot)
-        {
-            animator.SetBool("hasBow", true);
-        }
-
-            isDead = false;
+        isDead = false;
         characterController.enabled = true;
 
         OnInventoryChanged();
