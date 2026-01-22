@@ -40,9 +40,9 @@ public class InventoryUI : MonoBehaviour
     {
         if (item == null)
         {
-            itemNameText.text = "";
-            itemDescriptionText.text = "";
-            itemBuffText.text = "";
+            itemNameText.text = "Nothing";
+            itemDescriptionText.text = "This is a free slot in your bag";
+            itemBuffText.text = "...";
             return;
         }
 
