@@ -15,7 +15,8 @@ public class ItemHotbar : MonoBehaviour
     // 
     private GameObject[] slots;
 
-    public void Awake() {
+    public void Awake() 
+    {
         player = GameObject.Find("Player");
         playerInventory = player.GetComponent<Inventory>();
     }
@@ -45,17 +46,14 @@ public class ItemHotbar : MonoBehaviour
         }
     }
 
-    void OnEnable() 
+    // Update is called once per frame
+    void Update()
     {
         // check if slot count has changed
         int numSlots = Math.Min(playerInventory.numHotbarSlots, playerInventory.numItemSlots);
         if (slots == null || numSlots != slots.Length)
             InitializeSlots();
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
         UpdateSlots();
     }
 }
