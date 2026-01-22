@@ -65,7 +65,7 @@ public class UserInput : MonoBehaviour
     [Tooltip("How fast the ui should be navigated (in Hz)")]
     public float uiNavigateRepeatRate;
 
-    void Awake()
+    void Start()
     {
         player = GameObject.Find("Player").GetComponent<Player>();
         playerUpgrades = GameObject.Find("Player").GetComponent<PlayerUpgrades>();
