@@ -670,7 +670,7 @@ MonoBehaviour:
           cyclic: 0
       - key: AttackRange
         def:
-          baseValue: 3
+          baseValue: 9
           points: []
           cyclic: 0
       - key: AttackDamage
@@ -723,7 +723,7 @@ MonoBehaviour:
           cyclic: 0
       - key: DetectionRange
         def:
-          baseValue: 20
+          baseValue: 15
           points: []
           cyclic: 0
 --- !u!114 &7895014659698534790

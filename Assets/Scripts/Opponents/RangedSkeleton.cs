@@ -212,6 +212,7 @@ public class RangedSkeleton : Opponent
 
         aggressionModifier = 2.0f;
         aggressionTimer = aggressionDuration;
+        memoryTimer = stats.memoryDuration;
     }
 
     void Attack()
