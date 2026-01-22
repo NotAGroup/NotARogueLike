@@ -40,6 +40,11 @@ public class Projectile : MonoBehaviour
             return;
         }
 
+        if (transform.position.y < -10.0f)
+        {
+            Destroy(this.gameObject);
+        }
+
         travelDirection = rigidBody.linearVelocity.normalized;
         transform.rotation = Quaternion.LookRotation(travelDirection);
 
