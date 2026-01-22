@@ -45,14 +45,17 @@ public class ItemHotbar : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    void OnEnable() 
     {
         // check if slot count has changed
         int numSlots = Math.Min(playerInventory.numHotbarSlots, playerInventory.numItemSlots);
         if (slots == null || numSlots != slots.Length)
             InitializeSlots();
+    }
 
+    // Update is called once per frame
+    void Update()
+    {
         UpdateSlots();
     }
 }

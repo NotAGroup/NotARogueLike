@@ -15,14 +15,9 @@ public class InventoryUI : MonoBehaviour
     public Transform slotParent;
 
     // transforms that define slot positions
-    public RectTransform slotPositionBotLeft;
-    public RectTransform slotPositionBotRight;
-    public RectTransform slotPositionTopLeft;
-
-    // positions
-    private Vector2 slotPositionOrigin;
-    private Vector2 slotPositionRight;
-    private Vector2 slotPositionBottom;
+    public RectTransform slotTransformBotLeft;
+    public RectTransform slotTransformBotRight;
+    public RectTransform slotTransformTopLeft;
 
     [Header("Selected Item")]
     public TMP_Text itemNameText;
@@ -35,7 +30,8 @@ public class InventoryUI : MonoBehaviour
 
     // selection state
     public int currentSlot;
-    public bool grabbed;
+    private int grabbedSourceSlot;
+    private bool grabbed { get => grabbedSourceSlot >= 0; }
 
     // instantiated slots
     private GameObject[] slots = null;
@@ -80,20 +76,26 @@ public class InventoryUI : MonoBehaviour
     }
 
     void InitializeSlots() {
+        grabbedSourceSlot = -1;
         numSlots = inventory.numItemSlots;
         numHotbarSlots = inventory.numHotbarSlots;
         slots = new GameObject[numSlots];
 
         for (int i = 0; i < numSlots; i++) {
             slots[i] = Instantiate(slotPrefab, slotParent);
-            // left-to-right
+
+            // coefficients
+            int numRows = numSlots / numColumns;
             float right = (float)(i % numColumns) / (numColumns - 1);
-            Vector2 pos = slotPositionOrigin + slotPositionRight * right;
-            // top-to-bottom
-            float down = (float)(i / numColumns) / (float)Math.Ceiling((double)numSlots / numColumns - 1);
-            pos += slotPositionBottom * down;
-            // slots[i].GetComponent<RectTransform>().anchoredPosition = pos;
-            slots[i].transform.localPosition = pos;
+            float up = (float)(i / numColumns) / (numRows - 1);
+
+            // lerp position
+            Vector2 pos1 = Vector2.Lerp(slotTransformBotLeft.localPosition, slotTransformBotRight.localPosition, right);
+            Vector2 pos2 = Vector2.Lerp(slotTransformBotLeft.localPosition, slotTransformTopLeft.localPosition, up);
+
+            // slotTransformBotLeft has been added twice, so subtract it once here
+            RectTransform target = slots[i].GetComponent<RectTransform>();
+            target.localPosition = pos1 + pos2 - (Vector2)slotTransformBotLeft.localPosition;
         }
     }
 
@@ -101,7 +103,22 @@ public class InventoryUI : MonoBehaviour
         for (int i = 0; i < slots.Length; i++) {
             GameObject slot = slots[i];
             ItemHotbarSlot s = slot.GetComponent<ItemHotbarSlot>();
-            s.SetItem(inventory.items[i].storedItem, inventory.items[i].count);
+
+            ItemSlot slotToShow = inventory.items[i];
+            // if currently moving an item, show preview of items after swap
+            if (grabbed)
+            {
+                if (i == currentSlot)
+                {
+                    slotToShow = inventory.items[grabbedSourceSlot];
+                }
+                else if (i == grabbedSourceSlot)
+                {
+                    slotToShow = inventory.items[currentSlot];
+                }
+            }
+
+            s.SetItem(slotToShow.storedItem, slotToShow.count);
             s.SetSelected(i == currentSlot);
             slot.GetComponent<Button>().onClick.AddListener(delegate { OnClick(i); });
         }
@@ -116,43 +133,39 @@ public class InventoryUI : MonoBehaviour
 
     private void SwitchSlot(bool right) {
         int newSlot = right ? ((currentSlot + 1 + numSlots) % numSlots) : (currentSlot - 1 + numSlots) % numSlots;
-        if (grabbed)
-            inventory.items.SwapItems(currentSlot, newSlot);
         currentSlot = newSlot;
+
+        UpdateSlots();
     }
 
     public void MoveSelection(Vector2 delta) {
         if (numSlots == 0) return;
         int newSlot = (currentSlot + (int)Math.Round(delta.x) + numSlots) % numSlots;
         newSlot = (newSlot + (int)Math.Round(delta.y) * numColumns + numSlots) % numSlots;
-        if (grabbed)
-            inventory.items.SwapItems(currentSlot, newSlot);
         currentSlot = newSlot;
+
+        UpdateSlots();
     }
 
     public void ToggleItemGrabbed() {
-        grabbed = !grabbed;
+        if (grabbed)
+        {
+            inventory.items.SwapItems(currentSlot, grabbedSourceSlot);
+            grabbedSourceSlot = -1;
+        }
+        else 
+        {
+            grabbedSourceSlot = currentSlot;
+        }
+
+        UpdateSlots();
     }
 
-    void Start() {
+    void OnEnable() {
         player = GameObject.Find("Player").GetComponent<Player>();
         inventory = GameObject.Find("Player").GetComponent<Inventory>();
-    }
-
-    void Awake() {
-        slotPositionOrigin = slotPositionBotLeft.localPosition;
-        slotPositionRight  = slotPositionBotRight.localPosition;
-        slotPositionRight -= slotPositionOrigin;
-        slotPositionBottom = slotPositionTopLeft.localPosition;
-        slotPositionBottom-= slotPositionOrigin;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        // check if slot count has changed
-        numSlots = inventory.numItemSlots;
-        if (slots == null || numSlots != slots.Length)
+    
+        if (slots == null || slots.Length != inventory.numItemSlots)
             InitializeSlots();
 
         UpdateSlots();
