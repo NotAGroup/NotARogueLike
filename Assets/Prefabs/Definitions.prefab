@@ -53,6 +53,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Constants
   itemSlots: 12
   hotbarSlots: 4
+  inventoryMask: 05000000050000000500000005000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
   initialGold: 5
   initialXP: 0
   initialAmmo: 16

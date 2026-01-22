@@ -129,9 +129,7 @@ public class UIManager : MonoBehaviour
             actions[i].action = InputSystem.actions.FindAction(actions[i].name, true);
         }
 
-        SwitchToGameplay();
     }
-
 
     private void ApplyState() {
         UpdateVisibility();
