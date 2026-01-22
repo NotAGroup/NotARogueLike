@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3264794840061447751}
   - component: {fileID: 8351641477545658752}
+  - component: {fileID: 2024699942388069768}
   - component: {fileID: 5196027272824433926}
   - component: {fileID: 8408705079164422734}
   - component: {fileID: -2637577086527989318}
@@ -55,6 +56,34 @@ MonoBehaviour:
   initialGold: 5
   initialXP: 0
   initialAmmo: 16
+--- !u!114 &2024699942388069768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5066985577544289893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecd27f97cd10aaabea7b845e77d5a040, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  data:
+    definitions:
+    - key: Gold
+      def:
+        name: gold
+        displayName: Gold
+        description: Very shiny
+        currencyModel: {fileID: 2081972560401928170, guid: e5d5804ec7c18d42f914316809bdf857, type: 3}
+        currencySprite: {fileID: 21300000, guid: fd36cd716d761805e99b482b6010bbfb, type: 3}
+    - key: XP
+      def:
+        name: xp
+        displayName: XP
+        description: Makes you wiser
+        currencyModel: {fileID: 0}
+        currencySprite: {fileID: 0}
 --- !u!114 &5196027272824433926
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -73,7 +102,7 @@ MonoBehaviour:
     displayName: Health Fruit
     description: Restores health when eaten
     itemModel: {fileID: 5994598806465713049, guid: 4aed6631bfdec9c9fb8bc0e542fa7be5, type: 3}
-    itemModelUI: {fileID: 5994598806465713049, guid: 4aed6631bfdec9c9fb8bc0e542fa7be5, type: 3}
+    itemSprite: {fileID: 21300000, guid: 31bedb11f541e99b681572d881aabe0a, type: 3}
     dropProbability: 0.157
     shopProbability: 0.151
     cost: 2
@@ -87,7 +116,7 @@ MonoBehaviour:
     displayName: Stamina Fruit
     description: Restores stamina when eaten
     itemModel: {fileID: 1662156151352070245, guid: 78b72048a27746fa39395f10735ff60d, type: 3}
-    itemModelUI: {fileID: 1662156151352070245, guid: 78b72048a27746fa39395f10735ff60d, type: 3}
+    itemSprite: {fileID: 21300000, guid: 56820fe5803f5871f993b90ae3cfddd5, type: 3}
     dropProbability: 0.301
     shopProbability: 0.147
     cost: 1
@@ -101,7 +130,7 @@ MonoBehaviour:
     displayName: Mana Fruit
     description: Restores mana when eaten
     itemModel: {fileID: 8399732216031229202, guid: e9625c90e3b36bfbf829a333b7333109, type: 3}
-    itemModelUI: {fileID: 8399732216031229202, guid: e9625c90e3b36bfbf829a333b7333109, type: 3}
+    itemSprite: {fileID: 21300000, guid: 3934fdf3cb658e67da1baa0e2beb14d4, type: 3}
     dropProbability: 0.126
     shopProbability: 0.063
     cost: 2
@@ -115,7 +144,7 @@ MonoBehaviour:
     displayName: Arrow
     description: 
     itemModel: {fileID: 6937730135751535858, guid: 4bc641c7358486c479b67cdc7d794936, type: 3}
-    itemModelUI: {fileID: 6937730135751535858, guid: 4bc641c7358486c479b67cdc7d794936, type: 3}
+    itemSprite: {fileID: 21300000, guid: 580fb27bd0e1b7075b7763781738af9f, type: 3}
     dropProbability: 0.18
     shopProbability: 0.145
     cost: 2
@@ -129,7 +158,7 @@ MonoBehaviour:
     displayName: Rune of Swiftness
     description: Makes its owner faster
     itemModel: {fileID: 5994598806465713049, guid: cb2cc647910d12c0db740d8ff661c926, type: 3}
-    itemModelUI: {fileID: 5994598806465713049, guid: cb2cc647910d12c0db740d8ff661c926, type: 3}
+    itemSprite: {fileID: 21300000, guid: 0e441b28d0af49ab18d7cb3c48552317, type: 3}
     dropProbability: 0.031
     shopProbability: 0.23
     cost: 100
