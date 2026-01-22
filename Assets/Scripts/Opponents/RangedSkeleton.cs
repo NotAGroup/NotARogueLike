@@ -10,11 +10,16 @@ public class RangedSkeleton : Opponent
 
     private Projectile projectile;
 
+    private float aggressionTimer = 0.0f;
+    private float aggressionDuration = 5.0f;
+    private float aggressionModifier = 1.0f;
+
     private List<NavPoint> aimPoints;
     private int aimPointIndex = 0;
     private float aimDuration = 4.0f;
     private float aimTimer;
 
+    private float alertRange = 5.0f;
     private float avoidRadius = 1.2f;
     private float minDistance = 3.0f;
 
@@ -69,6 +74,17 @@ public class RangedSkeleton : Opponent
 
             return;
         }
+
+        if (attackTimer > 0.0f)
+        {
+            attackTimer -= Time.deltaTime;
+
+            if (aggressionTimer <= 0.0f)
+            {
+                aggressionModifier = 1.0f;
+                aggressionTimer = 0.0f;
+            }
+        }
     }
 
     protected override bool CanSeePlayer()
@@ -81,9 +97,14 @@ public class RangedSkeleton : Opponent
         Vector3 direction = playerTransform.position - transform.position;
         float distance = direction.magnitude;
 
-        if (distance > stats.detectionRange)
+        if (distance > stats.detectionRange * aggressionModifier)
         {
             return false;
+        }
+
+        if (distance < alertRange && !player.isSneaking())
+        {
+            return true;
         }
 
         float angle = Vector3.Angle(transform.forward, direction.normalized);
@@ -93,7 +114,7 @@ public class RangedSkeleton : Opponent
             return false;
         }
 
-        if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit hit, stats.detectionRange))
+        if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit hit, stats.detectionRange * aggressionModifier))
         {
             return hit.transform.CompareTag("Player");
         }
@@ -133,7 +154,7 @@ public class RangedSkeleton : Opponent
 
         if (!attacking)
         {
-            if (attackCooldown == 0.0f && distance <= stats.attackRange)
+            if (attackCooldown == 0.0f && distance <= stats.attackRange * aggressionModifier)
             {
                 Attack();
             }
@@ -143,6 +164,11 @@ public class RangedSkeleton : Opponent
 
     protected override void Idle()
     {
+        if (aggressionTimer > 0.0f)
+        {
+            return;
+        }
+
         navMeshAgent.isStopped = false;
         navMeshAgent.updateRotation = true;
 
@@ -178,6 +204,14 @@ public class RangedSkeleton : Opponent
         direction.y = 0.0f;
 
         RotateTowards(direction);
+    }
+
+    public override void TakeDamage(float damage, Vector3? direction = null)
+    {
+        base.TakeDamage(damage, direction);
+
+        aggressionModifier = 2.0f;
+        aggressionTimer = aggressionDuration;
     }
 
     void Attack()
