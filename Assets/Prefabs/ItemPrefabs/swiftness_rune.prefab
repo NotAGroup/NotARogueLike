@@ -98,7 +98,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4318507895472737666}
-  - component: {fileID: 6662445752637224613}
+  - component: {fileID: 319075980392423395}
   m_Layer: 0
   m_Name: swiftness_rune
   m_TagString: Untagged
@@ -122,8 +122,8 @@ Transform:
   - {fileID: 6035457373218364336}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &6662445752637224613
-SphereCollider:
+--- !u!136 &319075980392423395
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -140,6 +140,8 @@ SphereCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.2
+  serializedVersion: 2
+  m_Radius: 0.125
+  m_Height: 0.5
+  m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
