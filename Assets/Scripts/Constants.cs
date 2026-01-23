@@ -19,7 +19,7 @@ public class Constants : MonoBehaviour
             Debug.LogError("hotbarSlots has be positive and smaller than itemSlots");
         }
 
-        if(inventoryMask.Length != hotbarSlots)
+        if(inventoryMask.Length != itemSlots)
         {
             Debug.LogError("length of inventoryMask has to be equal to itemSlots");
         }
