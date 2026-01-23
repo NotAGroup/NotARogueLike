@@ -51,7 +51,7 @@ public class RunData {
         constitution.mana = PlayerStats.ComputeInitial(StatKey.MaxMana, statDef, upgrades);
 
         // add initial items and currencies
-        items.AddItem(defs.GetComponent<ItemDefinitions>()[3], constants.initialAmmo);
+        items.AddItem(defs.GetComponent<ItemDefinitions>()[3], constants.initialAmmo, constants.inventoryMask);
         currencies[Currency.Gold] = constants.initialGold;
     }
 
@@ -80,7 +80,7 @@ public class RunData {
         constitution.mana = PlayerStats.ComputeInitial(StatKey.MaxMana, statDef, upgrades);
 
         // add initial items and currencies
-        items.AddItem(defs.GetComponent<ItemDefinitions>()[3], constants.initialAmmo);
+        items.AddItem(defs.GetComponent<ItemDefinitions>()[3], constants.initialAmmo, constants.inventoryMask);
         currencies[Currency.Gold] = constants.initialGold;
         currencies[Currency.XP] = constants.initialXP;
     }

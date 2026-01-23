@@ -15,7 +15,8 @@ public class ItemHotbar : MonoBehaviour
     // 
     private GameObject[] slots;
 
-    public void Awake() {
+    public void Awake() 
+    {
         player = GameObject.Find("Player");
         playerInventory = player.GetComponent<Inventory>();
     }
@@ -40,7 +41,7 @@ public class ItemHotbar : MonoBehaviour
         for (int i = 0; i < slots.Length; i++) {
             GameObject slot = slots[i];
             ItemHotbarSlot s = slot.GetComponent<ItemHotbarSlot>();
-            s.SetItem(playerInventory.container[i].storedItem, playerInventory.container[i].count);
+            s.SetItem(playerInventory.items[i].storedItem, playerInventory.items[i].count);
             s.SetSelected(false);
         }
     }

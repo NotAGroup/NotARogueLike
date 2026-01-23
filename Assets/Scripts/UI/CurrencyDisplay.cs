@@ -4,6 +4,7 @@ public class CurrencyDisplay : MonoBehaviour
 {
     private GameObject player;
     private Inventory playerInventory;
+    private CurrencyDefinitions currencyDefinitions;
 
     [Header("Rendering")]
     public GameObject slotPrefab;
@@ -28,7 +29,7 @@ public class CurrencyDisplay : MonoBehaviour
         for (int i = 0; i < slots.Length; i++) {
             GameObject slot = slots[i];
             ItemHotbarSlot s = slot.GetComponent<ItemHotbarSlot>();
-            s.SetCurrency((Currency)i, playerInventory.currency[(Currency)i]);
+            s.SetCurrency(currencyDefinitions[(Currency)i], playerInventory.currency[(Currency)i]);
             s.SetSelected(false);
         }
     }
@@ -36,6 +37,7 @@ public class CurrencyDisplay : MonoBehaviour
     void Awake() {
         player = GameObject.Find("Player");
         playerInventory = player.GetComponent<Inventory>();
+        currencyDefinitions = GameObject.Find("Definitions").GetComponent<CurrencyDefinitions>();
     }
 
     // Update is called once per frame
