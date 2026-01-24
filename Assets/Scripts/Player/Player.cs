@@ -75,7 +75,7 @@ public class Player : MonoBehaviour
     Vector3 localVelocity;
     Animator animator;
     public Projectile[] projectiles;
-    public Weapon weapon;
+    public GameObject bow, sword;
     public PlayerHitZone hitZone;
 
     [Header("Interaction")]
@@ -286,7 +286,7 @@ public class Player : MonoBehaviour
     public void ChangeAttack(AttackType attackType)
     {
         this.attackType = attackType;
-        weapon.gameObject.SetActive(attackType == AttackType.Hit);
+        sword.gameObject.SetActive(attackType == AttackType.Hit);
 
         RunData.Instance.selectedAttack = attackType;
     }
@@ -361,8 +361,6 @@ public class Player : MonoBehaviour
         {
             return;
         }
-
-        weapon.SetDamage(stats.strikeDamage);
 
         hitState = HitState.Swing;
         hitTime = 0.0f;
@@ -528,7 +526,7 @@ public class Player : MonoBehaviour
         Projectile instance = Instantiate(projectiles[0], position, rotation);
         instance.name = projectiles[0].name;
         instance.SetDamage(stats.arrowDamage);
-        instance.SetSpeed(stats.arrowSpeed);
+        instance.Shoot(cameraTransform.forward, "Player", stats.arrowSpeed);
 
         fireCooldown = 1.0f / stats.fireRate;
     }

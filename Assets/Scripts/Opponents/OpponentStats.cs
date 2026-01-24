@@ -3,6 +3,8 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class OpponentStats : MonoBehaviour
 {
+    public string className;
+
     [Header("Combat")]
     public float hitRate;
     public float stunDuration;
@@ -28,6 +30,8 @@ public class OpponentStats : MonoBehaviour
     public float detectionRange;
 
     public void ComputeFrom(OpponentClassDefinition def, int level) {
+        className = def.className;
+
         hitRate = def[OpponentStatKey.HitRate].ComputeFrom(level);
 		stunDuration = def[OpponentStatKey.StunDuration].ComputeFrom(level);
 

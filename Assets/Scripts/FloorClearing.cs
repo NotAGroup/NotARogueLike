@@ -13,7 +13,7 @@ public class FloorClearing : MonoBehaviour
     public bool CheckClearingCondition() {
         if (cachedOpponent != null && cachedOpponent.activeInHierarchy) return false;
 
-        cachedOpponent = GameObject.Find("Opponent(Clone)");
+        cachedOpponent = GameObject.FindWithTag("Opponent");
         return cachedOpponent == null;
     }
 

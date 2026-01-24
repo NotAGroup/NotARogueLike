@@ -1866,8 +1866,8 @@ GameObject:
   - component: {fileID: 2506817616126039836}
   - component: {fileID: 7685539837612636914}
   m_Layer: 0
-  m_Name: Opponent
-  m_TagString: Untagged
+  m_Name: Melee Skeleton
+  m_TagString: Opponent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1973,18 +1973,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97912ec28d62fdc5a82cbc1d366788a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  className: 
   hitRate: 2
-  hitCooldown: 0
   stunDuration: 0
   swingDuration: 0
   strikeDuration: 0.3
   returnDuration: 0.6
   attackRange: 3
+  attackDamage: 0
   maxHealth: 100
   healthRegRate: 5
   wanderInterval: 3
   wanderRadius: 5
   rotationSpeed: 90
+  movementSpeed: 0
   memoryDuration: 5
   detectionRange: 20
 --- !u!114 &2506817616126039836

@@ -156,6 +156,7 @@ GameObject:
   - component: {fileID: 1939592861400707939}
   - component: {fileID: 1195309795827131598}
   - component: {fileID: 8845670175015512211}
+  - component: {fileID: 391421393070520}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -329,7 +330,8 @@ MonoBehaviour:
   zoomSpeed: 10
   projectiles:
   - {fileID: 7974811766441290857, guid: 60e49ade76f5c004293e0e18fd49dbb0, type: 3}
-  weapon: {fileID: 5109643459192554882}
+  bow: {fileID: 0}
+  sword: {fileID: 7462210246599486514}
   hitZone: {fileID: 8822189346619956698}
   interactionDistance: 10
   isDead: 0
@@ -383,6 +385,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f260ed3fca2d04999210b5efcd7c1d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Constitution
+--- !u!114 &391421393070520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 309834695554700441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifierVolume
+  m_SerializedVersion: 0
+  m_Size: {x: 2.25, y: 2, z: 2.5}
+  m_Center: {x: 0, y: 0.25, z: 0.5}
+  m_Area: 3
+  m_AffectedAgents: ffffffff
 --- !u!1 &7449309127033121466
 GameObject:
   m_ObjectHideFlags: 0
@@ -603,25 +622,18 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 8181522158833118603, guid: e0da3269c2fc55d4282a337ea7f82ea8, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e0da3269c2fc55d4282a337ea7f82ea8, type: 3}
---- !u!114 &5109643459192554882 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3821788035281090846, guid: e0da3269c2fc55d4282a337ea7f82ea8, type: 3}
-  m_PrefabInstance: {fileID: 8349865433730808988}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 11fd99614c85d0845b4db9b575306786, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Weapon
 --- !u!4 &6878993119720453247 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3213240907052435683, guid: e0da3269c2fc55d4282a337ea7f82ea8, type: 3}
+  m_PrefabInstance: {fileID: 8349865433730808988}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7462210246599486514 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1472596751792853166, guid: e0da3269c2fc55d4282a337ea7f82ea8, type: 3}
   m_PrefabInstance: {fileID: 8349865433730808988}
   m_PrefabAsset: {fileID: 0}
