@@ -81,6 +81,9 @@ public class Player : MonoBehaviour
     [Header("Interaction")]
     public float interactionDistance = 10f;
 
+    [Header("Inventory")]
+    public int numHotbarSlots;
+
     private Inventory inventory;
     private Constitution constitution;
     private ItemDefinitions itemDefinitions;
@@ -338,6 +341,15 @@ public class Player : MonoBehaviour
         isDead = false;
         characterController.enabled = true;
 
+        // set up inventory
+        Constants defs = GameObject.Find("Definitions").GetComponent<Constants>();
+        numHotbarSlots = defs.hotbarSlots;
+
+        inventory.GetFromRunData(RunData.Instance);
+        inventory.SetItemSlotCount(defs.itemSlots);
+        inventory.mask = defs.inventoryMask;
+        GameSaver.subscribe(inventory.currency);
+
         OnInventoryChanged();
         OnStatUpgrade();
     }
@@ -387,7 +399,15 @@ public class Player : MonoBehaviour
             OnInventoryChanged();
             return true;
         } else if (transform.gameObject.TryGetComponent<DroppedItem>(out DroppedItem item)) {
-            inventory.AddItem(item.item, item.count);
+            if (item.item != null)
+            {
+                inventory.AddItem(item.item, item.count);
+            }
+            else
+            {
+                inventory.AddCurrency(item.currency, item.count);
+            }
+
             item.Disable();
             OnInventoryChanged();
             return true;
