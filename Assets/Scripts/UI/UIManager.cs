@@ -6,8 +6,6 @@ using UnityEngine.InputSystem;
 // can switch between gameplay/inventory/death-screen (/pause-screen)
 public class UIManager : MonoBehaviour
 {
-    public static UIManager Instance;
-
     // ui elements (convenient accessors for other scripts)
     public GameObject playerStats { get; private set; }
     public GameObject hotbar { get; private set; }
@@ -113,8 +111,6 @@ public class UIManager : MonoBehaviour
     }
 
     void Awake() {
-        Instance = this;
-
         playerStats = GameObject.Find("Player Stats");
         hotbar = GameObject.Find("Hotbar");
         inventoryUI = GameObject.Find("Inventory");

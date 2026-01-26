@@ -86,6 +86,7 @@ public class Player : MonoBehaviour
     private ItemDefinitions itemDefinitions;
     private PlayerStats stats;
     private Crosshair crosshair;
+    private UIManager uiManager;
 
     public bool isDead = false;
     private bool opponentGotHit;
@@ -96,6 +97,7 @@ public class Player : MonoBehaviour
         inventory = GetComponent<Inventory>();
         constitution = GetComponent<Constitution>();
         crosshair = GameObject.Find("Canvas/Crosshair").GetComponent<Crosshair>();
+        uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
         itemDefinitions = GameObject.Find("Definitions").GetComponent<ItemDefinitions>();
 
         GameObject mainCamera = GameObject.Find("Main Camera");
@@ -308,7 +310,7 @@ public class Player : MonoBehaviour
         // TODO
         isDead = true;
         characterController.enabled = false;
-        UIManager.Instance.SwitchToDeathScreen();
+        uiManager.SwitchToDeathScreen();
         RunData.Instance.NewRun();
         GameSaver.save();
 
