@@ -354,21 +354,6 @@ public class Player : MonoBehaviour
         OnStatUpgrade();
     }
 
-    public float GetHealth()
-    {
-        return constitution.Health;
-    }
-
-    public float GetMana()
-    {
-        return constitution.Mana;
-    }
-
-    public float GetStamina()
-    {
-        return constitution.Stamina;
-    }
-
     public void Hit()
     {
         if (hitCooldown > 0.0f || hitState != HitState.Idle)
