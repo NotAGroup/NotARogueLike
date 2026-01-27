@@ -6,6 +6,8 @@ public class MeleeSkeleton : Opponent
     [Header("Combat")]
     public OpponentHitZone hitZone;
 
+    private Coroutine attackCoroutine;
+
     protected override void Start()
     {
         base.Start();
@@ -21,6 +23,22 @@ public class MeleeSkeleton : Opponent
 
     protected override void Combat()
     {
+        if (!CanSeePlayer())
+        {
+            memoryTimer -= Time.deltaTime;
+
+            if (memoryTimer <= 0f)
+            {
+                memoryTimer = 0.0f;
+                state = OpponentState.Idle;
+                return;
+            }
+        }
+        else
+        {
+            memoryTimer = stats.memoryDuration;
+        }
+
         navMeshAgent.isStopped = false;
         navMeshAgent.updateRotation = false;
 
@@ -34,19 +52,24 @@ public class MeleeSkeleton : Opponent
         Vector3 playerOppDir = (transform.position - playerTransform.position).normalized;
         float modifier = currentHealth < stats.maxHealth * 0.5f ? 7.5f : 2.5f;
 
-        if (!attacking)
-        {
-            navMeshAgent.SetDestination(playerTransform.position + playerOppDir * modifier);
+        navMeshAgent.SetDestination(playerTransform.position + playerOppDir * modifier);
 
-            if (attackCooldown == 0.0f && distance <= stats.attackRange)
-            {
-                Attack();
-            }
+        if (attackCooldown == 0.0f && distance <= stats.attackRange * aggressionModifier)
+        {
+            Attack();
         }
     }
 
     protected override void Idle()
     {
+        if (CanSeePlayer() && !player.isDead)
+        {
+            memoryTimer = stats.memoryDuration;
+            state = OpponentState.Combat;
+
+            return;
+        }
+
         navMeshAgent.isStopped = false;
         navMeshAgent.updateRotation = true;
 
@@ -54,43 +77,53 @@ public class MeleeSkeleton : Opponent
         RegenerateHealth();
     }
 
-    protected override void Update()
+    protected override void Attack()
     {
-        base.Update();
-
         if (attacking)
         {
-            attackTimer += Time.deltaTime;
-
-
-            if (attackTimer >= stats.swingDuration && attackTimer < stats.swingDuration + stats.strikeDuration)
-            {
-                hitZone.gameObject.SetActive(true);
-            }
-
-            if (attackTimer >= stats.swingDuration + stats.strikeDuration)
-            {
-                hitZone.gameObject.SetActive(false);
-
-                attacking = false;
-                attackCooldown = 1.0f / stats.hitRate;
-
-                navMeshAgent.isStopped = false;
-                playerGotHit = false;
-            }
-
             return;
         }
+
+        if (attackCoroutine != null)
+        {
+            StopCoroutine(attackCoroutine);
+        }
+
+        attackCoroutine = StartCoroutine(AttackRoutine());
     }
 
-    void Attack()
+    private System.Collections.IEnumerator AttackRoutine()
     {
         attacking = true;
-        attackTimer = 0.0f;
 
         navMeshAgent.isStopped = true;
+        navMeshAgent.velocity = Vector3.zero;
+
         animator.SetTrigger("swing");
         hitZone.SetDamage(stats.attackDamage);
+
+        yield return new WaitForSeconds(stats.swingDuration);
+        hitZone.gameObject.SetActive(true);
+
+        yield return new WaitForSeconds(stats.strikeDuration);
+        hitZone.gameObject.SetActive(false);
+
+        navMeshAgent.isStopped = false;
+        playerGotHit = false;
+
+        if (CanSeePlayer() && !player.isDead)
+        {
+            memoryTimer = stats.memoryDuration;
+            state = OpponentState.Combat;
+        }
+        else
+        {
+            state = OpponentState.Idle;
+        }
+
+        attacking = false;
+        attackCooldown = 1.0f / stats.hitRate;
+        attackCoroutine = null;
     }
 
     void Wander()
@@ -129,8 +162,7 @@ public class MeleeSkeleton : Opponent
             wanderTimer = Random.Range(stats.wanderInterval * 0.5f, stats.wanderInterval * 2.0f);
             wandering = true;
 
-            nextNavPointID++;
-            nextNavPointID %= navPoints.Count;
+            nextNavPointID = (nextNavPointID + 1) % navPoints.Count;
         }
     }
 
