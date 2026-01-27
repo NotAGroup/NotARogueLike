@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Text;
 using System.Collections.Generic;
 
 public class DungeonPropertyDefinitions : KeyValueStoreComponent<DungeonPropertyKey, InterpolationScaling>
@@ -19,6 +20,16 @@ public class DungeonPropertyDefinitions : KeyValueStoreComponent<DungeonProperty
 
 public class DungeonProperties : Dictionary<DungeonPropertyKey, float> {
     public DungeonProperties(Dictionary<DungeonPropertyKey, float> b) : base(b) { }
+
+    public override string ToString() {
+        StringBuilder builder = new();
+
+        foreach(var k in base.Keys)
+        {
+            builder.AppendFormat("{0}:{1},", k, base[k]);
+        }
+        return builder.ToString();
+    }
 }
 
 
@@ -76,6 +87,10 @@ public enum DungeonPropertyKey {
     // allows balancing of (scarce) resources 
     AvailableXP,
     AvailableGold,
-    AvailableAmmoPerEnemy
+    AvailableAmmoPerEnemy,
+
+    // 
+    AvailableItemsPerArea,
+    ChestsPerArea
 }
 
