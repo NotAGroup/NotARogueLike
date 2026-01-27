@@ -61,7 +61,7 @@ MonoBehaviour:
   roomOffset: 1
   pillarThickness: 2.344
   torchHeight: 3
-  torchSpacing: 7
+  torchSpacing: 20
   torchWallOffset: 0.7
   wallPrefab: {fileID: 8781256875488664814, guid: 162a6cb09e169d541bde363712399322, type: 3}
   pillarPrefab: {fileID: 6615400493496472829, guid: 94605816c626d0e4ca8797ec19da830a, type: 3}
@@ -92,7 +92,7 @@ MonoBehaviour:
   m_LayerMask:
     serializedVersion: 2
     m_Bits: 129
-  m_UseGeometry: 0
+  m_UseGeometry: 1
   m_DefaultArea: 0
   m_GenerateLinks: 0
   m_IgnoreNavMeshAgent: 1
