@@ -581,11 +581,7 @@ MonoBehaviour:
       - key: StunDuration
         def:
           baseValue: 0.6
-          points:
-          - level: 0
-            value: 1
-          - level: 0
-            value: 0.5
+          points: []
           cyclic: 0
       - key: SwingDuration
         def:
@@ -677,11 +673,7 @@ MonoBehaviour:
       - key: StunDuration
         def:
           baseValue: 0.6
-          points:
-          - level: 0
-            value: 1
-          - level: 0
-            value: 0.5
+          points: []
           cyclic: 0
       - key: SwingDuration
         def:
