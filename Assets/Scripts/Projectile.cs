@@ -94,7 +94,7 @@ public class Projectile : MonoBehaviour
         // deal damage to opponent
         if (hit.transform.TryGetComponent<Opponent>(out Opponent opponent)) {
             Debug.Log("Projectile dealing " + damage + " damage to " + name);
-            opponent.TakeDamage(damage, -travelDirection);
+            opponent.TakeDamage(damage, new Vector3(-travelDirection.x, 0.0f, -travelDirection.z));
         }
 
         // arrow can stick to opponent, so its position has be computed appropriately
