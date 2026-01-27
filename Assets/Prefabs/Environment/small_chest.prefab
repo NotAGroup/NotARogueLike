@@ -102,6 +102,7 @@ GameObject:
   - component: {fileID: 2622840580407919122}
   - component: {fileID: 1521579425286674091}
   - component: {fileID: 4419287533018641789}
+  - component: {fileID: 3675748758545721643}
   m_Layer: 0
   m_Name: small_chest
   m_TagString: Untagged
@@ -156,7 +157,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DestroyableObject
   maxHealth: 50
-  droppedItemPrefab: {fileID: 6834112976765427387, guid: 5c8515f40aecf6259b9c3cdb74d0a499, type: 3}
 --- !u!65 &1521579425286674091
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -191,6 +191,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AttachedObjects
   maximumAttachedObjects: 10
+--- !u!114 &3675748758545721643
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 801789873906574201}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cce98fa56ffba7b5fac31e256dc81795, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Rewards
+  droppedItemPrefab: {fileID: 6834112976765427387, guid: 5c8515f40aecf6259b9c3cdb74d0a499, type: 3}
+  gold: 0
+  xp: 0
 --- !u!1 &3442830045073502725
 GameObject:
   m_ObjectHideFlags: 0
