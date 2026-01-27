@@ -10,9 +10,7 @@ public class RangedSkeleton : Opponent
 
     private Projectile projectile;
 
-    private float aggressionTimer = 0.0f;
     private float aggressionDuration = 5.0f;
-    private float aggressionModifier = 1.0f;
 
     private List<NavPoint> aimPoints;
     private int aimPointIndex = 0;
@@ -51,79 +49,24 @@ public class RangedSkeleton : Opponent
         TryGetIdlePosition(2.0f);
     }
 
-    protected override void Update()
-    {
-        base.Update();
-
-        if (attacking)
-        {
-            attackTimer += Time.deltaTime;
-
-            if (attackTimer >= shootDuration)
-            {
-                Vector3 direction = (playerTransform.position - transform.position).normalized;
-
-                projectile.SetDamage(stats.attackDamage);
-                projectile.Shoot(direction, "Opponent", 60.0f);
-
-                projectile.transform.parent = null;
-
-                attacking = false;
-                attackCooldown = 1.0f / shootRate;
-            }
-
-            return;
-        }
-
-        if (attackTimer > 0.0f)
-        {
-            attackTimer -= Time.deltaTime;
-
-            if (aggressionTimer <= 0.0f)
-            {
-                aggressionModifier = 1.0f;
-                aggressionTimer = 0.0f;
-            }
-        }
-    }
-
-    protected override bool CanSeePlayer()
-    {
-        if (playerTransform == null)
-        {
-            return false;
-        }
-
-        Vector3 direction = playerTransform.position - transform.position;
-        float distance = direction.magnitude;
-
-        if (distance > stats.detectionRange * aggressionModifier)
-        {
-            return false;
-        }
-
-        if (distance < alertRange && !player.isSneaking())
-        {
-            return true;
-        }
-
-        float angle = Vector3.Angle(transform.forward, direction.normalized);
-
-        if (angle > viewAngle)
-        {
-            return false;
-        }
-
-        if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit hit, stats.detectionRange * aggressionModifier))
-        {
-            return hit.transform.CompareTag("Player");
-        }
-
-        return false;
-    }
-
     protected override void Combat()
     {
+        if (!CanSeePlayer())
+        {
+            memoryTimer -= Time.deltaTime;
+
+            if (memoryTimer <= 0f)
+            {
+                memoryTimer = 0.0f;
+                state = OpponentState.Idle;
+                return;
+            }
+        }
+        else
+        {
+            memoryTimer = stats.memoryDuration;
+        }
+
         navMeshAgent.isStopped = false;
         navMeshAgent.updateRotation = false;
 
@@ -152,20 +95,19 @@ public class RangedSkeleton : Opponent
             return;
         }
 
-        if (!attacking)
+        if (attackCooldown == 0.0f && distance <= stats.attackRange * aggressionModifier)
         {
-            if (attackCooldown == 0.0f && distance <= stats.attackRange * aggressionModifier)
-            {
-                Attack();
-            }
+            Attack();
         }
-
     }
 
     protected override void Idle()
     {
-        if (aggressionTimer > 0.0f)
+        if (CanSeePlayer() && !player.isDead)
         {
+            memoryTimer = stats.memoryDuration;
+            state = OpponentState.Combat;
+
             return;
         }
 
@@ -206,27 +148,71 @@ public class RangedSkeleton : Opponent
         RotateTowards(direction);
     }
 
-    public override void TakeDamage(float damage, Vector3? direction = null)
-    {
-        base.TakeDamage(damage, direction);
-
-        aggressionModifier = 2.0f;
-        aggressionTimer = aggressionDuration;
-        memoryTimer = stats.memoryDuration;
-    }
-
-    void Attack()
+    protected override System.Collections.IEnumerator AttackRoutine()
     {
         attacking = true;
-        attackTimer = 0.0f;
 
         projectile = Instantiate(ammunition, rightHand);
         projectile.transform.localPosition = new Vector3(0.0f, 0.5f, 0.0f);
         projectile.transform.localRotation = Quaternion.Euler(-90.0f, 0.0f, 0.0f);
         projectile.name = ammunition.name;
 
-        navMeshAgent.isStopped = true;
         animator.SetTrigger("shoot");
+
+        yield return new WaitForSeconds(shootDuration);
+
+        Vector3 direction = (playerTransform.position - transform.position).normalized;
+
+        projectile.SetDamage(stats.attackDamage);
+        projectile.Shoot(direction, "Opponent", 60.0f);
+        projectile.transform.parent = null;
+
+        attacking = false;
+        attackCooldown = 1.0f / shootRate;
+        attackCoroutine = null;
+    }
+
+    protected override bool CanSeePlayer()
+    {
+        if (playerTransform == null)
+        {
+            return false;
+        }
+
+        Vector3 direction = playerTransform.position - transform.position;
+        float distance = direction.magnitude;
+
+        if (distance > stats.detectionRange * aggressionModifier)
+        {
+            return false;
+        }
+
+        if (distance < alertRange && !player.isSneaking())
+        {
+            return true;
+        }
+
+        float angle = Vector3.Angle(transform.forward, direction.normalized);
+
+        if (angle > viewAngle)
+        {
+            return false;
+        }
+
+        if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit hit, stats.detectionRange * aggressionModifier))
+        {
+            return hit.transform.CompareTag("Player");
+        }
+
+        return false;
+    }
+
+    public override void TakeDamage(float damage, Vector3? direction = null)
+    {
+        base.TakeDamage(damage, direction);
+
+        aggressionModifier = 2.0f;
+        aggressionTimer = aggressionDuration;
     }
 
     private NavPoint GetNextNavPoint()

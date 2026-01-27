@@ -1,6 +1,6 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections.Generic;
 
 [RequireComponent(typeof(NavMeshAgent)), RequireComponent(typeof(OpponentStats))]
 public abstract class Opponent : MonoBehaviour
@@ -29,6 +29,7 @@ public abstract class Opponent : MonoBehaviour
 
     protected float currentHealth;
 
+    protected Coroutine attackCoroutine;
     protected bool attacking, wandering = false;
     protected float attackCooldown, stunCooldown;
     protected float aggressionModifier = 1.0f;
@@ -67,9 +68,19 @@ public abstract class Opponent : MonoBehaviour
 
     protected virtual void Update()
     {
-        if (state == OpponentState.Dead || playerTransform == null)
+        if (state == OpponentState.Dead)
         {
             return;
+        }
+
+        if (player == null || player.isDead)
+        {
+            if (state != OpponentState.Idle)
+            {
+                attacking = false;
+                navMeshAgent.isStopped = false;
+                state = OpponentState.Idle;
+            }
         }
 
         switch (state)
@@ -90,9 +101,21 @@ public abstract class Opponent : MonoBehaviour
         velocity = transform.InverseTransformDirection(navMeshAgent.velocity);
         UpdateMovementAnimation();
 
+        if (aggressionTimer > 0.0f)
+        {
+            aggressionTimer -= Time.deltaTime;
+
+            if (aggressionTimer <= 0.0f)
+            {
+                aggressionTimer = 0.0f;
+                aggressionModifier = 1.0f;
+            }
+        }
+
         if (attackCooldown > 0.0f)
         {
             attackCooldown -= Time.deltaTime;
+
             if (attackCooldown < 0.0f)
             {
                 attackCooldown = 0.0f;
@@ -100,7 +123,22 @@ public abstract class Opponent : MonoBehaviour
         }
     }
 
-    protected abstract void Attack();
+    protected virtual void Attack()
+    {
+        if (attacking)
+        {
+            return;
+        }
+
+        if (attackCoroutine != null)
+        {
+            StopCoroutine(attackCoroutine);
+        }
+
+        attackCoroutine = StartCoroutine(AttackRoutine());
+    }
+
+    protected abstract System.Collections.IEnumerator AttackRoutine();
 
     protected abstract void Combat();
 

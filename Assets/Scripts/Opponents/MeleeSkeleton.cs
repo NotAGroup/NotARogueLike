@@ -6,8 +6,6 @@ public class MeleeSkeleton : Opponent
     [Header("Combat")]
     public OpponentHitZone hitZone;
 
-    private Coroutine attackCoroutine;
-
     protected override void Start()
     {
         base.Start();
@@ -77,22 +75,7 @@ public class MeleeSkeleton : Opponent
         RegenerateHealth();
     }
 
-    protected override void Attack()
-    {
-        if (attacking)
-        {
-            return;
-        }
-
-        if (attackCoroutine != null)
-        {
-            StopCoroutine(attackCoroutine);
-        }
-
-        attackCoroutine = StartCoroutine(AttackRoutine());
-    }
-
-    private System.Collections.IEnumerator AttackRoutine()
+    protected override System.Collections.IEnumerator AttackRoutine()
     {
         attacking = true;
 
