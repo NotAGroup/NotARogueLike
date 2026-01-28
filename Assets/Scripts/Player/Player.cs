@@ -362,9 +362,6 @@ public class Player : MonoBehaviour
             return;
         }
 
-        //weapon.gameObject.SetActive(true);
-        weapon.SetDamage(stats.strikeDamage);
-
         hitState = HitState.Swing;
         hitTime = 0.0f;
 
