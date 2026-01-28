@@ -180,15 +180,14 @@ public class DungeonCreator : MonoBehaviour
     }
 
     float SampleExponential(float lambda) {
-            return -(float)Math.Log(UnityEngine.Random.Range(0f, 1f)) / lambda;
+        return -(float)Math.Log(UnityEngine.Random.Range(0f, 1f)) / lambda;
     }
 
     private void CreateEncounter(List<Node> listOfRooms, int index, int enemyCount) 
     {
-	Node room = listOfRooms[index];
+	    Node room = listOfRooms[index];
 
-        // make enemy count follow a poisson distribution
-	for (int i = 0; i < enemyCount; i++) {
+	    for (int i = 0; i < enemyCount; i++) {
             int opponentClass = SelectRandomOpponentClass();
     
             int enemyPosX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.BottomRightAreaCorner.x - 1);
@@ -207,23 +206,26 @@ public class DungeonCreator : MonoBehaviour
 
     private void CreateEnemy(List<Node> listOfRooms)
     {
-        int enemiesPerEncounter = (int)(enemyAmount * properties[DungeonPropertyKey.EnemyCount] * properties[DungeonPropertyKey.Size] * properties[DungeonPropertyKey.Size]);
-	    int encounters = (int) (properties[DungeonPropertyKey.Size] * properties[DungeonPropertyKey.Size]);
+        // expectation values
+        int opponents = enemyAmount * (int)(properties[DungeonPropertyKey.EnemyCount] * properties[DungeonPropertyKey.Size] * properties[DungeonPropertyKey.Size]);
+	    int encounters = (int) (properties[DungeonPropertyKey.EncounterCount] * properties[DungeonPropertyKey.Size] * properties[DungeonPropertyKey.Size]);
+        int enemiesPerEncounter = (int)(properties[DungeonPropertyKey.EnemyCount] / properties[DungeonPropertyKey.EncounterCount]);
 
         bool isEnoughEnemies = false;
         float counter = 0f;
 
         while (!isEnoughEnemies)
         {
-	    int i = (int)UnityEngine.Random.Range(0.0f, listOfRooms.Count);
+	        int i = UnityEngine.Random.Range(0, listOfRooms.Count);
             Node room = listOfRooms[i];
 
             if (room.Type == "room")
             {
                 if (UnityEngine.Random.Range(0.0f, 1.0f) > 0.5f)
                 {
-	    	    int num = (int)UnityEngine.Random.Range(0f, enemiesPerEncounter);
-	    	    CreateEncounter(listOfRooms, i, num);
+	    	        int num = (int)UnityEngine.Random.Range(enemiesPerEncounter * 0.5f, enemiesPerEncounter * 1.5f);
+                    Debug.Log("Creating encounter with " + num + " opponents in room " + i);
+	    	        CreateEncounter(listOfRooms, i, num);
             	    counter += SampleExponential(encounters);
                 }
 
