@@ -74,71 +74,78 @@ public class DungeonCreator : MonoBehaviour
 
     public void CreateDungeon()
     {
-        level = RunData.Instance.level;
-        if (level < 0)
+        try 
         {
-            Debug.LogWarning("rundata has not been initialized yet, assuming level = 0");
-            level = 0;
+            level = RunData.Instance.level;
+            if (level < 0)
+            {
+                Debug.LogWarning("rundata has not been initialized yet, assuming level = 0");
+                level = 0;
+            }
+
+            properties = dungeonPropertyDefinitions.ComputeFrom(level);
+            int size = (int)properties[DungeonPropertyKey.Size];
+            Debug.Log("Generating dungeon with parameters: " + properties.ToString());
+
+            DestroyAllChildren();
+
+            DugeonGenerator generator = new DugeonGenerator(size * dungeonWidth, size * dungeonLength);
+            var listOfRooms = generator.CalculateDungeon((int)Math.Clamp(Math.Log(size), 1, 5) * maxIterations,
+                roomWidthMin,
+                roomLengthMin,
+                roomBottomCornerModifier,
+                roomTopCornerMidifier,
+                roomOffset,
+                corridorWidth);
+
+            dungeonLevel = new GameObject("DungeonLevel");
+            dungeonLevel.transform.parent = transform;
+
+            dungeonSegments = new DungeonSegment[listOfRooms.Count];
+
+            horizontalWallOwners = new Dictionary<Vector3Int, DungeonSegment>();
+            verticalWallOwners = new Dictionary<Vector3Int, DungeonSegment>();
+
+            for (int i = listOfRooms.Count - 1; i >= 0; i--)
+            {
+                Vector2Int bottomLeftAreaCorner = listOfRooms[i].BottomLeftAreaCorner;
+                Vector2Int topRightAreaCorner = listOfRooms[i].TopRightAreaCorner;
+                String type = listOfRooms[i].Type;
+
+                Vector2Int areaCenter = (bottomLeftAreaCorner + topRightAreaCorner) / 2;
+
+                DungeonSegment segment = new DungeonSegment();
+
+                segment.area = new GameObject(char.ToUpper(type[0]) + type.Substring(1) + " " + areaCenter);
+                segment.area.transform.parent = dungeonLevel.transform;
+                segment.area.transform.position = new Vector3(areaCenter.x, 0, areaCenter.y);
+
+                segment.corridorOpenings = new HashSet<Vector3Int>();
+
+                segment.horizontalWallPositions = new HashSet<Vector3Int>();
+                segment.verticalWallPositions = new HashSet<Vector3Int>();
+
+                CreateMesh(bottomLeftAreaCorner, topRightAreaCorner, segment, type);
+                StoreOnlyOpeningCentres(segment);
+
+                dungeonSegments[i] = segment;
+            }
+
+            CreatePlayer(listOfRooms);
+            CreateTrapDoor(listOfRooms);
+            CreateWalls();
+            CreatePillars(listOfRooms);
+            CreateLoot(listOfRooms);
+            CreateEnemy(listOfRooms);
+            CreateNavPoints(listOfRooms);
+            CreateShop(listOfRooms);
+
+            navMeshSurface.BuildNavMesh();
         }
-
-        properties = dungeonPropertyDefinitions.ComputeFrom(level);
-        int size = (int)properties[DungeonPropertyKey.Size];
-        Debug.Log("Generating dungeon with parameters: " + properties.ToString());
-
-        DestroyAllChildren();
-
-        DugeonGenerator generator = new DugeonGenerator(size * dungeonWidth, size * dungeonLength);
-        var listOfRooms = generator.CalculateDungeon((int)Math.Clamp(Math.Log(size), 1, 5) * maxIterations,
-            roomWidthMin,
-            roomLengthMin,
-            roomBottomCornerModifier,
-            roomTopCornerMidifier,
-            roomOffset,
-            corridorWidth);
-
-        dungeonLevel = new GameObject("DungeonLevel");
-        dungeonLevel.transform.parent = transform;
-
-        dungeonSegments = new DungeonSegment[listOfRooms.Count];
-
-        horizontalWallOwners = new Dictionary<Vector3Int, DungeonSegment>();
-        verticalWallOwners = new Dictionary<Vector3Int, DungeonSegment>();
-
-        for (int i = listOfRooms.Count - 1; i >= 0; i--)
+        catch (Exception e)
         {
-            Vector2Int bottomLeftAreaCorner = listOfRooms[i].BottomLeftAreaCorner;
-            Vector2Int topRightAreaCorner = listOfRooms[i].TopRightAreaCorner;
-            String type = listOfRooms[i].Type;
-
-            Vector2Int areaCenter = (bottomLeftAreaCorner + topRightAreaCorner) / 2;
-
-            DungeonSegment segment = new DungeonSegment();
-
-            segment.area = new GameObject(char.ToUpper(type[0]) + type.Substring(1) + " " + areaCenter);
-            segment.area.transform.parent = dungeonLevel.transform;
-            segment.area.transform.position = new Vector3(areaCenter.x, 0, areaCenter.y);
-
-            segment.corridorOpenings = new HashSet<Vector3Int>();
-
-            segment.horizontalWallPositions = new HashSet<Vector3Int>();
-            segment.verticalWallPositions = new HashSet<Vector3Int>();
-
-            CreateMesh(bottomLeftAreaCorner, topRightAreaCorner, segment, type);
-            StoreOnlyOpeningCentres(segment);
-
-            dungeonSegments[i] = segment;
+            Debug.LogError(e);
         }
-
-        CreatePlayer(listOfRooms);
-        CreateTrapDoor(listOfRooms);
-        CreateWalls();
-        CreatePillars(listOfRooms);
-        CreateLoot(listOfRooms);
-        CreateEnemy(listOfRooms);
-        CreateNavPoints(listOfRooms);
-        CreateShop(listOfRooms);
-
-        navMeshSurface.BuildNavMesh();
     }
 
     private void CreatePlayer(List<Node> listOfRooms)
