@@ -138,6 +138,8 @@ public abstract class Opponent : MonoBehaviour
 
     protected virtual void UpdateMovementAnimation()
     {
+        if (animator == null) 
+            return;
         animator.SetFloat("MoveX", velocity.x, 0.25f, Time.deltaTime);
         animator.SetFloat("MoveZ", velocity.z, 0.25f, Time.deltaTime);
     }
