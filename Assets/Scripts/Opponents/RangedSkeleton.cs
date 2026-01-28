@@ -11,9 +11,9 @@ public class RangedSkeleton : Opponent
     private Projectile projectile;
 
     private List<NavPoint> aimPoints;
-    public int aimPointIndex = 0;
+    private int aimPointIndex = 0;
 
-    public float aimTimer;
+    private float aimTimer;
 
     private Vector3 idlePosition;
 
