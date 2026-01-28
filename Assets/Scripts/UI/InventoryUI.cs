@@ -123,8 +123,15 @@ public class InventoryUI : MonoBehaviour
             slot.GetComponent<Button>().onClick.AddListener(delegate { OnClick(i); });
         }
 
-        ItemSlot selected = inventory.items[currentSlot];
-        UpdateSelectedItem(selected.storedItem, selected.count);
+        if (currentSlot >= 0 && currentSlot < inventory.numItemSlots)
+        {
+            ItemSlot selected = inventory.items[currentSlot];
+            UpdateSelectedItem(selected.storedItem, selected.count);
+        }
+        else
+        {
+            UpdateSelectedItem(null, 0);
+        }
     }
 
     void OnClick(int slot) {
