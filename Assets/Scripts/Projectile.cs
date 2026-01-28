@@ -92,7 +92,19 @@ public class Projectile : MonoBehaviour
         }
 
         // deal damage to opponent
-        if (hit.transform.TryGetComponent<Opponent>(out Opponent opponent)) {
+        if (hit.transform.TryGetComponent<Opponent>(out Opponent opponent))
+        {
+            Animator animator = opponent.GetComponentInChildren<Animator>();
+
+            if (animator != null) {
+                Transform head = animator.GetBoneTransform(HumanBodyBones.Head);
+
+                if (Vector3.Distance(hit.point, head.position) <= 0.75f) {
+                    Debug.Log("Headshot!");
+                    damage *= 1.25f; // headshot multiplier
+                }
+            }
+
             Debug.Log("Projectile dealing " + damage + " damage to " + name);
             opponent.TakeDamage(damage, new Vector3(-travelDirection.x, 0.0f, -travelDirection.z));
         }
