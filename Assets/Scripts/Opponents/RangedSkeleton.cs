@@ -192,7 +192,6 @@ public class RangedSkeleton : Opponent
 
         if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit hit, stats.detectionRange * aggressionModifier))
         {
-            Debug.Log("I can see " + hit.transform.gameObject.name);
             return hit.transform.CompareTag("Player");
         }
 
