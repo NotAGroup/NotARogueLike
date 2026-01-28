@@ -569,7 +569,7 @@ MonoBehaviour:
     prefab: {fileID: 8282398908945130151, guid: 2466d15c19041db4fba290b6fc587695, type: 3}
     stats:
       definitions:
-      - key: HitRate
+      - key: AttackRate
         def:
           baseValue: 2
           points:
@@ -653,7 +653,37 @@ MonoBehaviour:
           cyclic: 0
       - key: DetectionRange
         def:
-          baseValue: 20
+          baseValue: 30
+          points: []
+          cyclic: 0
+      - key: AlertRange
+        def:
+          baseValue: 5
+          points: []
+          cyclic: 0
+      - key: AimDuration
+        def:
+          baseValue: 4
+          points: []
+          cyclic: 0
+      - key: AvoidRadius
+        def:
+          baseValue: 1.2
+          points: []
+          cyclic: 0
+      - key: MinDistanceToPlayer
+        def:
+          baseValue: 3
+          points: []
+          cyclic: 0
+      - key: ShootDuration
+        def:
+          baseValue: 0.3
+          points: []
+          cyclic: 0
+      - key: AggressionDuration
+        def:
+          baseValue: 10
           points: []
           cyclic: 0
   - className: Ranged Skeleton
@@ -661,13 +691,13 @@ MonoBehaviour:
     prefab: {fileID: 8282398908945130151, guid: b2f353518050c5e4387c48f25a9229f2, type: 3}
     stats:
       definitions:
-      - key: HitRate
+      - key: AttackRate
         def:
-          baseValue: 2
+          baseValue: 5
           points:
           - level: 0
             value: 1
-          - level: 1
+          - level: 5
             value: 2
           cyclic: 0
       - key: StunDuration
@@ -745,7 +775,37 @@ MonoBehaviour:
           cyclic: 0
       - key: DetectionRange
         def:
-          baseValue: 15
+          baseValue: 250
+          points: []
+          cyclic: 0
+      - key: AlertRange
+        def:
+          baseValue: 5
+          points: []
+          cyclic: 0
+      - key: AimDuration
+        def:
+          baseValue: 4
+          points: []
+          cyclic: 0
+      - key: AvoidRadius
+        def:
+          baseValue: 1.2
+          points: []
+          cyclic: 0
+      - key: MinDistanceToPlayer
+        def:
+          baseValue: 3
+          points: []
+          cyclic: 0
+      - key: ShootDuration
+        def:
+          baseValue: 0.3
+          points: []
+          cyclic: 0
+      - key: AggressionDuration
+        def:
+          baseValue: 10
           points: []
           cyclic: 0
 --- !u!114 &7895014659698534790

@@ -10,19 +10,10 @@ public class RangedSkeleton : Opponent
 
     private Projectile projectile;
 
-    private float aggressionDuration = 5.0f;
-
     private List<NavPoint> aimPoints;
-    private int aimPointIndex = 0;
-    private float aimDuration = 4.0f;
-    private float aimTimer;
+    public int aimPointIndex = 0;
 
-    private float alertRange = 5.0f;
-    private float avoidRadius = 1.2f;
-    private float minDistance = 3.0f;
-
-    private float shootDuration = 0.3f;
-    private float shootRate = 5.0f;
+    public float aimTimer;
 
     private Vector3 idlePosition;
 
@@ -77,7 +68,7 @@ public class RangedSkeleton : Opponent
 
         RotateTowards(direction);
 
-        if (distance < minDistance && !wandering)
+        if (distance < stats.minDistanceToPlayer && !wandering)
         {
             NavPoint escapePoint = GetNextNavPoint();
 
@@ -139,7 +130,7 @@ public class RangedSkeleton : Opponent
         if (aimTimer <= 0.0f)
         {
             aimPointIndex = (aimPointIndex + 1) % aimPoints.Count;
-            aimTimer = aimDuration;
+            aimTimer = stats.aimDuration;
         }
 
         direction = (aimPoints[aimPointIndex].transform.position - transform.position).normalized;
@@ -159,7 +150,7 @@ public class RangedSkeleton : Opponent
 
         animator.SetTrigger("shoot");
 
-        yield return new WaitForSeconds(shootDuration);
+        yield return new WaitForSeconds(stats.shootDuration);
 
         Vector3 direction = (playerTransform.position - transform.position).normalized;
 
@@ -168,7 +159,7 @@ public class RangedSkeleton : Opponent
         projectile.transform.parent = null;
 
         attacking = false;
-        attackCooldown = 1.0f / shootRate;
+        attackCooldown = 1.0f / stats.attackRate;
         attackCoroutine = null;
     }
 
@@ -187,7 +178,7 @@ public class RangedSkeleton : Opponent
             return false;
         }
 
-        if (distance < alertRange && !player.isSneaking())
+        if (distance < stats.alertRange && !player.isSneaking())
         {
             return true;
         }
@@ -201,6 +192,7 @@ public class RangedSkeleton : Opponent
 
         if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit hit, stats.detectionRange * aggressionModifier))
         {
+            Debug.Log("I can see " + hit.transform.gameObject.name);
             return hit.transform.CompareTag("Player");
         }
 
@@ -212,7 +204,7 @@ public class RangedSkeleton : Opponent
         base.TakeDamage(damage, direction);
 
         aggressionModifier = 2.0f;
-        aggressionTimer = aggressionDuration;
+        aggressionTimer = stats.aggressionDuration;
     }
 
     private NavPoint GetNextNavPoint()
@@ -226,7 +218,7 @@ public class RangedSkeleton : Opponent
         {
             Vector3 navPointPosition = navPoint.transform.position;
 
-            if (Vector3.Distance(navPointPosition, playerPosition) < minDistance || PathCrossesPlayer(navPointPosition))
+            if (Vector3.Distance(navPointPosition, playerPosition) < stats.minDistanceToPlayer || PathCrossesPlayer(navPointPosition))
             {
                 continue;
             }
@@ -265,7 +257,7 @@ public class RangedSkeleton : Opponent
 
             Vector3 closest = corner + direction * factor;
 
-            if (Vector3.Distance(playerTransform.position, closest) < avoidRadius)
+            if (Vector3.Distance(playerTransform.position, closest) < stats.avoidRadius)
             {
                 return true;
             }

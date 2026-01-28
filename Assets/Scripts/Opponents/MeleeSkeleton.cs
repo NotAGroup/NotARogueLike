@@ -105,7 +105,7 @@ public class MeleeSkeleton : Opponent
         }
 
         attacking = false;
-        attackCooldown = 1.0f / stats.hitRate;
+        attackCooldown = 1.0f / stats.attackRate;
         attackCoroutine = null;
     }
 
