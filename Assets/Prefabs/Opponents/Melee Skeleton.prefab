@@ -109,7 +109,7 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: f3d5d500492484b4180400302ff2595e, type: 3}
   m_Controller: {fileID: 9100000, guid: d730ce3e6e6e41043a5bf530ee40a124, type: 2}
-  m_CullingMode: 1
+  m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
@@ -1974,7 +1974,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   className: 
-  hitRate: 2
+  attackRate: 0
   stunDuration: 0
   swingDuration: 0
   strikeDuration: 0.3
@@ -1989,6 +1989,12 @@ MonoBehaviour:
   movementSpeed: 0
   memoryDuration: 5
   detectionRange: 20
+  alertRange: 0
+  aggressionDuration: 0
+  aimDuration: 0
+  avoidRadius: 0
+  minDistanceToPlayer: 0
+  shootDuration: 0
 --- !u!114 &2506817616126039836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2001,9 +2007,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26eca20a2ebcb2d40a7b9dad62ee364d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Opponent
-  hitZone: {fileID: 2615748330894058864}
   playerGotHit: 0
   viewAngle: 60
+  hitZone: {fileID: 2615748330894058864}
 --- !u!114 &7685539837612636914
 MonoBehaviour:
   m_ObjectHideFlags: 0
