@@ -30,7 +30,7 @@ public class Player : MonoBehaviour
         Strike
     }
 
-    private AttackType attackType;
+    public AttackType attackType;
     private HitState hitState;
 
     private float gravity = -9.81f;
@@ -517,6 +517,11 @@ public class Player : MonoBehaviour
         // Camera
         angleX = Mathf.Clamp(angleX, minAngleX, maxAngleX);
         cameraTransform.localRotation = Quaternion.AngleAxis(angleX, Vector3.left);
+    }
+
+    public void DrawBow()
+    {
+        animator.SetTrigger("BowDrawn");
     }
 
     public void Shoot()
