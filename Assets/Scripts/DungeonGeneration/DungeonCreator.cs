@@ -188,7 +188,7 @@ public class DungeonCreator : MonoBehaviour
         return -(float)Math.Log(UnityEngine.Random.Range(0f, 1f)) / lambda;
     }
 
-    private void CreateEncounter(List<Node> listOfRooms, int index, int enemyCount) 
+    private void CreateEncounter(List<Node> listOfRooms, int index, int enemyCount, int totalEnemyCount) 
     {
 	    Node room = listOfRooms[index];
 
@@ -223,10 +223,10 @@ public class DungeonCreator : MonoBehaviour
                     enemyRewards.SetSingleItem(RandomItemFrom(availableLootItems));
                     break;
                 case 1:
-                    enemyRewards.xp = XpFrom(availableLootCurrencies, (int)(availableLootCurrencies[Currency.XP] / actualEnemyAmount));
+                    enemyRewards.xp = XpFrom(availableLootCurrencies, (int)(properties[DungeonPropertyKey.AvailableXP] / totalEnemyCount));
                     break;
                 case 2:
-                    enemyRewards.gold = GoldFrom(availableLootCurrencies, (int)(availableLootCurrencies[Currency.Gold] / actualEnemyAmount));
+                    enemyRewards.gold = GoldFrom(availableLootCurrencies, (int)(properties[DungeonPropertyKey.AvailableGold] / totalEnemyCount));
                     break;
                 }
             }
@@ -254,11 +254,10 @@ public class DungeonCreator : MonoBehaviour
                 {
 	    	        int num = (int)UnityEngine.Random.Range(enemiesPerEncounter * 0.5f, enemiesPerEncounter * 1.5f);
                     Debug.Log("Creating encounter with " + num + " opponents in room " + i);
-	    	        CreateEncounter(listOfRooms, i, num);
-            	    counter += SampleExponential(encounters);
+	    	        CreateEncounter(listOfRooms, i, num, opponents);
+                    counter += Distributions.Exponential.Sample(encounters);
                 }
 
-                counter += Distributions.Exponential.Sample(encounters);
             }
 
         }
