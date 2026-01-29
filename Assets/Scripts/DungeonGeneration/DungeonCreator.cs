@@ -188,8 +188,19 @@ public class DungeonCreator : MonoBehaviour
     {
 	    Node room = listOfRooms[index];
 
-	    for (int i = 0; i < enemyCount; i++) {
+        int rangedEnemies = 0;
+
+	    for (int i = 0; i < enemyCount; ) {
             int opponentClass = SelectRandomOpponentClass();
+
+            // ensure ranged enemies constraint is fulfilled
+            if (opponentDefinitions.classes[opponentClass].className == "Ranged Skeleton") 
+            {
+                rangedEnemies += 1;
+                if (rangedEnemies > properties[DungeonPropertyKey.EnemyMaxRangedCount])
+                    continue;
+            }
+
     
             int enemyPosX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.BottomRightAreaCorner.x - 1);
             int enemyPosY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopLeftAreaCorner.y - 1);
@@ -227,6 +238,7 @@ public class DungeonCreator : MonoBehaviour
                 }
             }
 
+            i++;
         }
     }
 
@@ -237,13 +249,13 @@ public class DungeonCreator : MonoBehaviour
 	    float encounters = properties[DungeonPropertyKey.EncounterCount] * properties[DungeonPropertyKey.Size] * properties[DungeonPropertyKey.Size];
         float enemiesPerEncounter = properties[DungeonPropertyKey.EnemyCount] / properties[DungeonPropertyKey.EncounterCount];
 
-        enemiesPerEncounter = Math.Clamp(enemiesPerEncounter, 0.1f, 4f);
+        enemiesPerEncounter = Math.Clamp(enemiesPerEncounter, 0.1f, 3f);
         encounters = Math.Clamp(encounters, 0.1f, 10f);
 
         Debug.Log("Expecting " + encounters + " encounters of expected " + enemiesPerEncounter + "enemies each");
 
         // number of encounters follows poisson distribution
-        int actualEncounters = Distributions.Poisson.Sample(encounters);
+        int actualEncounters = (int)(Distributions.Poisson.Sample(1f) * encounters);
         for (int j = 0; j < actualEncounters; )
         {
             int i = UnityEngine.Random.Range(0, listOfRooms.Count() - 1);
@@ -251,7 +263,7 @@ public class DungeonCreator : MonoBehaviour
 
             if (room.Type == "room")
             {
-	    	    int num = Distributions.Poisson.Sample(enemiesPerEncounter);
+	    	    int num = (int)(Distributions.Poisson.Sample(1f) * enemiesPerEncounter);
 
                 Debug.Log("Creating encounter with " + num + " opponents in room " + i);
 	    	    CreateEncounter(listOfRooms, i, num, opponents);

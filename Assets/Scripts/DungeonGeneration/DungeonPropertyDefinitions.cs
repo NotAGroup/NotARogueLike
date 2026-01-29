@@ -6,8 +6,7 @@ using System.Collections.Generic;
 public class DungeonPropertyDefinitions : KeyValueStoreComponent<DungeonPropertyKey, InterpolationScaling>
 {
     // returns the dungeon properties for the given level
-    public DungeonProperties
-    ComputeFrom(int level) {
+    public DungeonProperties ComputeFrom(int level) {
         Dictionary<DungeonPropertyKey, float> result = new();
         
         for (int i = 0; i < data._defs.Length; i++) {
@@ -82,6 +81,7 @@ public enum DungeonPropertyKey {
     EnemyCount,
     EncounterCount,
     EnemyLevel,
+    EnemyMaxRangedCount,
     // probability for having a boss
     HasBoss,
     // allows balancing of (scarce) resources 
