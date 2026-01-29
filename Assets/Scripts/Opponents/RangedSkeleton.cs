@@ -185,7 +185,7 @@ public class RangedSkeleton : Opponent
 
         float angle = Vector3.Angle(transform.forward, direction.normalized);
 
-        if (angle > viewAngle)
+        if (angle > viewAngle * aggressionModifier)
         {
             return false;
         }

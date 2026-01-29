@@ -34,11 +34,6 @@ public class FlickeringEffect : MonoBehaviour
         factor = 1f;
     }
 
-    private static float SampleExponential(float lambda)
-    {
-        return -(float)Mathf.Log(UnityEngine.Random.Range(0f,1f)) / lambda; 
-    }
-
     void Update()
     {
         // apply current intensities
@@ -53,19 +48,19 @@ public class FlickeringEffect : MonoBehaviour
 
         if (time <= 0f) {
             // flicker event occured, compute waiting time until next one
-            time = SampleExponential(lambda);
+            time = Distributions.Exponential.Sample(lambda);
 
             // set new intensity factor by sampling something 
             // in expectation, sets factor to either 1 + (flickerMax - 1) / 2
             //                          or to either 1 - (1 - flickerMin) / 2
-            float gaussianLike = (UnityEngine.Random.Range(0f, 1f) + UnityEngine.Random.Range(0f, 1f) + UnityEngine.Random.Range(0f, 1f)) / 6;
+            float value = Distributions.Bates.Sample(0f,1f, 3);
             if (UnityEngine.Random.Range(0f, 1f) > 0.7)
             {
-                factor = flickerMax * gaussianLike;
+                factor = flickerMax * value;
             } 
             else
             {
-                factor = 1f - (1f - flickerMin) * gaussianLike;
+                factor = 1f - (1f - flickerMin) * value;
             }
         }
 

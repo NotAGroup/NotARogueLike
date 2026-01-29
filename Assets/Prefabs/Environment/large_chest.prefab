@@ -77,9 +77,9 @@ PrefabInstance:
       value: 0.525
       objectReference: {fileID: 0}
     - target: {fileID: 2622840580407919122, guid: e7b9dbe30139672529e028327be50597, type: 3}
-      propertyPath: droppedItemPrefab
-      value: 
-      objectReference: {fileID: 6834112976765427387, guid: 5c8515f40aecf6259b9c3cdb74d0a499, type: 3}
+      propertyPath: maxHealth
+      value: 150
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5767974309510853132, guid: e7b9dbe30139672529e028327be50597, type: 3}
     - {fileID: 898926249135683563, guid: e7b9dbe30139672529e028327be50597, type: 3}

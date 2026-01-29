@@ -8,13 +8,13 @@ public class UserInterface : MonoBehaviour
     private Slider manaBar;
     private Slider staminaBar;
 
-    private Player player;
+    private Constitution playerConstitution;
     private PlayerStats playerStats;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
-        player = GameObject.Find("Player").GetComponent<Player>();
+        playerConstitution = GameObject.Find("Player").GetComponent<Constitution>();
         playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
         
         healthBar = GameObject.Find("Health Bar").GetComponent<Slider>();
@@ -26,10 +26,10 @@ public class UserInterface : MonoBehaviour
     void Update()
     {
         healthBar.maxValue = playerStats.maxHealth;
-        healthBar.value = player.GetHealth();
+        healthBar.value = playerConstitution.Health;
         manaBar.maxValue = playerStats.maxMana;
-        manaBar.value = player.GetMana();
+        manaBar.value = playerConstitution.Mana;
         staminaBar.maxValue = playerStats.maxStamina;
-        staminaBar.value = player.GetStamina();
+        staminaBar.value = playerConstitution.Stamina;
     }
 }

@@ -81,11 +81,15 @@ public class Player : MonoBehaviour
     [Header("Interaction")]
     public float interactionDistance = 10f;
 
+    [Header("Inventory")]
+    public int numHotbarSlots;
+
     private Inventory inventory;
     private Constitution constitution;
     private ItemDefinitions itemDefinitions;
     private PlayerStats stats;
     private Crosshair crosshair;
+    private UIManager uiManager;
 
     public bool isDead = false;
     private bool opponentGotHit;
@@ -96,6 +100,7 @@ public class Player : MonoBehaviour
         inventory = GetComponent<Inventory>();
         constitution = GetComponent<Constitution>();
         crosshair = GameObject.Find("Canvas/Crosshair").GetComponent<Crosshair>();
+        uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
         itemDefinitions = GameObject.Find("Definitions").GetComponent<ItemDefinitions>();
 
         GameObject mainCamera = GameObject.Find("Main Camera");
@@ -308,7 +313,7 @@ public class Player : MonoBehaviour
         // TODO
         isDead = true;
         characterController.enabled = false;
-        UIManager.Instance.SwitchToDeathScreen();
+        uiManager.SwitchToDeathScreen();
         RunData.Instance.NewRun();
         GameSaver.save();
 
@@ -336,23 +341,17 @@ public class Player : MonoBehaviour
         isDead = false;
         characterController.enabled = true;
 
+        // set up inventory
+        Constants defs = GameObject.Find("Definitions").GetComponent<Constants>();
+        numHotbarSlots = defs.hotbarSlots;
+
+        inventory.GetFromRunData(RunData.Instance);
+        inventory.SetItemSlotCount(defs.itemSlots);
+        inventory.mask = defs.inventoryMask;
+        GameSaver.subscribe(inventory.currency);
+
         OnInventoryChanged();
         OnStatUpgrade();
-    }
-
-    public float GetHealth()
-    {
-        return constitution.Health;
-    }
-
-    public float GetMana()
-    {
-        return constitution.Mana;
-    }
-
-    public float GetStamina()
-    {
-        return constitution.Stamina;
     }
 
     public void Hit()
@@ -385,7 +384,15 @@ public class Player : MonoBehaviour
             OnInventoryChanged();
             return true;
         } else if (transform.gameObject.TryGetComponent<DroppedItem>(out DroppedItem item)) {
-            inventory.AddItem(item.item, item.count);
+            if (item.item != null)
+            {
+                inventory.AddItem(item.item, item.count);
+            }
+            else
+            {
+                inventory.AddCurrency(item.currency, item.count);
+            }
+
             item.Disable();
             OnInventoryChanged();
             return true;
