@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 
 public class Overlord : Opponent
@@ -41,9 +40,14 @@ public class Overlord : Opponent
         }
     }
 
-    protected override IEnumerator AttackRoutine()
+    protected override System.Collections.IEnumerator AttackRoutine()
     {
-        throw new System.NotImplementedException();
+        attacking = true;
+
+        attacking = false;
+        attackCoroutine = null;
+
+        yield break;
     }
 
     protected override bool CanSeePlayer()
