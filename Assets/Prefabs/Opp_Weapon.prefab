@@ -10,8 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3213240907052435683}
   - component: {fileID: 8181522158833118603}
-  - component: {fileID: -5235780296733378725}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Opp_Weapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -61,18 +60,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
---- !u!114 &-5235780296733378725
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1472596751792853166}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b71ab5f1e7dc37c4db41091756dc2457, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Opp_Weapon
 --- !u!1001 &6402456348678655438
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -121,6 +108,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7334951474422550414, guid: f254d5df1f6f8063786858a7270cd764, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: -6319239227303391928, guid: f254d5df1f6f8063786858a7270cd764, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -129,9 +120,25 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: da5cf113c51c6044b8c20daa528a8cf3, type: 2}
+    - target: {fileID: -1484000759336623469, guid: f254d5df1f6f8063786858a7270cd764, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 132083945168169662, guid: f254d5df1f6f8063786858a7270cd764, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: f254d5df1f6f8063786858a7270cd764, type: 3}
       propertyPath: m_Name
       value: sword
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: f254d5df1f6f8063786858a7270cd764, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3168575851667111681, guid: f254d5df1f6f8063786858a7270cd764, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3250233862321393286, guid: f254d5df1f6f8063786858a7270cd764, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'

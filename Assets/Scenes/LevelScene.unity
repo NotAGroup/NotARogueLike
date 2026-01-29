@@ -176,6 +176,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
+--- !u!114 &62124511 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1174493148950342287, guid: 758dd1d80f8f28e41b779b0989e997e1, type: 3}
+  m_PrefabInstance: {fileID: 2113634165}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9238566f73bd5d5df8f0abf244b9260d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIManager
 --- !u!114 &635671204 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7704773253529878811, guid: 0a53e9d4b436e9f239d561d2ef7c9a96, type: 3}
@@ -246,6 +257,18 @@ MonoBehaviour:
       - m_Target: {fileID: 904684438}
         m_TargetAssemblyTypeName: Player, Assembly-CSharp
         m_MethodName: StartGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 62124511}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: SwitchToGameplay
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -606,6 +629,18 @@ PrefabInstance:
     - target: {fileID: 4021868496781465586, guid: 0a53e9d4b436e9f239d561d2ef7c9a96, type: 3}
       propertyPath: m_Name
       value: DungeonCreator
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857228739014436680, guid: 0a53e9d4b436e9f239d561d2ef7c9a96, type: 3}
+      propertyPath: m_NavMeshData
+      value: 
+      objectReference: {fileID: 23800000, guid: 4323ae3b59a7f5b46a4e568db4021334, type: 2}
+    - target: {fileID: 6857228739014436680, guid: 0a53e9d4b436e9f239d561d2ef7c9a96, type: 3}
+      propertyPath: m_CollectObjects
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6857228739014436680, guid: 0a53e9d4b436e9f239d561d2ef7c9a96, type: 3}
+      propertyPath: m_LayerMask.m_Bits
+      value: 129
       objectReference: {fileID: 0}
     - target: {fileID: 9065253412205972852, guid: 0a53e9d4b436e9f239d561d2ef7c9a96, type: 3}
       propertyPath: m_LocalPosition.x

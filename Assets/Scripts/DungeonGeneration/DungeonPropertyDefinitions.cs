@@ -69,6 +69,7 @@ public enum DungeonPropertyKey {
     TrapCount,
     // 
     EnemyCount,
+    EncounterCount,
     EnemyLevel,
     // probability for having a boss
     HasBoss,

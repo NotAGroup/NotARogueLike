@@ -31,6 +31,36 @@ public abstract class Node
         }
     }
 
+    public List<NavPoint> GetCorners()
+    {
+        List<NavPoint> corners = new List<NavPoint>();
+
+        foreach (var navPoint in navPointList)
+        {
+            if (navPoint.type == "corner")
+            {
+                corners.Add(navPoint);
+            }
+        }
+
+        return corners;
+    }
+
+    public List<NavPoint> GetCorridorOpenings()
+    {
+        List<NavPoint> corridorOpenings = new List<NavPoint>();
+
+        foreach (var navPoint in navPointList)
+        {
+            if (navPoint.type == "opening")
+            {
+                corridorOpenings.Add(navPoint);
+            }
+        }
+
+        return corridorOpenings;
+    }
+
     public void AddChild(Node node)
     {
         childrenNodeList.Add(node);

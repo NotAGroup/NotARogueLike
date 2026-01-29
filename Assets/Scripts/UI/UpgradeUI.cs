@@ -8,8 +8,10 @@ public class UpgradeUI : MonoBehaviour
 {
     [Header("Rendering")]
     public GameObject statUIPrefab;
-    public Vector2 origin;
-    public Vector2 offset;
+
+    // transforms that define slot positions
+    public RectTransform statTransformStart;
+    public RectTransform statTransformEnd;
 
     [Header("Stat information")]
     public TMP_Text statNameText;
@@ -31,11 +33,13 @@ public class UpgradeUI : MonoBehaviour
     public void MoveSelection(Vector2 delta) 
     {
         selectedIndex = (selectedIndex - (int)delta.y + stats.Length) % stats.Length;
+        UpdateUpgrades();
     }
 
     public void TryUpgrade() 
     {  
         upgrades.TryUpgrade(selectedStat);
+        UpdateUpgrades();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -45,24 +49,34 @@ public class UpgradeUI : MonoBehaviour
         scalingDefs = GameObject.Find("Definitions").GetComponent<StatScalingDefinitions>();
         player = GameObject.Find("Player");
         upgrades = player.GetComponent<PlayerUpgrades>();
+    }
 
+    void OnEnable() 
+    {
         // clear old ui objects
-        if (uiInstances != null) {
-            foreach (var i in uiInstances) 
-                GameObject.Destroy(i);
-        } else {
+        if (uiInstances == null) {
             uiInstances = new GameObject[stats.Length];
         }
 
-        // 
+        // create ui element for each stat
         int index = 0;
         foreach(BaseStatKey key in stats) {
+            if (uiInstances[index] != null) continue;
+
             var obj = Instantiate(statUIPrefab, transform);
-            obj.transform.localPosition = origin + offset * index;
+            RectTransform target = obj.GetComponent<RectTransform>();
+            target.localPosition = Vector2.Lerp(statTransformStart.localPosition, statTransformEnd.localPosition, (float)index / (stats.Length - 1));
+            target.localScale    = Vector2.Lerp(statTransformStart.localScale, statTransformEnd.localScale, (float)index / (stats.Length - 1));
 
             uiInstances[index] = obj;
             index++;
         }
+
+        // disable preview gameobjects
+        statTransformStart.gameObject.SetActive(false);
+        statTransformEnd.gameObject.SetActive(false);
+
+        UpdateUpgrades();
     }
 
     public void UpdateUpgrades() {
@@ -105,10 +119,5 @@ public class UpgradeUI : MonoBehaviour
         }
 
         return builder.ToString();
-    }
-
-    void Update() {
-        // TODO: extract to player script
-        UpdateUpgrades();
     }
 }
