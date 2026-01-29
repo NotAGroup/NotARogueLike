@@ -492,17 +492,17 @@ MonoBehaviour:
         baseValue: 1
         points:
         - level: 0
-          value: 1
+          value: 3
         - level: 1
           value: 3
         - level: 2
-          value: 0.5
+          value: 1
         - level: 3
-          value: 0.25
+          value: 0.5
         cyclic: 1
     - key: EncounterCount
       def:
-        baseValue: 0.5
+        baseValue: 1.5
         points: []
         cyclic: 1
     - key: EnemyLevel
