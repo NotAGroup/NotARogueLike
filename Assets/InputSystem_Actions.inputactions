@@ -597,8 +597,8 @@
                 },
                 {
                     "name": "",
-                    "id": "340308cc-b9ce-425e-816e-7ccaedb27461",
-                    "path": "<Gamepad>/leftShoulder",
+                    "id": "c32970a2-9fe2-4754-a2cb-37de08cc951e",
+                    "path": "<Gamepad>/leftTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -657,7 +657,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Shoot",
+                    "action": "Attack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -685,17 +685,6 @@
                 },
                 {
                     "name": "",
-                    "id": "99499cdc-0659-4be6-a960-277ea8e2c833",
-                    "path": "<Gamepad>/leftTrigger",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Strike",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "4198b828-136f-4817-952f-e2801fae226f",
                     "path": "<Mouse>/scroll/up",
                     "interactions": "",
@@ -712,6 +701,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse;Touch",
+                    "action": "ChangeAttack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2bcf976e-ea8a-48f7-b16c-e09220895e7f",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
                     "action": "ChangeAttack",
                     "isComposite": false,
                     "isPartOfComposite": false
