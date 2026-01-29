@@ -74,71 +74,78 @@ public class DungeonCreator : MonoBehaviour
 
     public void CreateDungeon()
     {
-        level = RunData.Instance.level;
-        if (level < 0)
+        try 
         {
-            Debug.LogWarning("rundata has not been initialized yet, assuming level = 0");
-            level = 0;
+            level = RunData.Instance.level;
+            if (level < 0)
+            {
+                Debug.LogWarning("rundata has not been initialized yet, assuming level = 0");
+                level = 0;
+            }
+
+            properties = dungeonPropertyDefinitions.ComputeFrom(level);
+            int size = (int)properties[DungeonPropertyKey.Size];
+            Debug.Log("Generating dungeon with parameters: " + properties.ToString());
+
+            DestroyAllChildren();
+
+            DugeonGenerator generator = new DugeonGenerator(size * dungeonWidth, size * dungeonLength);
+            var listOfRooms = generator.CalculateDungeon((int)Math.Clamp(Math.Log(size), 1, 5) * maxIterations,
+                roomWidthMin,
+                roomLengthMin,
+                roomBottomCornerModifier,
+                roomTopCornerMidifier,
+                roomOffset,
+                corridorWidth);
+
+            dungeonLevel = new GameObject("DungeonLevel");
+            dungeonLevel.transform.parent = transform;
+
+            dungeonSegments = new DungeonSegment[listOfRooms.Count];
+
+            horizontalWallOwners = new Dictionary<Vector3Int, DungeonSegment>();
+            verticalWallOwners = new Dictionary<Vector3Int, DungeonSegment>();
+
+            for (int i = listOfRooms.Count - 1; i >= 0; i--)
+            {
+                Vector2Int bottomLeftAreaCorner = listOfRooms[i].BottomLeftAreaCorner;
+                Vector2Int topRightAreaCorner = listOfRooms[i].TopRightAreaCorner;
+                String type = listOfRooms[i].Type;
+
+                Vector2Int areaCenter = (bottomLeftAreaCorner + topRightAreaCorner) / 2;
+
+                DungeonSegment segment = new DungeonSegment();
+
+                segment.area = new GameObject(char.ToUpper(type[0]) + type.Substring(1) + " " + areaCenter);
+                segment.area.transform.parent = dungeonLevel.transform;
+                segment.area.transform.position = new Vector3(areaCenter.x, 0, areaCenter.y);
+
+                segment.corridorOpenings = new HashSet<Vector3Int>();
+
+                segment.horizontalWallPositions = new HashSet<Vector3Int>();
+                segment.verticalWallPositions = new HashSet<Vector3Int>();
+
+                CreateMesh(bottomLeftAreaCorner, topRightAreaCorner, segment, type);
+                StoreOnlyOpeningCentres(segment);
+
+                dungeonSegments[i] = segment;
+            }
+
+            CreatePlayer(listOfRooms);
+            CreateTrapDoor(listOfRooms);
+            CreateWalls();
+            CreatePillars(listOfRooms);
+            CreateLoot(listOfRooms);
+            CreateEnemy(listOfRooms);
+            CreateNavPoints(listOfRooms);
+            CreateShop(listOfRooms);
+
+            navMeshSurface.BuildNavMesh();
         }
-
-        properties = dungeonPropertyDefinitions.ComputeFrom(level);
-        int size = (int)properties[DungeonPropertyKey.Size];
-        Debug.Log("Generating dungeon with parameters: " + properties.ToString());
-
-        DestroyAllChildren();
-
-        DugeonGenerator generator = new DugeonGenerator(size * dungeonWidth, size * dungeonLength);
-        var listOfRooms = generator.CalculateDungeon((int)Math.Clamp(Math.Log(size), 1, 5) * maxIterations,
-            roomWidthMin,
-            roomLengthMin,
-            roomBottomCornerModifier,
-            roomTopCornerMidifier,
-            roomOffset,
-            corridorWidth);
-
-        dungeonLevel = new GameObject("DungeonLevel");
-        dungeonLevel.transform.parent = transform;
-
-        dungeonSegments = new DungeonSegment[listOfRooms.Count];
-
-        horizontalWallOwners = new Dictionary<Vector3Int, DungeonSegment>();
-        verticalWallOwners = new Dictionary<Vector3Int, DungeonSegment>();
-
-        for (int i = listOfRooms.Count - 1; i >= 0; i--)
+        catch (Exception e)
         {
-            Vector2Int bottomLeftAreaCorner = listOfRooms[i].BottomLeftAreaCorner;
-            Vector2Int topRightAreaCorner = listOfRooms[i].TopRightAreaCorner;
-            String type = listOfRooms[i].Type;
-
-            Vector2Int areaCenter = (bottomLeftAreaCorner + topRightAreaCorner) / 2;
-
-            DungeonSegment segment = new DungeonSegment();
-
-            segment.area = new GameObject(char.ToUpper(type[0]) + type.Substring(1) + " " + areaCenter);
-            segment.area.transform.parent = dungeonLevel.transform;
-            segment.area.transform.position = new Vector3(areaCenter.x, 0, areaCenter.y);
-
-            segment.corridorOpenings = new HashSet<Vector3Int>();
-
-            segment.horizontalWallPositions = new HashSet<Vector3Int>();
-            segment.verticalWallPositions = new HashSet<Vector3Int>();
-
-            CreateMesh(bottomLeftAreaCorner, topRightAreaCorner, segment, type);
-            StoreOnlyOpeningCentres(segment);
-
-            dungeonSegments[i] = segment;
+            Debug.LogError(e);
         }
-
-        CreatePlayer(listOfRooms);
-        CreateTrapDoor(listOfRooms);
-        CreateWalls();
-        CreatePillars(listOfRooms);
-        CreateLoot(listOfRooms);
-        CreateEnemy(listOfRooms);
-        CreateNavPoints(listOfRooms);
-        CreateShop(listOfRooms);
-
-        navMeshSurface.BuildNavMesh();
     }
 
     private void CreatePlayer(List<Node> listOfRooms)
@@ -172,48 +179,63 @@ public class DungeonCreator : MonoBehaviour
         return opponentClass;
     }
 
+    float SampleExponential(float lambda) {
+        return -(float)Math.Log(UnityEngine.Random.Range(0f, 1f)) / lambda;
+    }
+
+    private void CreateEncounter(List<Node> listOfRooms, int index, int enemyCount) 
+    {
+	    Node room = listOfRooms[index];
+
+	    for (int i = 0; i < enemyCount; i++) {
+            int opponentClass = SelectRandomOpponentClass();
+    
+            int enemyPosX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.BottomRightAreaCorner.x - 1);
+            int enemyPosY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopLeftAreaCorner.y - 1);
+            Vector3 enemyPos = new Vector3(enemyPosX, 1, enemyPosY);
+    
+            GameObject foe = Instantiate(opponentDefinitions.classes[opponentClass].prefab, enemyPos, Quaternion.identity, dungeonSegments[index].area.transform);
+            foe.name = opponentDefinitions.classes[opponentClass].prefab.name;
+            Opponent opponent = foe.GetComponent<Opponent>();
+            opponent.spawnRoom = room;
+    
+            OpponentStats stats = foe.GetComponent<OpponentStats>();
+            stats.ComputeFrom(opponentDefinitions.classes[opponentClass], (int)properties[DungeonPropertyKey.EnemyLevel]);
+        }
+    }
+
     private void CreateEnemy(List<Node> listOfRooms)
     {
-        int actualEnemyAmount = (int)(enemyAmount * properties[DungeonPropertyKey.EnemyCount]);
+        // expectation values
+        int opponents = enemyAmount * (int)(properties[DungeonPropertyKey.EnemyCount] * properties[DungeonPropertyKey.Size] * properties[DungeonPropertyKey.Size]);
+	    int encounters = (int) (properties[DungeonPropertyKey.EncounterCount] * properties[DungeonPropertyKey.Size] * properties[DungeonPropertyKey.Size]);
+        int enemiesPerEncounter = (int)(properties[DungeonPropertyKey.EnemyCount] / properties[DungeonPropertyKey.EncounterCount]);
 
         bool isEnoughEnemies = false;
-        int counter = 0;
+        float counter = 0f;
 
         while (!isEnoughEnemies)
         {
-            for (int i = 0; i < listOfRooms.Count; i++)
+	        int i = UnityEngine.Random.Range(0, listOfRooms.Count);
+            Node room = listOfRooms[i];
+
+            if (room.Type == "room")
             {
-                Node room = listOfRooms[i];
-
-                if (room.Type == "room")
+                if (UnityEngine.Random.Range(0.0f, 1.0f) > 0.5f)
                 {
-                    if (UnityEngine.Random.Range(0.0f, 1.0f) > 0.5f)
-                    {
-                        int opponentClass = SelectRandomOpponentClass();
+	    	        int num = (int)UnityEngine.Random.Range(enemiesPerEncounter * 0.5f, enemiesPerEncounter * 1.5f);
+                    Debug.Log("Creating encounter with " + num + " opponents in room " + i);
+	    	        CreateEncounter(listOfRooms, i, num);
+            	    counter += SampleExponential(encounters);
+                }
 
-                        int enemyPosX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.BottomRightAreaCorner.x - 1);
-                        int enemyPosY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopLeftAreaCorner.y - 1);
-                        Vector3 enemyPos = new Vector3(enemyPosX, 1, enemyPosY);
-
-                        GameObject foe = Instantiate(opponentDefinitions.classes[opponentClass].prefab, enemyPos, Quaternion.identity, dungeonSegments[i].area.transform);
-                        foe.name = opponentDefinitions.classes[opponentClass].prefab.name;
-                        Opponent opponent = foe.GetComponent<Opponent>();
-                        opponent.spawnRoom = room;
-
-                        OpponentStats stats = foe.GetComponent<OpponentStats>();
-                        stats.ComputeFrom(opponentDefinitions.classes[opponentClass], (int)properties[DungeonPropertyKey.EnemyLevel]);
-
-                        counter++;
-                    }
-
-                    if (counter >= actualEnemyAmount)
-                    {
-                        break;
-                    }
+                isEnoughEnemies = counter >= 1f;
+                if (isEnoughEnemies)
+                {
+                    break;
                 }
             }
 
-            isEnoughEnemies = counter >= actualEnemyAmount;
         }
     }
 
@@ -412,7 +434,7 @@ public class DungeonCreator : MonoBehaviour
         {
             Quaternion rotation = Quaternion.Euler(0.0f, UnityEngine.Random.Range(0, 4) * 90.0f, 0.0f);
 
-            GameObject pillar = Instantiate(pillarPrefab, position, Quaternion.identity, parent.transform);
+            GameObject pillar = Instantiate(pillarPrefab, position, rotation, parent.transform);
             pillar.name = pillarPrefab.name;
         }
     }

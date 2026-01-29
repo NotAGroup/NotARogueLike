@@ -1,28 +1,46 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections.Generic;
 
 [RequireComponent(typeof(NavMeshAgent)), RequireComponent(typeof(OpponentStats))]
 public abstract class Opponent : MonoBehaviour
 {
+    public enum OpponentState
+    {
+        Combat,
+        Dead,
+        Idle,
+        Stunned
+    }
+
+    public struct OptionalVector3
+    {
+        public bool hasValue;
+        public Vector3 value;
+    }
+
     // Components
     protected Animator animator;
     protected NavMeshAgent navMeshAgent;
     protected Transform playerTransform;
     protected Player player;
+    protected OpponentState state;
     protected OpponentStats stats;
 
     protected float currentHealth;
 
-    protected bool attacking, hit, stunned, wandering = false;
+    protected Coroutine attackCoroutine;
+    protected bool attacking, wandering = false;
     protected float attackCooldown, stunCooldown;
-    protected float attackTimer, memoryTimer, wanderTimer;
+    protected float aggressionModifier = 1.0f;
+    protected float aggressionTimer, memoryTimer, wanderTimer;
 
     public Node spawnRoom;
     protected Vector3 spawnRoomCenter;
     protected int nextNavPointID = 0;
     protected List<NavPoint> navPoints;
 
+    protected OptionalVector3 damageDirection;
     protected Vector3 direction, velocity;
     protected Quaternion rotation;
 
@@ -43,94 +61,143 @@ public abstract class Opponent : MonoBehaviour
         player = playerTransform?.GetComponent<Player>();
 
         currentHealth = stats.maxHealth;
+
+        aggressionTimer = 0.0f;
         wanderTimer = stats.wanderInterval;
     }
 
     protected virtual void Update()
     {
-        if (currentHealth <= 0.0f || playerTransform == null)
+        if (state == OpponentState.Dead)
         {
             return;
         }
 
-        if (hit)
+        if (player == null || player.isDead)
         {
-            velocity = Vector3.zero;
-            UpdateMovementAnimation();
-
-            if (Quaternion.Angle(transform.rotation, rotation) > 1.0f)
+            if (state != OpponentState.Idle)
             {
-                RotateTowards(direction);
-                return;
-            }
-
-            if (!stunned)
-            {
-                hit = false;
-                stunned = true;
-                stunCooldown = stats.stunDuration * 2.0f;
-
+                attacking = false;
                 navMeshAgent.isStopped = false;
+                state = OpponentState.Idle;
             }
         }
 
-        if (stunned)
+        switch (state)
         {
-            stunCooldown -= Time.deltaTime;
+            case OpponentState.Combat:
+                Combat();
+                break;
 
-            if (stunCooldown <= 0.0f)
-            {
-                stunCooldown = 0.0f;
-                stunned = false;
+            case OpponentState.Idle:
+                Idle();
+                break;
 
-                navMeshAgent.isStopped = false;
-            }
-
-            return;
+            case OpponentState.Stunned:
+                Stunned();
+                break;
         }
 
         velocity = transform.InverseTransformDirection(navMeshAgent.velocity);
         UpdateMovementAnimation();
 
+        if (aggressionTimer > 0.0f)
+        {
+            aggressionTimer -= Time.deltaTime;
+
+            if (aggressionTimer <= 0.0f)
+            {
+                aggressionTimer = 0.0f;
+                aggressionModifier = 1.0f;
+            }
+        }
+
         if (attackCooldown > 0.0f)
         {
             attackCooldown -= Time.deltaTime;
+
             if (attackCooldown < 0.0f)
             {
                 attackCooldown = 0.0f;
             }
         }
-
-        if (CanSeePlayer() && !player.isDead)
-        {
-            memoryTimer = stats.memoryDuration;
-        }
-
-
-        if (memoryTimer > 0.0f)
-        {
-            memoryTimer -= Time.deltaTime;
-            if (memoryTimer < 0.0f)
-            {
-                memoryTimer = 0.0f;
-            }
-
-            Combat();
-        }
-        else
-        {
-            Idle();
-        }
     }
+
+    protected virtual void Attack()
+    {
+        if (attacking)
+        {
+            return;
+        }
+
+        if (attackCoroutine != null)
+        {
+            StopCoroutine(attackCoroutine);
+        }
+
+        attackCoroutine = StartCoroutine(AttackRoutine());
+    }
+
+    protected abstract System.Collections.IEnumerator AttackRoutine();
+
+    protected abstract void Combat();
 
     protected abstract bool CanSeePlayer();
 
-    protected abstract void Combat();
+    protected virtual void Stunned()
+    {
+        if (damageDirection.hasValue)
+        {
+            navMeshAgent.isStopped = true;
+
+            velocity = Vector3.zero;
+            UpdateMovementAnimation();
+
+            if (Vector3.Angle(transform.forward, damageDirection.value) > 1.0f)
+            {
+                RotateTowards(damageDirection.value);
+                return;
+            }
+            else
+            {
+                damageDirection.hasValue = false;
+            }
+        }
+
+        stunCooldown -= Time.deltaTime;
+
+        if (stunCooldown <= 0.0f)
+        {
+            stunCooldown = 0.0f;
+
+            navMeshAgent.isStopped = false;
+
+            if (CanSeePlayer() && !player.isDead)
+            {
+                memoryTimer = stats.memoryDuration;
+                state = OpponentState.Combat;
+
+                float distance = Vector3.Distance(playerTransform.position, transform.position);
+
+                if (attackCooldown == 0.0f && distance <= stats.attackRange * aggressionModifier)
+                {
+                    Attack();
+                }
+            }
+            else
+            {
+                state = OpponentState.Idle;
+            }
+        }
+    }
 
     protected virtual void Die()
     {
         navMeshAgent.isStopped = true;
+
         animator.SetBool("isDead", true);
+        state = OpponentState.Dead;
+
         Destroy(gameObject, 2.0f);
     }
 
@@ -169,14 +236,17 @@ public abstract class Opponent : MonoBehaviour
 
         if (direction.HasValue)
         {
-            this.direction = direction.Value;
+            damageDirection.hasValue = true;
+            damageDirection.value = direction.Value;
         }
         else
         {
-            stunCooldown = stats.stunDuration;
-            stunned = true;
+            damageDirection.hasValue = false;
+            damageDirection.value = Vector3.zero;
         }
 
+        state = OpponentState.Stunned;
+        stunCooldown = stats.stunDuration;
         currentHealth -= damage;
 
         if (currentHealth <= 0.0f)
@@ -184,7 +254,5 @@ public abstract class Opponent : MonoBehaviour
             currentHealth = 0.0f;
             Die();
         }
-
-        hit = true;
     }
 }
