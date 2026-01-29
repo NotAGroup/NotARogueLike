@@ -330,7 +330,7 @@ MonoBehaviour:
   zoomSpeed: 10
   projectiles:
   - {fileID: 7974811766441290857, guid: 60e49ade76f5c004293e0e18fd49dbb0, type: 3}
-  bow: {fileID: 0}
+  bow: {fileID: 8260777167524374014}
   sword: {fileID: 7462210246599486514}
   hitZone: {fileID: 8822189346619956698}
   interactionDistance: 10
@@ -740,6 +740,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3213240907052435683, guid: e0da3269c2fc55d4282a337ea7f82ea8, type: 3}
   m_PrefabInstance: {fileID: 8349865433730808988}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &7462210246599486514 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1472596751792853166, guid: e0da3269c2fc55d4282a337ea7f82ea8, type: 3}
+  m_PrefabInstance: {fileID: 8349865433730808988}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &9107761417599031471
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -813,6 +818,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 88a3089db6c67c94e9d8b51a44c488cf, type: 3}
+--- !u!1 &8260777167524374014 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 88a3089db6c67c94e9d8b51a44c488cf, type: 3}
+  m_PrefabInstance: {fileID: 9107761417599031471}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8786520383600918340 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 88a3089db6c67c94e9d8b51a44c488cf, type: 3}

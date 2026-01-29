@@ -78,7 +78,6 @@ public class Player : MonoBehaviour
     public GameObject bow, sword;
     public PlayerHitZone hitZone;
     private GameObject quiver;
-    private GameObject bow;
 
     [Header("Interaction")]
     public float interactionDistance = 10f;
@@ -295,7 +294,7 @@ public class Player : MonoBehaviour
     public void ChangeAttack(AttackType attackType)
     {
         this.attackType = attackType;
-        weapon.gameObject.SetActive(attackType == AttackType.Hit);
+        sword.gameObject.SetActive(attackType == AttackType.Hit);
         quiver.gameObject.SetActive(attackType == AttackType.Shoot);
         bow.gameObject.SetActive(attackType == AttackType.Shoot);
         animator.SetBool("hasBow", attackType == AttackType.Shoot);
