@@ -184,10 +184,6 @@ public class DungeonCreator : MonoBehaviour
         return opponentClass;
     }
 
-    float SampleExponential(float lambda) {
-        return -(float)Math.Log(UnityEngine.Random.Range(0f, 1f)) / lambda;
-    }
-
     private void CreateEncounter(List<Node> listOfRooms, int index, int enemyCount, int totalEnemyCount) 
     {
 	    Node room = listOfRooms[index];
@@ -238,26 +234,29 @@ public class DungeonCreator : MonoBehaviour
     {
         // expectation values
         int opponents = enemyAmount * (int)(properties[DungeonPropertyKey.EnemyCount] * properties[DungeonPropertyKey.Size] * properties[DungeonPropertyKey.Size]);
-	    int encounters = (int) (properties[DungeonPropertyKey.EncounterCount] * properties[DungeonPropertyKey.Size] * properties[DungeonPropertyKey.Size]);
-        int enemiesPerEncounter = (int)(properties[DungeonPropertyKey.EnemyCount] / properties[DungeonPropertyKey.EncounterCount]);
+	    float encounters = properties[DungeonPropertyKey.EncounterCount] * properties[DungeonPropertyKey.Size] * properties[DungeonPropertyKey.Size];
+        float enemiesPerEncounter = properties[DungeonPropertyKey.EnemyCount] / properties[DungeonPropertyKey.EncounterCount];
+
+        enemiesPerEncounter = Math.Clamp(enemiesPerEncounter, 0.1f, 4f);
+        encounters = Math.Clamp(encounters, 0.1f, 10f);
+
+        Debug.Log("Expecting " + encounters + " encounters of expected " + enemiesPerEncounter + "enemies each");
 
         // number of encounters follows poisson distribution
-        float counter = 0f;
-        while (counter < 1f)
+        int actualEncounters = Distributions.Poisson.Sample(encounters);
+        for (int j = 0; j < actualEncounters; )
         {
             int i = UnityEngine.Random.Range(0, listOfRooms.Count() - 1);
             Node room = listOfRooms[i];
 
             if (room.Type == "room")
             {
-                if (UnityEngine.Random.Range(0.0f, 1.0f) > 0.5f)
-                {
-	    	        int num = (int)UnityEngine.Random.Range(enemiesPerEncounter * 0.5f, enemiesPerEncounter * 1.5f);
-                    Debug.Log("Creating encounter with " + num + " opponents in room " + i);
-	    	        CreateEncounter(listOfRooms, i, num, opponents);
-                    counter += Distributions.Exponential.Sample(encounters);
-                }
+	    	    int num = Distributions.Poisson.Sample(enemiesPerEncounter);
 
+                Debug.Log("Creating encounter with " + num + " opponents in room " + i);
+	    	    CreateEncounter(listOfRooms, i, num, opponents);
+
+                j++;
             }
 
         }

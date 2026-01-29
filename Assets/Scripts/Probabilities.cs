@@ -11,6 +11,23 @@ public class Distributions
         }
     }
 
+    public class Poisson
+    {
+        // lambda is expected rate
+        public static int Sample(float lambda)
+        {
+            int result = 0;
+            float ctr = Exponential.Sample(lambda);
+            while(ctr < 1f)
+            {
+                ctr += Exponential.Sample(lambda);
+                result++;
+            }
+
+            return result;
+        }
+    }
+
     public class Bates
     {
         public static float Sample(float min, float max, int n)
