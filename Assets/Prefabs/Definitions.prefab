@@ -500,6 +500,11 @@ MonoBehaviour:
         - level: 3
           value: 0.25
         cyclic: 1
+    - key: EncounterCount
+      def:
+        baseValue: 0.5
+        points: []
+        cyclic: 1
     - key: EnemyLevel
       def:
         baseValue: 1
@@ -775,7 +780,7 @@ MonoBehaviour:
           cyclic: 0
       - key: DetectionRange
         def:
-          baseValue: 250
+          baseValue: 25
           points: []
           cyclic: 0
       - key: AlertRange
