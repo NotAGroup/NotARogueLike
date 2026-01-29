@@ -245,17 +245,17 @@ public class DungeonCreator : MonoBehaviour
     private void CreateEnemy(List<Node> listOfRooms)
     {
         // expectation values
-        int opponents = enemyAmount * (int)(properties[DungeonPropertyKey.EnemyCount] * properties[DungeonPropertyKey.Size] * properties[DungeonPropertyKey.Size]);
 	    float encounters = properties[DungeonPropertyKey.EncounterCount] * properties[DungeonPropertyKey.Size] * properties[DungeonPropertyKey.Size];
-        float enemiesPerEncounter = properties[DungeonPropertyKey.EnemyCount] / properties[DungeonPropertyKey.EncounterCount];
+        int opponents = enemyAmount * (int)(properties[DungeonPropertyKey.EnemyCount] * properties[DungeonPropertyKey.EncounterCount] * properties[DungeonPropertyKey.Size] * properties[DungeonPropertyKey.Size]);
+        float enemiesPerEncounter = properties[DungeonPropertyKey.EnemyCount];
 
-        enemiesPerEncounter = Math.Clamp(enemiesPerEncounter, 0.1f, 3f);
-        encounters = Math.Clamp(encounters, 0.1f, 10f);
+        enemiesPerEncounter = Math.Clamp(enemiesPerEncounter, 1f, 3f);
+        encounters = Math.Clamp(encounters, 2f, 10f);
 
         Debug.Log("Expecting " + encounters + " encounters of expected " + enemiesPerEncounter + "enemies each");
 
         // number of encounters follows poisson distribution
-        int actualEncounters = (int)(Distributions.Poisson.Sample(1f) * encounters);
+        int actualEncounters = (int)(Distributions.Poisson.Sample(8f) / 8f * encounters);
         for (int j = 0; j < actualEncounters; )
         {
             int i = UnityEngine.Random.Range(0, listOfRooms.Count() - 1);
@@ -263,7 +263,7 @@ public class DungeonCreator : MonoBehaviour
 
             if (room.Type == "room")
             {
-	    	    int num = (int)(Distributions.Poisson.Sample(1f) * enemiesPerEncounter);
+	    	    int num = (int)(Distributions.Poisson.Sample(16f) / 16f * enemiesPerEncounter);
 
                 Debug.Log("Creating encounter with " + num + " opponents in room " + i);
 	    	    CreateEncounter(listOfRooms, i, num, opponents);

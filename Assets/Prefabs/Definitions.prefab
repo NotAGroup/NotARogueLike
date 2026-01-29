@@ -492,22 +492,22 @@ MonoBehaviour:
         baseValue: 1
         points:
         - level: 0
-          value: 3
+          value: 2
         - level: 1
           value: 3
         - level: 2
-          value: 1
+          value: 2
         - level: 3
-          value: 0.5
+          value: 2
+        cyclic: 1
+    - key: EncounterCount
+      def:
+        baseValue: 3
+        points: []
         cyclic: 1
     - key: EnemyMaxRangedCount
       def:
         baseValue: 2
-        points: []
-        cyclic: 1
-    - key: EncounterCount
-      def:
-        baseValue: 1.5
         points: []
         cyclic: 1
     - key: EnemyLevel
