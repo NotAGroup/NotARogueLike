@@ -25,11 +25,13 @@ public class UpgradeUI : MonoBehaviour
     private GameObject[] uiInstances;
     private UpgradeCostDefinitions defs;
     private StatScalingDefinitions scalingDefs;
+    private Strings strings;
     private PlayerUpgrades upgrades;
     private GameObject player;
 
     // get array of stats
     private Array stats = Enum.GetValues(typeof(BaseStatKey));
+    
 
     // 
     public void MoveSelection(Vector2 delta) 
@@ -62,6 +64,7 @@ public class UpgradeUI : MonoBehaviour
     {
         defs = GameObject.Find("Definitions").GetComponent<UpgradeCostDefinitions>();
         scalingDefs = GameObject.Find("Definitions").GetComponent<StatScalingDefinitions>();
+        strings = GameObject.Find("Canvas").GetComponent<Strings>();
         player = GameObject.Find("Player");
         upgrades = player.GetComponent<PlayerUpgrades>();
     }
@@ -122,7 +125,7 @@ public class UpgradeUI : MonoBehaviour
 
         if (selectedIndex >= 0)
         {
-            statNameText.text = Enum.GetName(typeof(BaseStatKey), selectedStat);
+            statNameText.text = strings.baseStats[selectedStat];
             statInfoText.text = ComputeUpgradeDescription(selectedStat);
         } 
         else 
@@ -145,13 +148,14 @@ public class UpgradeUI : MonoBehaviour
             if (current == upgraded) continue;
 
             // show relative change if upgraded
+            string name = strings.stats[key];
             if (upgradeEffectsRelative)
             {
-                builder.AppendFormat("{0,-18}\t x{1:0.00}\n", key.ToString(), upgraded / current); 
+                builder.AppendFormat("{0,-18}\t x{1:0.00}\n", name, upgraded / current); 
             }
             else
             {
-                builder.AppendFormat("{0,-18}\t {1:0.00}->{2:0.00}\n", key.ToString(), current, upgraded); 
+                builder.AppendFormat("{0,-18}\t {1:0.00}->{2:0.00}\n", name, current, upgraded); 
             }
         }
 

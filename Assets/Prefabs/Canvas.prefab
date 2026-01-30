@@ -2570,6 +2570,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   statUIPrefab: {fileID: 4181095292343879397, guid: 8ab8870e4ce9871f99d59bd181fbcf79, type: 3}
+  upgradeEffectsRelative: 0
   statTransformStart: {fileID: 8622986383827119741}
   statTransformEnd: {fileID: 1478916222683482963}
   statNameText: {fileID: 6302165386999173938}
@@ -3139,6 +3140,7 @@ GameObject:
   - component: {fileID: 7128067112286998707}
   - component: {fileID: 4840845350211867440}
   - component: {fileID: 1174493148950342287}
+  - component: {fileID: 5536421368516026660}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -3293,6 +3295,82 @@ MonoBehaviour:
     enabledIn: 13
   - name: Cancel
     enabledIn: 76
+--- !u!114 &5536421368516026660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7038015854114532385}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c4b50daec6794f51b8fbaad6e44fbbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  baseStats:
+    definitions:
+    - key: Health
+      def: Health
+    - key: Armour
+      def: Armour
+    - key: Strength
+      def: Strength
+    - key: Agility
+      def: Agility
+    - key: Stamina
+      def: Stamina
+    - key: Dexterity
+      def: Dexterity
+    - key: Perception
+      def: Perception
+  stats:
+    definitions:
+    - key: FireRate
+      def: Fire Rate
+    - key: HitRate
+      def: Hit Rate
+    - key: SwingDuration
+      def: Swing Duration
+    - key: StrikeDuration
+      def: Strike Duration
+    - key: StrikeDamage
+      def: Strike Damage
+    - key: ArrowDamage
+      def: Arrow Damage
+    - key: ArrowSpeed
+      def: Arrow Speed
+    - key: ReturnDuration
+      def: Return Duration
+    - key: MaxMana
+      def: Max Mana
+    - key: ManaRegRate
+      def: Mana Regeneration
+    - key: RunSpeed
+      def: Run Speed
+    - key: WalkSpeed
+      def: Walk Speed
+    - key: SneakSpeed
+      def: Sneak Speed
+    - key: MaxSlideTime
+      def: Slide Time
+    - key: SlideSpeed
+      def: Slide Speed
+    - key: MaxHealth
+      def: Max Health
+    - key: HealthRegRate
+      def: Health Regeneration
+    - key: JumpHeight
+      def: Jump Height
+    - key: MaxStamina
+      def: Max Stamina
+    - key: StaminaRegRate
+      def: Stamina Regeneration
+    - key: RunConsRate
+      def: Running Exhaustion
+    - key: SlideConsRate
+      def: Slide Exhaustion
+    - key: JumpConsRate
+      def: Jumping Exhaustion
 --- !u!1 &7052077407146181751
 GameObject:
   m_ObjectHideFlags: 0
