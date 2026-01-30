@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System;
 using System.Text;
 
@@ -42,6 +43,19 @@ public class UpgradeUI : MonoBehaviour
         UpdateUpgrades();
     }
 
+    public void OnClickUpgrade(int index)
+    {
+        selectedIndex = index;
+        upgrades.TryUpgrade(selectedStat);
+        UpdateUpgrades();
+    }
+
+    public void OnClick(int index)
+    {
+        selectedIndex = index;
+        UpdateUpgrades();
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
@@ -68,6 +82,12 @@ public class UpgradeUI : MonoBehaviour
             target.localPosition = Vector2.Lerp(statTransformStart.localPosition, statTransformEnd.localPosition, (float)index / (stats.Length - 1));
             target.localScale    = Vector2.Lerp(statTransformStart.localScale, statTransformEnd.localScale, (float)index / (stats.Length - 1));
 
+            // onclick callback
+            object boxedIndex = index;
+            target.Find("UpgradeButton").GetComponent<Button>().onClick.AddListener(() => OnClickUpgrade((int)boxedIndex));
+
+            target.GetComponent<Button>().onClick.AddListener(() => OnClick((int)boxedIndex));
+
             uiInstances[index] = obj;
             index++;
         }
@@ -75,6 +95,8 @@ public class UpgradeUI : MonoBehaviour
         // disable preview gameobjects
         statTransformStart.gameObject.SetActive(false);
         statTransformEnd.gameObject.SetActive(false);
+
+        selectedIndex = -1;
 
         UpdateUpgrades();
     }
@@ -97,9 +119,16 @@ public class UpgradeUI : MonoBehaviour
             index++;
         }
 
-        BaseStatKey selection = selectedStat;
-        statNameText.text = Enum.GetName(typeof(BaseStatKey), selection);
-        statInfoText.text = ComputeUpgradeDescription(selection);
+        if (selectedIndex >= 0)
+        {
+            statNameText.text = Enum.GetName(typeof(BaseStatKey), selectedStat);
+            statInfoText.text = ComputeUpgradeDescription(selectedStat);
+        } 
+        else 
+        {
+            statNameText.text = "Nothing selected";
+            statInfoText.text = "...";
+        }
     }
     
     private string ComputeUpgradeDescription(BaseStatKey baseStat) {
