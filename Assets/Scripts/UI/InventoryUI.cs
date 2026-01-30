@@ -13,12 +13,6 @@ public class InventoryUI : MonoBehaviour
 
     [Header("Rendering")]
     public GameObject slotPrefab;
-    public Transform slotParent;
-
-    // transforms that define slot positions
-    public RectTransform slotTransformBotLeft;
-    public RectTransform slotTransformBotRight;
-    public RectTransform slotTransformTopLeft;
 
     [Header("Selected Item")]
     public TMP_Text itemNameText;
@@ -81,26 +75,18 @@ public class InventoryUI : MonoBehaviour
         numSlots = inventory.numItemSlots;
         slots = new GameObject[numSlots];
 
+        UIGrid grid = GetComponent<UIGrid>();
         for (int i = 0; i < numSlots; i++) {
-            slots[i] = Instantiate(slotPrefab, slotParent);
-
             // coefficients
             int numRows = numSlots / numColumns;
-            float right = (float)(i % numColumns) / (numColumns - 1);
-            float up = (float)(i / numColumns) / (numRows - 1);
-
-            // lerp position
-            Vector2 pos1 = Vector2.Lerp(slotTransformBotLeft.localPosition, slotTransformBotRight.localPosition, right);
-            Vector2 pos2 = Vector2.Lerp(slotTransformBotLeft.localPosition, slotTransformTopLeft.localPosition, up);
-
-            // slotTransformBotLeft has been added twice, so subtract it once here
-            RectTransform target = slots[i].GetComponent<RectTransform>();
-            target.localPosition = pos1 + pos2 - (Vector2)slotTransformBotLeft.localPosition;
+            slots[i] = grid.InstantiateGridEntry(i % numColumns, i / numColumns, numColumns, numRows);
 
             // box current index to pass it as reference to the lambda
             object index = i;
             slots[i].GetComponent<Button>().onClick.AddListener(() => OnClick((int)index));
         }
+
+        grid.Commit();
     }
 
     void UpdateSlots() {

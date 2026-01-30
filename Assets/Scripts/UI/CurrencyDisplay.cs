@@ -6,12 +6,6 @@ public class CurrencyDisplay : MonoBehaviour
     private Inventory playerInventory;
     private CurrencyDefinitions currencyDefinitions;
 
-    [Header("Rendering")]
-    public GameObject slotPrefab;
-
-    public Vector2 slotPositionLeft;
-    public Vector2 slotPositionRight;
-
     // 
     private GameObject[] slots;
 
@@ -19,10 +13,12 @@ public class CurrencyDisplay : MonoBehaviour
         int numSlots = playerInventory.numCurrencySlots;
         slots = new GameObject[numSlots];
 
+        UIGrid grid = GetComponent<UIGrid>();
         for (int i = 0; i < numSlots; i++) {
-            slots[i] = Instantiate(slotPrefab, transform);
-            slots[i].transform.localPosition = Vector2.Lerp(slotPositionLeft, slotPositionRight, (float)i / numSlots);
+            slots[i] = grid.InstantiateGridEntry(i, 0, numSlots, 1);
         }
+
+        grid.Commit();
     }
 
     void UpdateSlots() {

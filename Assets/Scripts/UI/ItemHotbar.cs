@@ -6,12 +6,6 @@ public class ItemHotbar : MonoBehaviour
     private Player player;
     private Inventory playerInventory;
 
-    [Header("Rendering")]
-    public GameObject slotPrefab;
-
-    public Vector2 slotPositionLeft;
-    public Vector2 slotPositionRight;
-
     // 
     private GameObject[] slots;
 
@@ -29,10 +23,11 @@ public class ItemHotbar : MonoBehaviour
         int numSlots = Math.Min(player.numHotbarSlots, playerInventory.numItemSlots);
         slots = new GameObject[numSlots];
 
+        UIGrid grid = GetComponent<UIGrid>();
         for (int i = 0; i < numSlots; i++) {
-            slots[i] = Instantiate(slotPrefab, transform);
-            slots[i].transform.localPosition = Vector2.Lerp(slotPositionLeft, slotPositionRight, (float)i / (numSlots - 1));
+            slots[i] = grid.InstantiateGridEntry(i, 0, numSlots, 1);
         }
+        grid.Commit();
     }
 
     void UpdateSlots() {

@@ -69,7 +69,7 @@ public class UpgradeUI : MonoBehaviour
         upgrades = player.GetComponent<PlayerUpgrades>();
     }
 
-    void OnEnable() 
+    void InitUpgrades()
     {
         // clear old ui objects
         if (uiInstances == null) {
@@ -78,31 +78,31 @@ public class UpgradeUI : MonoBehaviour
 
         // create ui element for each stat
         int index = 0;
+        UIGrid grid = GetComponent<UIGrid>();
         foreach(BaseStatKey key in stats) {
             if (uiInstances[index] != null) continue;
 
-            var obj = Instantiate(statUIPrefab, transform);
-            RectTransform target = obj.GetComponent<RectTransform>();
-            target.localPosition = Vector2.Lerp(statTransformStart.localPosition, statTransformEnd.localPosition, (float)index / (stats.Length - 1));
-            target.localScale    = Vector2.Lerp(statTransformStart.localScale, statTransformEnd.localScale, (float)index / (stats.Length - 1));
+            var obj = grid.InstantiateGridEntry(0, index, 1, stats.Length);
 
             // onclick callback
             object boxedIndex = index;
-            target.Find("UpgradeButton").GetComponent<Button>().onClick.AddListener(() => OnClickUpgrade((int)boxedIndex));
+            obj.transform.Find("UpgradeButton").GetComponent<Button>().onClick.AddListener(() => OnClickUpgrade((int)boxedIndex));
 
-            target.GetComponent<Button>().onClick.AddListener(() => OnClick((int)boxedIndex));
+            obj.GetComponent<Button>().onClick.AddListener(() => OnClick((int)boxedIndex));
 
             uiInstances[index] = obj;
             index++;
         }
-
-        // disable preview gameobjects
-        statTransformStart.gameObject.SetActive(false);
-        statTransformEnd.gameObject.SetActive(false);
+        grid.Commit();
 
         selectedIndex = -1;
 
         UpdateUpgrades();
+    }
+
+    void OnEnable() 
+    {
+        InitUpgrades();
     }
 
     public void UpdateUpgrades() {
@@ -130,8 +130,8 @@ public class UpgradeUI : MonoBehaviour
         } 
         else 
         {
-            statNameText.text = "Nothing selected";
-            statInfoText.text = "...";
+            statNameText.text = "...";
+            statInfoText.text = "Nothing selected";
         }
     }
     
