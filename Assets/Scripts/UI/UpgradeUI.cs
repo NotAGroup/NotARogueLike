@@ -9,6 +9,7 @@ public class UpgradeUI : MonoBehaviour
 {
     [Header("Rendering")]
     public GameObject statUIPrefab;
+    public bool upgradeEffectsRelative;
 
     // transforms that define slot positions
     public RectTransform statTransformStart;
@@ -144,7 +145,14 @@ public class UpgradeUI : MonoBehaviour
             if (current == upgraded) continue;
 
             // show relative change if upgraded
-            builder.AppendFormat("x{1:0.00} {0,-20}\n", key.ToString(), current / upgraded); 
+            if (upgradeEffectsRelative)
+            {
+                builder.AppendFormat("{0,-18}\t x{1:0.00}\n", key.ToString(), upgraded / current); 
+            }
+            else
+            {
+                builder.AppendFormat("{0,-18}\t {1:0.00}->{2:0.00}\n", key.ToString(), current, upgraded); 
+            }
         }
 
         return builder.ToString();
