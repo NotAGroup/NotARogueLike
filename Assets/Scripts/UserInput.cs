@@ -21,6 +21,7 @@ public class UserInput : MonoBehaviour
     // movement actions
     private InputAction moveAction;
     private InputAction rotateAction;
+    private InputAction rotateSinceLastFrameAction;
 
     // movement modifiers
     private InputAction sneakAction;
@@ -82,6 +83,7 @@ public class UserInput : MonoBehaviour
         // find input actions
 		moveAction = InputSystem.actions.FindAction("Move", true);
 		rotateAction = InputSystem.actions.FindAction("Look", true);
+		rotateSinceLastFrameAction = InputSystem.actions.FindAction("LookSinceLastFrame", true);
 
 		jumpAction = InputSystem.actions.FindAction("Jump", true);
 		sneakAction = InputSystem.actions.FindAction("Crouch", true);
@@ -125,7 +127,9 @@ public class UserInput : MonoBehaviour
             player.Aim(aimAction.IsPressed());
 
             Vector2 direction = moveAction.ReadValue<Vector2>();
-            Vector2 rotation  = lookSensitivity * rotateAction.ReadValue<Vector2>();
+
+            Vector2 rotation  = lookSensitivity * rotateAction.ReadValue<Vector2>() * Time.deltaTime;
+            rotation         += lookSensitivity * rotateSinceLastFrameAction.ReadValue<Vector2>();
 
             player.Rotate(rotation);
             player.Move(direction);

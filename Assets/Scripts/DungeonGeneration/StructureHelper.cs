@@ -17,7 +17,9 @@ public static class StructureHelper
         {
             nodesToCheck.Enqueue(child);
         }
-        while (nodesToCheck.Count > 0)
+
+        int iterations = 0;
+        while (iterations++ < 100 &&nodesToCheck.Count > 0)
         {
             var currentNode = nodesToCheck.Dequeue();
             if (currentNode.ChildrenNodeList.Count == 0)

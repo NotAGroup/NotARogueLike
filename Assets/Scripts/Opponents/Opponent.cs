@@ -198,6 +198,11 @@ public abstract class Opponent : MonoBehaviour
         animator.SetBool("isDead", true);
         state = OpponentState.Dead;
 
+        if (TryGetComponent<Rewards>(out Rewards rewards))
+        {
+            rewards.Drop();
+        }
+
         Destroy(gameObject, 2.0f);
     }
 

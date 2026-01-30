@@ -5,26 +5,23 @@ using System.Collections.Generic;
 
 public class Inventory : MonoBehaviour
 {
-    public int numHotbarSlots  {get; protected set;}
-    public int numItemSlots {get => items.slots.Length;}
+    public int numItemSlots {get => (items != null) ? items.Count : 0;}
     public ItemContainer items { get; protected set;}
-    private ItemType[] mask;
+    public ItemType[] mask;
 
     // amount of currencies
     public int numCurrencySlots {get; protected set;} = Enum.GetValues(typeof(Currency)).Length;
     public CurrencyContainer currency { get; protected set; }
 
-    public Inventory() {
-        items = RunData.Instance.items;// new(RunData.Instance.items, mask);
-        currency = RunData.Instance.currencies;
-
-        GameSaver.subscribe(currency);
+    public void GetFromRunData(RunData data) 
+    {
+        items = data.items;
+        currency = data.currencies;
     }
 
-    public void Start() {
-        Constants defs = GameObject.Find("Definitions").GetComponent<Constants>();
-        numHotbarSlots = defs.hotbarSlots;
-        mask = defs.inventoryMask;
+    public void SetItemSlotCount(int size)
+    {
+        items.Resize(size);
     }
 
     public void AddCurrency(Currency currency, int amount) 
@@ -34,7 +31,10 @@ public class Inventory : MonoBehaviour
 
     public void AddItem(ItemDefinition item, int count) 
     {
-        items.AddItem(item, count, mask);
+        if (mask != null)
+            items.AddItem(item, count, mask);
+        else
+            items.AddItem(item, count);
     }
 }
 
@@ -69,12 +69,14 @@ public class ItemContainer {
         get => slots[slot];
     }
 
-    public void PrintState() {
+    public int Count { get => (slots != null) ? slots.Length : 0;}
+
+    public override string ToString() {
         StringBuilder output = new();
         for (int i = 0; i < slots.Length; i++) {
             output.AppendFormat("{0} : {1}({2}x), ", i, (slots[i].storedItem != null) ? slots[i].storedItem.name : "none", slots[i].count);
         }
-        Debug.Log("inventory: " + output.ToString());
+        return output.ToString();
     }
 
     public void Resize(int newSize) {
@@ -92,6 +94,27 @@ public class ItemContainer {
         }
 
         slots = nslots;
+    }
+
+    public void Shrink() 
+    {
+        int i = 0;
+        int len = slots.Length - 1;
+        if (len < 0) return;
+        for(; i < len; i++) 
+        {
+            while (i < len && slots[i].count <= 0) 
+            {
+                // swap last slot to this position
+                slots[i] = slots[len];
+                slots[i].storedItem = slots[len].storedItem;
+                slots[len].count = 0;
+                slots[len].storedItem = null;
+                len--;
+            }
+        }
+
+        Resize(len);
     }
 
     public void Clear() {

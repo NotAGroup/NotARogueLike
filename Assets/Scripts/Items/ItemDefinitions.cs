@@ -48,6 +48,16 @@ public class ItemDefinitions : MonoBehaviour
         get => definitions[i];
     }
 
+    public ItemDefinition this[string name] {
+        get {
+            foreach(ItemDefinition def in definitions)
+            {
+                if (def.name == name) return def;
+            }
+            throw new KeyNotFoundException();
+        }
+    }
+
     // 
     public ItemDefinition[] definitions;
 

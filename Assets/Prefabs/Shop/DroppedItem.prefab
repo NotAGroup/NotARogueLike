@@ -51,7 +51,8 @@ MonoBehaviour:
   modelPosition: {x: 0, y: 0, z: 0}
   modelScale: {x: 1, y: 1, z: 1}
   modelRotation: {x: -0.70710677, y: 0, z: 0, w: 0.70710677}
-  interactionHintFormat: Pick up {0}
+  countPerInteraction: 0
+  interactionHintFormat: Pick up {0} ({1})
 --- !u!114 &8690330570862342540
 MonoBehaviour:
   m_ObjectHideFlags: 0

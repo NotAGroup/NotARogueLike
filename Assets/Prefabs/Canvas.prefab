@@ -164,7 +164,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 26.85
+  m_fontSize: 36
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1128,7 +1128,6 @@ MonoBehaviour:
   itemBuffText: {fileID: 2419347362322737192}
   numColumns: 4
   currentSlot: 0
-  grabbed: 0
 --- !u!114 &2168415538754453025
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3336,6 +3335,7 @@ GameObject:
   - component: {fileID: 898759984747337816}
   - component: {fileID: 6166481096260975538}
   - component: {fileID: 2940239631244702822}
+  - component: {fileID: 6921539762444435102}
   m_Layer: 5
   m_Name: Death Screen
   m_TagString: Untagged
@@ -3402,6 +3402,36 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6921539762444435102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8027994548421002953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de7d6d301437e2417af11a702360e81e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UINavigationReceiver
+  navigationEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  submitEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7026903157227739262}
+        m_TargetAssemblyTypeName: Restart, Assembly-CSharp
+        m_MethodName: RestartGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &8830944126593913855
 GameObject:
   m_ObjectHideFlags: 0

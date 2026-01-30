@@ -21,7 +21,7 @@ public class MeleeSkeleton : Opponent
 
     protected override void Combat()
     {
-        if (!CanSeePlayer())
+        if (!CanSeePlayer() && navMeshAgent.remainingDistance <= 1f)
         {
             memoryTimer -= Time.deltaTime;
 
@@ -164,7 +164,7 @@ public class MeleeSkeleton : Opponent
             return false;
         }
 
-        if (distance < 5.0f && !player.isSneaking())
+        if (distance < stats.alertRange && !player.isSneaking())
         {
             return true;
         }
