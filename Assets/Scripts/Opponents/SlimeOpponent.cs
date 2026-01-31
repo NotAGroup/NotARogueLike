@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections;
 
 public class SlimeOpponent : Opponent
 {
@@ -11,9 +12,22 @@ public class SlimeOpponent : Opponent
     [SerializeField] private float damageWindowStart = 0.10f;
     [SerializeField] private float damageWindowEnd = 0.38f;
 
+    [Header("Chase")]
+    [SerializeField] private float stopBeforePlayer = 1.0f;
+
+    [Header("Launch")]
+    [SerializeField] private float launchDistance = 1.4f;
+    [SerializeField] private float launchDuration = 0.12f;
+
     [Header("Visual")]
     [SerializeField] private Renderer slimeRenderer;
     [SerializeField] private Color attackColor = new Color(1f, 0.2f, 0.2f, 1f);
+
+    [Header("Death")]
+    [SerializeField] private Transform modelRoot;
+    [SerializeField] private float deathDuration = 1.0f;
+    [SerializeField] private float deathXZMultiplier = 2.0f;
+    [SerializeField] private float deathYMultiplier = 0.2f;
 
     private MaterialPropertyBlock mpb;
     private Color normalBaseColor;
@@ -23,6 +37,13 @@ public class SlimeOpponent : Opponent
 
     private Vector3 leapStart;
     private Vector3 leapTarget;
+
+    private bool launching;
+    private float launchTimer;
+    private Vector3 launchDir;
+    private Vector3 launchPrevApplied;
+
+    private Vector3 modelRootBaseLocalPos;
 
     protected override void Start()
     {
@@ -42,51 +63,34 @@ public class SlimeOpponent : Opponent
         if (slimeRenderer != null)
         {
             mpb = new MaterialPropertyBlock();
-
             if (slimeRenderer.sharedMaterial != null && slimeRenderer.sharedMaterial.HasProperty(ID_BaseColor))
                 normalBaseColor = slimeRenderer.sharedMaterial.GetColor(ID_BaseColor);
             else
                 normalBaseColor = Color.white;
         }
 
+        if (modelRoot == null)
+        {
+            Transform t = transform.Find("ModelRoot");
+            modelRoot = t != null ? t : transform;
+        }
+
+        if (modelRoot != null)
+            modelRootBaseLocalPos = modelRoot.localPosition;
+
         navMeshAgent.updateRotation = false;
+        navMeshAgent.updatePosition = true;
     }
 
     protected override void Update()
     {
         if (currentHealth <= 0.0f || playerTransform == null) return;
 
-        if (hit)
-        {
-            velocity = Vector3.zero;
-            UpdateMovementAnimation();
+        if (!aggroed && CanSeePlayer())
+            aggroed = true;
 
-            if (Quaternion.Angle(transform.rotation, rotation) > 1.0f)
-            {
-                RotateTowards(direction);
-                return;
-            }
-
-            if (!stunned)
-            {
-                hit = false;
-                stunned = true;
-                stunCooldown = stats.stunDuration * 2.0f;
-                navMeshAgent.isStopped = false;
-            }
-        }
-
-        if (stunned)
-        {
-            stunCooldown -= Time.deltaTime;
-            if (stunCooldown <= 0.0f)
-            {
-                stunCooldown = 0.0f;
-                stunned = false;
-                navMeshAgent.isStopped = false;
-            }
-            return;
-        }
+        if (launching)
+            LaunchUpdate();
 
         if (attackCooldown > 0.0f)
         {
@@ -94,8 +98,8 @@ public class SlimeOpponent : Opponent
             if (attackCooldown < 0.0f) attackCooldown = 0.0f;
         }
 
-        if (!aggroed && CanSeePlayer() && !player.isDead)
-            aggroed = true;
+        if (float.IsNaN(attackCooldown) || float.IsInfinity(attackCooldown))
+            attackCooldown = 0.0f;
 
         if (attacking)
         {
@@ -103,13 +107,71 @@ public class SlimeOpponent : Opponent
             return;
         }
 
-        if (aggroed && !player.isDead)
+        if (aggroed)
             Combat();
         else
             Idle();
 
         velocity = transform.InverseTransformDirection(navMeshAgent.velocity);
-        UpdateMovementAnimation();
+    }
+
+    private Vector3 GetChaseTarget()
+    {
+        Vector3 slimePos = transform.position;
+        Vector3 playerPos = playerTransform.position;
+
+        Vector3 toPlayer = playerPos - slimePos;
+        toPlayer.y = 0f;
+
+        if (toPlayer.sqrMagnitude < 1e-6f)
+            return slimePos;
+
+        toPlayer.Normalize();
+
+        float d = Mathf.Max(0.1f, stopBeforePlayer);
+        return playerPos - toPlayer * d;
+    }
+
+
+    public override void TakeDamage(float damage, Vector3? hitDirection = null)
+    {
+        if (currentHealth <= 0.0f) return;
+
+        aggroed = true;
+
+        if (attacking)
+            StopAttackSoft();
+
+        currentHealth -= damage;
+
+        if (currentHealth <= 0.0f)
+        {
+            currentHealth = 0.0f;
+            Die();
+            return;
+        }
+        attackCooldown = 1.0f / Mathf.Max(0.0001f, stats.hitRate);
+
+
+        Vector3 xz;
+
+        if (hitDirection.HasValue)
+        {
+            Vector3 away = -hitDirection.Value;
+            xz = new Vector3(away.x, 0f, away.z);
+        }
+        else
+        {
+            Vector3 away = transform.position - playerTransform.position;
+            xz = new Vector3(away.x, 0f, away.z);
+        }
+
+        if (xz.sqrMagnitude > 1e-6f)
+        {
+            xz.Normalize();
+            direction = xz;
+            StartLaunch(xz);
+        }
     }
 
     protected override bool CanSeePlayer()
@@ -135,29 +197,32 @@ public class SlimeOpponent : Opponent
 
     protected override void Combat()
     {
+        if (!navMeshAgent.enabled) return;
+        if (!navMeshAgent.isOnNavMesh) return;
+
         navMeshAgent.isStopped = false;
         navMeshAgent.updateRotation = false;
 
+        Vector3 chaseTarget = GetChaseTarget();
+        navMeshAgent.SetDestination(chaseTarget);
+
         float distance = Vector3.Distance(playerTransform.position, transform.position);
 
-        direction = (playerTransform.position - transform.position).normalized;
+        direction = (playerTransform.position - transform.position);
         direction.y = 0.0f;
 
         if (direction.sqrMagnitude > 1e-6f)
-            RotateTowards(direction);
+            RotateTowards(direction.normalized);
 
-        if (!attacking)
-        {
-            navMeshAgent.SetDestination(playerTransform.position);
-
-            if (attackCooldown == 0.0f && distance <= stats.attackRange)
-                StartAttack();
-        }
+        if (attackCooldown <= 0.0001f && distance <= stats.attackRange)
+            StartAttack();
     }
 
     protected override void Idle()
     {
-        navMeshAgent.isStopped = true;
+        if (navMeshAgent.enabled)
+            navMeshAgent.isStopped = true;
+
         RegenerateHealth();
     }
 
@@ -168,6 +233,8 @@ public class SlimeOpponent : Opponent
         playerGotHit = false;
 
         navMeshAgent.isStopped = true;
+        navMeshAgent.updatePosition = false;
+        navMeshAgent.nextPosition = transform.position;
 
         leapStart = transform.position;
         leapTarget = playerTransform.position;
@@ -182,6 +249,22 @@ public class SlimeOpponent : Opponent
         SetAttackTint(true);
     }
 
+    private void StopAttackSoft()
+    {
+        if (hitZone != null)
+            hitZone.gameObject.SetActive(false);
+
+        attacking = false;
+
+        navMeshAgent.updatePosition = true;
+        navMeshAgent.isStopped = false;
+
+        if (navMeshAgent.enabled)
+            navMeshAgent.nextPosition = transform.position;
+
+        SetAttackTint(false);
+    }
+
     private void AttackUpdate()
     {
         attackTimer += Time.deltaTime;
@@ -191,7 +274,9 @@ public class SlimeOpponent : Opponent
         Vector3 pos = Vector3.Lerp(leapStart, leapTarget, t);
         float arc = 4f * t * (1f - t);
         pos.y = leapStart.y + arc * leapHeight;
+
         transform.position = pos;
+        navMeshAgent.nextPosition = pos;
 
         Vector3 flat = (leapTarget - leapStart);
         flat.y = 0f;
@@ -208,13 +293,104 @@ public class SlimeOpponent : Opponent
                 hitZone.gameObject.SetActive(false);
 
             attacking = false;
-            attackCooldown = 1.0f / Mathf.Max(0.0001f, stats.hitRate);
 
-            navMeshAgent.Warp(transform.position);
+            float rate = stats.hitRate;
+            if (rate <= 0.0001f) rate = 1.0f;
+            attackCooldown = 1.0f / rate;
+
+            navMeshAgent.updatePosition = true;
             navMeshAgent.isStopped = false;
+            navMeshAgent.nextPosition = transform.position;
+            navMeshAgent.SetDestination(GetChaseTarget());
 
             SetAttackTint(false);
         }
+    }
+
+    private void StartLaunch(Vector3 dirXZ)
+    {
+        launching = true;
+        launchTimer = 0f;
+        launchDir = dirXZ;
+        launchPrevApplied = Vector3.zero;
+    }
+
+    private void LaunchUpdate()
+    {
+        float dt = Time.deltaTime;
+        launchTimer += dt;
+
+        float dur = Mathf.Max(0.0001f, launchDuration);
+        float t = Mathf.Clamp01(launchTimer / dur);
+        float k = Mathf.SmoothStep(0f, 1f, t);
+
+        Vector3 total = launchDir * (launchDistance * k);
+        Vector3 delta = total - launchPrevApplied;
+        launchPrevApplied = total;
+
+        transform.position += delta;
+
+        if (navMeshAgent != null && navMeshAgent.enabled)
+            navMeshAgent.nextPosition = transform.position;
+
+        if (launchTimer >= launchDuration)
+        {
+            launching = false;
+
+            if (navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
+                navMeshAgent.SetDestination(GetChaseTarget());
+        }
+    }
+
+    protected override void Die()
+    {
+        StopAllCoroutines();
+
+        launching = false;
+        attacking = false;
+
+        if (hitZone != null)
+            hitZone.gameObject.SetActive(false);
+
+        if (navMeshAgent != null && navMeshAgent.enabled)
+        {
+            navMeshAgent.isStopped = true;
+            if (navMeshAgent.isOnNavMesh)
+                navMeshAgent.Warp(transform.position);
+            navMeshAgent.enabled = false;
+        }
+
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.enabled = false;
+
+        SetAttackTint(false);
+
+        StartCoroutine(DieRoutine());
+    }
+
+    private IEnumerator DieRoutine()
+    {
+        if (modelRoot == null) modelRoot = transform;
+
+        Vector3 start = modelRoot.localScale;
+        Vector3 end = new Vector3(
+            start.x * deathXZMultiplier,
+            start.y * deathXZMultiplier,
+            start.z * deathYMultiplier
+        );
+
+        float t = 0f;
+        float dur = Mathf.Max(0.0001f, deathDuration);
+
+        while (t < 1f)
+        {
+            t += Time.deltaTime / dur;
+            float kk = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t));
+            modelRoot.localScale = Vector3.Lerp(start, end, kk);
+            yield return null;
+        }
+
+        Destroy(gameObject);
     }
 
     private void SetAttackTint(bool on)

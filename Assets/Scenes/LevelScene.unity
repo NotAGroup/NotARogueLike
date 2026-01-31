@@ -134,7 +134,7 @@ PrefabInstance:
     - target: {fileID: 149643943944928172, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
       propertyPath: classes.Array.data[2].prefab
       value: 
-      objectReference: {fileID: 5175595025418407880, guid: 70a999182a7918f418e80047599e8fa5, type: 3}
+      objectReference: {fileID: 6847619720094373699, guid: 70a999182a7918f418e80047599e8fa5, type: 3}
     - target: {fileID: 149643943944928172, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
       propertyPath: classes.Array.data[2].className
       value: Slime
@@ -209,7 +209,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 149643943944928172, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
       propertyPath: classes.Array.data[2].stats.definitions.Array.data[0].def.baseValue
-      value: 2
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 149643943944928172, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
       propertyPath: classes.Array.data[2].stats.definitions.Array.data[1].def.baseValue
@@ -229,15 +229,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 149643943944928172, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
       propertyPath: classes.Array.data[2].stats.definitions.Array.data[5].def.baseValue
-      value: 9
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 149643943944928172, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
       propertyPath: classes.Array.data[2].stats.definitions.Array.data[6].def.baseValue
-      value: 30
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 149643943944928172, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
       propertyPath: classes.Array.data[2].stats.definitions.Array.data[7].def.baseValue
-      value: 100
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 149643943944928172, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
       propertyPath: classes.Array.data[2].stats.definitions.Array.data[8].def.baseValue
@@ -265,7 +265,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 149643943944928172, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
       propertyPath: classes.Array.data[2].stats.definitions.Array.data[14].def.baseValue
-      value: 15
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 149643943944928172, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
       propertyPath: classes.Array.data[2].stats.definitions.Array.data[0].def.points.Array.size
