@@ -8,22 +8,22 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Black
-    second: {fileID: 2100000, guid: fcb82e6da8f560a44a6839d763b85a6a, type: 2}
+    second: {fileID: 2100000, guid: 078dd74b904a1ef45bcfa0e97789c277, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Bones
-    second: {fileID: 2100000, guid: 20d98719dabcba648910bdf82053aa97, type: 2}
+    second: {fileID: 2100000, guid: 913b397b62bfc2d48bc3b0061434e3a1, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Dark Leather
-    second: {fileID: 2100000, guid: 9c812e30514044e4eb24b503c98a5be6, type: 2}
+    second: {fileID: 2100000, guid: f0a17ef1328ef8c44a25f2f268ccbf9c, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Iron
-    second: {fileID: 2100000, guid: d3296c10ea0baf84094bebc965bc262f, type: 2}
+    second: {fileID: 2100000, guid: 7e8aa3190a34405438d22bf2ccfb68ec, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
