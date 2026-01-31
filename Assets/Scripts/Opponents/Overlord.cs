@@ -10,6 +10,9 @@ public class Overlord : Opponent
         Three
     }
 
+    private SkinnedMeshRenderer meshRenderer;
+    private Material[] materials;
+
     public FireBreath fireBreath;
     public OpponentHitZone hitZone;
 
@@ -30,6 +33,9 @@ public class Overlord : Opponent
 
         currentPhase = Phase.One;
         fireBreath = GetComponent<FireBreath>();
+        
+        meshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
+        materials = meshRenderer.materials;
 
         if (spawnRoom != null)
         {
@@ -37,6 +43,11 @@ public class Overlord : Opponent
             spawnRoomCenter = new Vector3(roomCenter.x, 0.0f, roomCenter.y);
 
             navPoints = spawnRoom.GetCorners();
+        }
+
+        foreach (Material material in materials)
+        {
+            material.SetFloat("_Blend", 1.0f);
         }
     }
 
