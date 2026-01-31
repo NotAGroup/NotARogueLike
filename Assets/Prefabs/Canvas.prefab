@@ -1119,7 +1119,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c3dcf97d43b5160c8d8d04a31dca19f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventoryUI
-  slotPrefab: {fileID: 7343116501942089031, guid: f84497dd88d73036ba3e58426918a475, type: 3}
   itemNameText: {fileID: 7380680789581233529}
   itemDescriptionText: {fileID: 8944336561309606877}
   itemBuffText: {fileID: 2419347362322737192}

@@ -11,9 +11,6 @@ public class InventoryUI : MonoBehaviour
     private Player player;
     private Inventory inventory;
 
-    [Header("Rendering")]
-    public GameObject slotPrefab;
-
     [Header("Selected Item")]
     public TMP_Text itemNameText;
     public TMP_Text itemDescriptionText;
