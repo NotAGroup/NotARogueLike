@@ -48,7 +48,7 @@ public class DungeonCreator : MonoBehaviour
     [Range(0, 2)]
     public float torchWallOffset;
 
-    public GameObject wallPrefab, pillarPrefab, playerPrefab, chestPrefab, largeChestPrefab, shopPrefab, torchPrefab, trapDoorPrefab, navPointPrefab;
+    public GameObject wallPrefab, pillarPrefab, playerPrefab, chestPrefab, largeChestPrefab, shopPrefab, torchPrefab, trapDoorPrefab, bossDoorPrefab, navPointPrefab;
 
     private Dictionary<Vector3Int, DungeonSegment> horizontalWallOwners;
     private Dictionary<Vector3Int, DungeonSegment> verticalWallOwners;
@@ -61,7 +61,7 @@ public class DungeonCreator : MonoBehaviour
     // current level
     int level;
     DungeonProperties properties;
-
+    bool hasBossRoom;
 
     // temporary inventory for loot placement
     ItemContainer availableLootItems;
@@ -90,6 +90,7 @@ public class DungeonCreator : MonoBehaviour
 
             properties = dungeonPropertyDefinitions.ComputeFrom(level);
             int size = (int)properties[DungeonPropertyKey.Size];
+            hasBossRoom = properties[DungeonPropertyKey.HasBoss] >= 1f;
             Debug.Log("Generating dungeon with parameters: " + properties.ToString());
 
             DestroyAllChildren();
@@ -101,7 +102,9 @@ public class DungeonCreator : MonoBehaviour
                 roomBottomCornerModifier,
                 roomTopCornerMidifier,
                 roomOffset,
-                corridorWidth);
+                corridorWidth,
+                hasBossRoom
+                );
 
             dungeonLevel = new GameObject("DungeonLevel");
             dungeonLevel.transform.parent = transform;
@@ -130,7 +133,7 @@ public class DungeonCreator : MonoBehaviour
                 segment.horizontalWallPositions = new HashSet<Vector3Int>();
                 segment.verticalWallPositions = new HashSet<Vector3Int>();
 
-                CreateMesh(bottomLeftAreaCorner, topRightAreaCorner, segment, type);
+                CreateMesh(bottomLeftAreaCorner, topRightAreaCorner, segment);
                 StoreOnlyOpeningCentres(segment);
 
                 dungeonSegments[i] = segment;
@@ -141,6 +144,7 @@ public class DungeonCreator : MonoBehaviour
             CreateTrapDoor(listOfRooms);
             CreateWalls();
             CreatePillars(listOfRooms);
+            if (hasBossRoom) CreateBossDoor(listOfRooms);
             CreateEnemy(listOfRooms);
             CreateLoot(listOfRooms);
             CreateNavPoints(listOfRooms);
@@ -156,11 +160,14 @@ public class DungeonCreator : MonoBehaviour
 
     private void CreatePlayer(List<Node> listOfRooms)
     {
-        Node room = listOfRooms[UnityEngine.Random.Range(0, listOfRooms.Count)];
-
-        int playerPosX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.TopRightAreaCorner.x - 1);
-        int playerPosY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopRightAreaCorner.y - 1);
-        Vector3 playerPos = new Vector3(playerPosX, 2, playerPosY);
+        Node room = listOfRooms.Find(r => r.Type == "starting_room");
+        float playerPosX = (room.BottomLeftAreaCorner.x + room.TopRightAreaCorner.x) / 2f + UnityEngine.Random.Range(-2f, 2f);
+        float playerPosY = (room.BottomLeftAreaCorner.y + room.TopLeftAreaCorner.y) / 2f + UnityEngine.Random.Range(-2f, 2f);
+        Vector3 playerPos = new Vector3(
+            playerPosX,
+            2,
+            playerPosY
+            );
 
         Player player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         player.transform.SetPositionAndRotation(playerPos, Quaternion.identity);
@@ -293,7 +300,7 @@ public class DungeonCreator : MonoBehaviour
         {
             Node room = listOfRooms[i];
 
-            if (room.Type == "room")
+            if (room.Type == "room" || room.Type == "starting_room" || room.Type == "boss_room")
             {
                 DungeonSegment segment = dungeonSegments[i];
 
@@ -364,29 +371,37 @@ public class DungeonCreator : MonoBehaviour
     // places the trapdoor in the room the furthest away from player
     private void CreateTrapDoor(List<Node> listOfRooms)
     {
-        Transform player = GameObject.FindGameObjectWithTag("Player").transform;
-
-        float maxDist = 0f;
         Node selectedRoom = null;
         GameObject selectedAera = null;
 
-        for (int i = 0; i < listOfRooms.Count(); i++)
+        if (hasBossRoom)
         {
-            Node room = listOfRooms[i];
+            selectedRoom = listOfRooms.Find(r => r.Type == "boss_room");
+            selectedAera = dungeonSegments[listOfRooms.IndexOf(selectedRoom)].area;
+        }
+        else
+        {
+            Transform player = GameObject.FindGameObjectWithTag("Player").transform;
+            float maxDist = 0f;
 
-            if (room.Type != "room") continue;
-
-            Vector3 currentPos = new Vector3(
-                (room.BottomLeftAreaCorner.x + room.BottomRightAreaCorner.x) / 2,
-                0,
-                (room.BottomLeftAreaCorner.y + room.TopLeftAreaCorner.y) / 2);
-            float dist = (player.position - currentPos).magnitude;
-
-            if (dist > maxDist)
+            for (int i = 0; i < listOfRooms.Count(); i++)
             {
-                maxDist = dist;
-                selectedAera = dungeonSegments[i].area;
-                selectedRoom = room;
+                Node room = listOfRooms[i];
+
+                if (room.Type != "room") continue;
+
+                Vector3 currentPos = new Vector3(
+                    (room.BottomLeftAreaCorner.x + room.BottomRightAreaCorner.x) / 2,
+                    0,
+                    (room.BottomLeftAreaCorner.y + room.TopLeftAreaCorner.y) / 2);
+                float dist = (player.position - currentPos).magnitude;
+
+                if (dist > maxDist)
+                {
+                    maxDist = dist;
+                    selectedAera = dungeonSegments[i].area;
+                    selectedRoom = room;
+                }
             }
         }
 
@@ -628,9 +643,26 @@ public class DungeonCreator : MonoBehaviour
             Vector3 topRightCorner = new Vector3(room.TopRightAreaCorner.x, 0, room.TopRightAreaCorner.y);
             CreatePillar(topRightCorner, area);
         }
+        if (hasBossRoom)
+        {
+            Node room = listOfRooms.Find(r => r.Type == "boss_room");
+            GameObject area = dungeonSegments[listOfRooms.IndexOf(room)].area;
+
+            float height = room.TopRightAreaCorner.y - room.BottomLeftAreaCorner.y;
+            float width = room.TopRightAreaCorner.x - room.BottomLeftAreaCorner.x;
+
+            Vector3 pillarOne = new Vector3(room.BottomLeftAreaCorner.x + width / 4, 0, room.BottomLeftAreaCorner.y + height / 4);
+            PlaceTorchesBossRoom(CreatePillar(pillarOne, area), area);
+            Vector3 pillarTwo = new Vector3(room.TopRightAreaCorner.x - width / 4, 0, room.BottomLeftAreaCorner.y + height / 4);
+            PlaceTorchesBossRoom(CreatePillar(pillarTwo, area), area);
+            Vector3 pillarThree = new Vector3(room.BottomLeftAreaCorner.x + width / 4, 0, room.TopRightAreaCorner.y - height / 4);
+            PlaceTorchesBossRoom(CreatePillar(pillarThree, area), area);
+            Vector3 pillarFour = new Vector3(room.TopRightAreaCorner.x - width / 4, 0, room.TopRightAreaCorner.y - height / 4);
+            PlaceTorchesBossRoom(CreatePillar(pillarFour, area), area);
+        }
     }
 
-    private void CreatePillar(Vector3 position, GameObject parent)
+    private GameObject CreatePillar(Vector3 position, GameObject parent)
     {
         if (position != Vector3.zero)
         {
@@ -638,6 +670,10 @@ public class DungeonCreator : MonoBehaviour
 
             GameObject pillar = Instantiate(pillarPrefab, position, rotation, parent.transform);
             pillar.name = pillarPrefab.name;
+            return pillar;
+        } else
+        {
+            return null;
         }
     }
 
@@ -818,6 +854,41 @@ public class DungeonCreator : MonoBehaviour
         }
     }
 
+    private void CreateBossDoor(List<Node> listOfRooms)
+    {
+        Node preBossRoom = listOfRooms.Find(r => r.name == "PreBossRoom");
+        Node bossRoom = listOfRooms.Find(r => r.Type == "boss_room");
+        RelativePosition relativePosition = StructureHelper.CheckPositionStructure2AgainstStructure1(bossRoom, preBossRoom);
+        Node room = listOfRooms.Find(c => c.name == "BossCorridor");
+        DungeonSegment segment = dungeonSegments[listOfRooms.IndexOf(room)];
+
+        Vector3 doorPosition = new Vector3(
+            (room.BottomLeftAreaCorner.x + room.TopRightAreaCorner.x) / 2f,
+            0f,
+            (room.BottomLeftAreaCorner.y + room.TopRightAreaCorner.y) / 2f
+        );
+        Quaternion rotation;
+        if (relativePosition == RelativePosition.Up)
+        {
+            rotation = Quaternion.Euler(0, 0, 0);
+        }
+        else if (relativePosition == RelativePosition.Down)
+        {
+            rotation = Quaternion.Euler(0, 180, 0);
+        }
+        else if (relativePosition == RelativePosition.Right)
+        {
+            rotation = Quaternion.Euler(0, 90, 0);
+        }
+        else
+        {
+            rotation = Quaternion.Euler(0, 270, 0);
+        }
+        GameObject door = Instantiate(bossDoorPrefab, doorPosition, rotation, segment.area.transform);
+        door.name = bossDoorPrefab.name;
+    }
+    
+
     private void CreatePlane(String name, Material material, GameObject parent, Vector3[] vertices)
     {
         GameObject plane = new GameObject(name);
@@ -856,7 +927,7 @@ public class DungeonCreator : MonoBehaviour
         meshCollider.convex = false;
     }
 
-    private void CreateMesh(Vector2 bottomLeftCorner, Vector2 topRightCorner, DungeonSegment segment, String roomType)
+    private void CreateMesh(Vector2 bottomLeftCorner, Vector2 topRightCorner, DungeonSegment segment)
     {
         Vector3 bottomLeftV = new Vector3(bottomLeftCorner.x, 0, bottomLeftCorner.y);
         Vector3 bottomRightV = new Vector3(topRightCorner.x, 0, bottomLeftCorner.y);
@@ -998,6 +1069,26 @@ public class DungeonCreator : MonoBehaviour
             GameObject torch = Instantiate(torchPrefab, position, Quaternion.LookRotation(-normal), parent.transform);
             torch.name = torchPrefab.name;
         }
+    }
+
+    private void PlaceTorchesBossRoom(GameObject Pillar, GameObject parent)
+    {
+        Vector3 position = new Vector3(Pillar.transform.position.x, torchHeight, Pillar.transform.position.z - 1.25f);
+        Quaternion rotation = Quaternion.identity;
+        GameObject torch = Instantiate(torchPrefab, position, rotation, parent.transform);
+        torch.name = torchPrefab.name;
+        position = new Vector3(Pillar.transform.position.x, torchHeight, Pillar.transform.position.z + 1.25f);
+        rotation = Quaternion.Euler(0, 180, 0);
+        GameObject torch2 = Instantiate(torchPrefab, position, rotation, parent.transform);
+        torch2.name = torchPrefab.name;
+        position = new Vector3(Pillar.transform.position.x - 1.25f, torchHeight, Pillar.transform.position.z);
+        rotation = Quaternion.Euler(0, 90, 0);
+        GameObject torch3 = Instantiate(torchPrefab, position, rotation, parent.transform);
+        torch3.name = torchPrefab.name;
+        position = new Vector3(Pillar.transform.position.x + 1.25f, torchHeight, Pillar.transform.position.z);
+        rotation = Quaternion.Euler(0, 270, 0);
+        GameObject torch4 = Instantiate(torchPrefab, position, rotation, parent.transform);
+        torch4.name = torchPrefab.name;
     }
 
     void StoreOnlyOpeningCentres(DungeonSegment segment)

@@ -68,6 +68,35 @@ public static class StructureHelper
         Vector2 tempVector = sum / 2;
         return new Vector2Int((int)tempVector.x, (int)tempVector.y);
     }
+
+    public static RelativePosition CheckPositionStructure2AgainstStructure1(Node structure1, Node structure2)
+    {
+        Vector2 middlePointStructure1Temp = ((Vector2)structure1.TopRightAreaCorner + structure1.BottomLeftAreaCorner) / 2;
+        Vector2 middlePointStructure2Temp = ((Vector2)structure2.TopRightAreaCorner + structure2.BottomLeftAreaCorner) / 2;
+        float angle = CalculateAngle(middlePointStructure1Temp, middlePointStructure2Temp);
+        if ((angle < 45 && angle >= 0) || (angle > -45 && angle < 0))
+        {
+            return RelativePosition.Right;
+        }
+        else if(angle > 45 && angle < 135)
+        {
+            return RelativePosition.Up;
+        }
+        else if(angle > -135 && angle < -45)
+        {
+            return RelativePosition.Down;
+        }
+        else
+        {
+            return RelativePosition.Left;
+        }
+    }
+
+    private static float CalculateAngle(Vector2 middlePointStructure1Temp, Vector2 middlePointStructure2Temp)
+    {
+        return Mathf.Atan2(middlePointStructure2Temp.y - middlePointStructure1Temp.y,
+            middlePointStructure2Temp.x - middlePointStructure1Temp.x)*Mathf.Rad2Deg;
+    }
 }
 
 public enum RelativePosition

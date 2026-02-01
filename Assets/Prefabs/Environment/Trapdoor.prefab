@@ -83,7 +83,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85ff9ab4d503377c38d705f5d95936db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FloorClearing
-  trapDoor: {fileID: 1259973537569220611}
+  refObject: {fileID: 1259973537569220611}
+  isBossDoor: 0
 --- !u!114 &3051982175118773285
 MonoBehaviour:
   m_ObjectHideFlags: 0
