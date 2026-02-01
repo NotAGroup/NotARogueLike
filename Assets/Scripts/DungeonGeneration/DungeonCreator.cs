@@ -300,7 +300,7 @@ public class DungeonCreator : MonoBehaviour
         {
             Node room = listOfRooms[i];
 
-            if (room.Type == "room")
+            if (room.Type == "room" || room.Type == "starting_room" || room.Type == "boss_room")
             {
                 DungeonSegment segment = dungeonSegments[i];
 
