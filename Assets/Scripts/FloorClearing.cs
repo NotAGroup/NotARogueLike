@@ -7,7 +7,8 @@ public class FloorClearing : MonoBehaviour
     private GameObject cachedOpponent;
 
     // gameobject to activate when the level is cleared
-    public GameObject trapDoor;
+    public GameObject refObject;
+    public bool isBossDoor = false;
 
 
     public bool CheckClearingCondition() {
@@ -20,7 +21,13 @@ public class FloorClearing : MonoBehaviour
     void Update()
     {
         if (CheckClearingCondition()) {
-            trapDoor.GetComponent<TrapDoor>().Enable();
+            if (!isBossDoor) {
+                refObject.GetComponent<TrapDoor>().Enable();
+            }
+            else
+            { 
+                refObject.GetComponent<BossDoor>().Enable(); 
+            }
         }
     }
 }
