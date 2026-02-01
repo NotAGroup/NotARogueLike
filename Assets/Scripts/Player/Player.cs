@@ -525,7 +525,7 @@ public class Player : MonoBehaviour
             return;
         }
 
-        items.ConsumeItem(bowAmmoSlot);
+        inventory.ConsumeItem(bowAmmoSlot);
 
         Vector3 position = cameraTransform.position + cameraTransform.forward * 1.0f;
         Quaternion rotation = cameraTransform.rotation;
@@ -592,7 +592,7 @@ public class Player : MonoBehaviour
                 break;
         }
 
-        inv.ConsumeItem(itemID);
+        inventory.ConsumeItem(itemID);
     }
 
     public void TakeDamage(float damage)

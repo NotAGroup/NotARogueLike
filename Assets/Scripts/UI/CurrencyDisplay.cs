@@ -21,7 +21,11 @@ public class CurrencyDisplay : MonoBehaviour
         grid.Commit();
     }
 
-    void UpdateSlots() {
+    public void UpdateSlots() {
+        // check if slot count has changed
+        if (slots == null || playerInventory.numCurrencySlots != slots.Length)
+            InitializeSlots();
+
         for (int i = 0; i < slots.Length; i++) {
             GameObject slot = slots[i];
             ItemHotbarSlot s = slot.GetComponent<ItemHotbarSlot>();
@@ -34,15 +38,5 @@ public class CurrencyDisplay : MonoBehaviour
         player = GameObject.Find("Player");
         playerInventory = player.GetComponent<Inventory>();
         currencyDefinitions = GameObject.Find("Definitions").GetComponent<CurrencyDefinitions>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        // check if slot count has changed
-        if (slots == null || playerInventory.numCurrencySlots != slots.Length)
-            InitializeSlots();
-
-        UpdateSlots();
     }
 }

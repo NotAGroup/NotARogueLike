@@ -30,8 +30,11 @@ public class ItemHotbar : MonoBehaviour
         grid.Commit();
     }
 
-    void UpdateSlots() {
-        if (slots == null) return;
+    public void UpdateSlots() {
+        // check if slot count has changed
+        int numSlots = Math.Min(player.numHotbarSlots, playerInventory.numItemSlots);
+        if (slots == null || numSlots != slots.Length)
+            InitializeSlots();
 
         for (int i = 0; i < slots.Length; i++) {
             GameObject slot = slots[i];
@@ -39,16 +42,5 @@ public class ItemHotbar : MonoBehaviour
             s.SetItem(playerInventory.items[i].storedItem, playerInventory.items[i].count);
             s.SetSelected(false);
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        // check if slot count has changed
-        int numSlots = Math.Min(player.numHotbarSlots, playerInventory.numItemSlots);
-        if (slots == null || numSlots != slots.Length)
-            InitializeSlots();
-
-        UpdateSlots();
     }
 }
