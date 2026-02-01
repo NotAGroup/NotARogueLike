@@ -1,10 +1,12 @@
-
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Overlord : Opponent
 {
     public enum Phase
     {
+        None,
         One,
         Two,
         Three
@@ -13,6 +15,9 @@ public class Overlord : Opponent
     private SkinnedMeshRenderer meshRenderer;
     private Material[] materials;
 
+    private List<NavPoint> aimPoints;
+    private int aimPointIndex = 0;
+
     public FireBreath fireBreath;
     public OpponentHitZone hitZone;
 
@@ -20,6 +25,7 @@ public class Overlord : Opponent
     public Transform[] summonPoints;
 
     private Phase currentPhase;
+    private Vector3 idlePosition;
     private bool initialized = false;
 
     private float jumpCooldown = 0.0f;
@@ -31,9 +37,11 @@ public class Overlord : Opponent
     {
         base.Start();
 
-        currentPhase = Phase.One;
-        fireBreath = GetComponent<FireBreath>();
-        
+        currentPhase = Phase.None;
+
+        fireBreath = GetComponentInChildren<FireBreath>();
+        fireBreath.gameObject.SetActive(false);
+
         meshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
         materials = meshRenderer.materials;
 
@@ -42,13 +50,12 @@ public class Overlord : Opponent
             Vector2Int roomCenter = (spawnRoom.BottomLeftAreaCorner + spawnRoom.TopRightAreaCorner) / 2;
             spawnRoomCenter = new Vector3(roomCenter.x, 0.0f, roomCenter.y);
 
+            aimPoints = spawnRoom.GetCorridorOpenings();
             navPoints = spawnRoom.GetCorners();
         }
 
-        foreach (Material material in materials)
-        {
-            material.SetFloat("_Blend", 1.0f);
-        }
+        SetBlending(1.0f);
+        TryGetIdlePosition(1.0f);
     }
 
     protected override System.Collections.IEnumerator AttackRoutine()
@@ -64,7 +71,8 @@ public class Overlord : Opponent
     protected override bool CanSeePlayer()
     {
         Vector3 direction = playerTransform.position - transform.position;
-        return Vector3.Angle(transform.forward, direction.normalized) < viewAngle;
+        //return Vector3.Angle(transform.forward, direction.normalized) < viewAngle;
+        return false;
     }
 
     protected override void Combat()
@@ -89,12 +97,38 @@ public class Overlord : Opponent
 
     protected override void Idle()
     {
-        throw new System.NotImplementedException();
+        if (CanSeePlayer() && !player.isDead)
+        {
+            memoryTimer = stats.memoryDuration;
+            state = OpponentState.Combat;
+
+            return;
+        }
+
+        navMeshAgent.isStopped = false;
+        navMeshAgent.updateRotation = true;
+
+        Vector3 position = transform.position;
+        position.y = 0.0f;
+
+        // Move back to the center of the spawn room
+        if (Vector3.Distance(position, idlePosition) > 1.0f)
+        {
+            navMeshAgent.SetDestination(idlePosition);
+            return;
+        }
+
+        navMeshAgent.isStopped = true;
+
+        direction = (aimPoints[0].transform.position - transform.position).normalized;
+        direction.y = 0.0f;
+
+        RotateTowards(direction);
     }
 
     private void InitializePhase()
     {
-        animator.SetTrigger("Roar");
+        //animator.SetTrigger("Roar");
 
         switch (currentPhase)
         {
@@ -110,6 +144,40 @@ public class Overlord : Opponent
                 //SpawnMeleeSkeletons(3);
                 //SpawnRangedSkeletons(3);
                 break;
+        }
+    }
+
+    private void SetBlending(float value)
+    {
+        float blend = Mathf.Clamp01(value);
+
+        foreach (Material material in materials)
+        {
+            material.SetFloat("_Blend", 1.0f);
+        }
+    }
+
+    private void TryGetIdlePosition(float maxDistance)
+    {
+        idlePosition = transform.position;
+
+        if (spawnRoom != null)
+        {
+            Vector2Int bottomLeftAreaCorner = spawnRoom.BottomLeftAreaCorner;
+            Vector2Int topRightAreaCorner = spawnRoom.TopRightAreaCorner;
+
+            float length = bottomLeftAreaCorner.x - topRightAreaCorner.x;
+            float width = bottomLeftAreaCorner.y - topRightAreaCorner.y;
+
+            float offset = Mathf.Min(width, length) * 0.25f;
+            Vector3 direction = (aimPoints[0].transform.position - spawnRoomCenter).normalized;
+
+            Vector3 position = spawnRoomCenter + direction * offset;
+            
+            if (NavMesh.SamplePosition(position, out NavMeshHit hit, maxDistance, NavMesh.AllAreas))
+            {
+                idlePosition = hit.position;
+            }
         }
     }
 

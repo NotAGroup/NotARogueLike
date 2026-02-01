@@ -50,6 +50,7 @@ public abstract class Opponent : MonoBehaviour
 
     protected virtual void Start()
     {
+        state = OpponentState.Idle;
         stats = GetComponent<OpponentStats>();
 
         navMeshAgent = GetComponent<NavMeshAgent>();

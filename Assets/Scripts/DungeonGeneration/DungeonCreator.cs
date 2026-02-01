@@ -60,6 +60,7 @@ public class DungeonCreator : MonoBehaviour
 
     // current level
     int level;
+    int opponents;
     DungeonProperties properties;
     bool hasBossRoom;
 
@@ -118,13 +119,25 @@ public class DungeonCreator : MonoBehaviour
             {
                 Vector2Int bottomLeftAreaCorner = listOfRooms[i].BottomLeftAreaCorner;
                 Vector2Int topRightAreaCorner = listOfRooms[i].TopRightAreaCorner;
-                String type = listOfRooms[i].Type;
+                string type = listOfRooms[i].Type;
 
                 Vector2Int areaCenter = (bottomLeftAreaCorner + topRightAreaCorner) / 2;
 
                 DungeonSegment segment = new DungeonSegment();
+                string segmentName;
 
-                segment.area = new GameObject(char.ToUpper(type[0]) + type.Substring(1) + " " + areaCenter);
+                if (type.Contains('_'))
+                {
+                    string[] name = type.Split('_');
+                    segmentName = char.ToUpper(name[0][0]) + name[0].Substring(1) + " " +
+                        char.ToUpper(name[1][0]) + name[1].Substring(1) + " " + areaCenter;
+                }
+                else
+                {
+                    segmentName = char.ToUpper(type[0]) + type.Substring(1) + " " + areaCenter;
+                }
+
+                segment.area = new GameObject(segmentName);
                 segment.area.transform.parent = dungeonLevel.transform;
                 segment.area.transform.position = new Vector3(areaCenter.x, 0, areaCenter.y);
 
@@ -144,9 +157,15 @@ public class DungeonCreator : MonoBehaviour
             CreateTrapDoor(listOfRooms);
             CreateWalls();
             CreatePillars(listOfRooms);
-            if (hasBossRoom) CreateBossDoor(listOfRooms);
             CreateNavPoints(listOfRooms);
             CreateEnemy(listOfRooms);
+
+            if (hasBossRoom)
+            {
+                CreateBoss(listOfRooms);
+                CreateBossDoor(listOfRooms);
+            }
+
             CreateLoot(listOfRooms);
             CreateShop(listOfRooms);
 
@@ -261,8 +280,14 @@ public class DungeonCreator : MonoBehaviour
     {
         // expectation values
 	    float encounters = properties[DungeonPropertyKey.EncounterCount] * properties[DungeonPropertyKey.Size] * properties[DungeonPropertyKey.Size];
-        int opponents = enemyAmount * (int)(properties[DungeonPropertyKey.EnemyCount] * properties[DungeonPropertyKey.EncounterCount] * properties[DungeonPropertyKey.Size] * properties[DungeonPropertyKey.Size]);
         float enemiesPerEncounter = properties[DungeonPropertyKey.EnemyCount];
+        opponents = enemyAmount * (int)(properties[DungeonPropertyKey.EnemyCount] * properties[DungeonPropertyKey.EncounterCount] *
+            properties[DungeonPropertyKey.Size] * properties[DungeonPropertyKey.Size]); 
+
+        if (hasBossRoom)
+        {
+            opponents++;
+        }
 
         enemiesPerEncounter = Math.Clamp(enemiesPerEncounter, 1f, 3f);
         encounters = Math.Clamp(encounters, 2f, 10f);
@@ -862,6 +887,60 @@ public class DungeonCreator : MonoBehaviour
         }
     }
 
+    private void CreateBoss(List<Node> listOfRooms)
+    {
+        Node room = listOfRooms.Find(r => r.Type == "boss_room");
+        DungeonSegment segment = dungeonSegments[listOfRooms.IndexOf(room)];
+
+        OpponentClassDefinition opponentClass = opponentDefinitions["Overlord"];
+
+        if (opponentClass == null)
+        {
+            return;
+        }
+
+        if (opponentClass.bossEnemy)
+        {
+            int bossPosX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.BottomRightAreaCorner.x - 1);
+            int bossPosY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopLeftAreaCorner.y - 1);
+            Vector3 bossPos = new Vector3(bossPosX, 1, bossPosY);
+
+            GameObject boss = Instantiate(opponentClass.prefab, bossPos, Quaternion.identity, segment.area.transform);
+            boss.name = opponentClass.prefab.name;
+
+            // assign spawn room
+            if (boss.TryGetComponent<Opponent>(out Opponent opponent))
+            {
+                opponent.spawnRoom = room;
+            }
+
+            // assign level
+            if (boss.TryGetComponent<OpponentStats>(out OpponentStats stats))
+            {
+                int level = (int)(properties[DungeonPropertyKey.EnemyLevel]);
+                stats.ComputeFrom(opponentClass, level);
+            }
+
+            // add loot
+            if (boss.TryGetComponent<Rewards>(out Rewards enemyRewards))
+            {
+                int type = UnityEngine.Random.Range(0, 3);
+                switch (type)
+                {
+                    case 0:
+                        enemyRewards.SetSingleItem(RandomItemFrom(availableLootItems));
+                        break;
+                    case 1:
+                        enemyRewards.xp = XpFrom(availableLootCurrencies, (int)(properties[DungeonPropertyKey.AvailableXP] / opponents));
+                        break;
+                    case 2:
+                        enemyRewards.gold = GoldFrom(availableLootCurrencies, (int)(properties[DungeonPropertyKey.AvailableGold] / opponents));
+                        break;
+                }
+            }
+        }
+    }
+
     private void CreateBossDoor(List<Node> listOfRooms)
     {
         Node preBossRoom = listOfRooms.Find(r => r.name == "PreBossRoom");
@@ -1026,9 +1105,10 @@ public class DungeonCreator : MonoBehaviour
     private void PlaceTorches(Vector3 start, Vector3 end, GameObject parent)
     {
         float lenght = Vector3.Distance(start, end);
+        float spacing = parent.name.Contains("Boss Room") ? torchSpacing * 0.5f : torchSpacing;
         float visibleLength = lenght - 2.0f * pillarThickness;
 
-        float edgePadding = torchSpacing * 0.5f;
+        float edgePadding = spacing * 0.5f;
 
         if (visibleLength < edgePadding)
         {
@@ -1050,7 +1130,7 @@ public class DungeonCreator : MonoBehaviour
             normal = -normal;
         }
 
-        int torchCount = usableLength < 0 ? 1 : Mathf.FloorToInt(visibleLength / torchSpacing) + 1;
+        int torchCount = usableLength < 0 ? 1 : Mathf.FloorToInt(visibleLength / spacing) + 1;
 
         if (torchCount == 1)
         {
@@ -1064,12 +1144,12 @@ public class DungeonCreator : MonoBehaviour
             return;
         }
 
-        float placementLength = (torchCount - 1) * torchSpacing;
+        float placementLength = (torchCount - 1) * spacing;
         float startOffset = pillarThickness + edgePadding + (usableLength - placementLength) * 0.5f;
 
         for (int i = 0; i < torchCount; i++)
         {
-            float offset = startOffset + i * torchSpacing;
+            float offset = startOffset + i * spacing;
 
             Vector3 position = start + direction * offset;
             position += normal * torchWallOffset;

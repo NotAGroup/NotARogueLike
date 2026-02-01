@@ -81,6 +81,7 @@ GameObject:
   - component: {fileID: 2069591081605510192}
   - component: {fileID: 801800927801335867}
   - component: {fileID: 7685539837612636914}
+  - component: {fileID: 7694551200114560616}
   m_Layer: 0
   m_Name: Overlord
   m_TagString: Opponent
@@ -243,8 +244,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AttachedObjects
   maximumAttachedObjects: 10
-  mesh: {fileID: 0}
+  mesh: {fileID: 674676719527859555}
   boneSnappingFactor: 0.7
+--- !u!114 &7694551200114560616
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8282398908945130151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cce98fa56ffba7b5fac31e256dc81795, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Rewards
+  droppedItemPrefab: {fileID: 6834112976765427387, guid: 5c8515f40aecf6259b9c3cdb74d0a499, type: 3}
+  gold: 0
+  xp: 0
 --- !u!1001 &4495503337863322903
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -422,6 +438,11 @@ PrefabInstance:
       addedObject: {fileID: 6309237106261682274}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d3704e965acd437468e12036af393c65, type: 3}
+--- !u!137 &674676719527859555 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -4085550019967420182, guid: d3704e965acd437468e12036af393c65, type: 3}
+  m_PrefabInstance: {fileID: 5625518211038408073}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3033518343726327874 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7208261743932278219, guid: d3704e965acd437468e12036af393c65, type: 3}
