@@ -21,16 +21,21 @@ public class MeleeSkeleton : Opponent
 
     protected override void Combat()
     {
-        if (!CanSeePlayer() && navMeshAgent.remainingDistance <= 1f)
+        if (!CanSeePlayer())
         {
-            memoryTimer -= Time.deltaTime;
-
-            if (memoryTimer <= 0f)
+            if (navMeshAgent.remainingDistance <= 1f)
             {
-                memoryTimer = 0.0f;
-                state = OpponentState.Idle;
-                return;
+                memoryTimer -= Time.deltaTime;
+
+                if (memoryTimer <= 0f)
+                {
+                    memoryTimer = 0.0f;
+                    state = OpponentState.Idle;
+                    return;
+                }
             }
+
+            return;
         }
         else
         {
