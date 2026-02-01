@@ -225,7 +225,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Overlord
   playerGotHit: 0
-  viewAngle: 60
+  viewAngle: 120
   fireBreath: {fileID: 9002241943986355196}
   hitZone: {fileID: 2615748330894058864}
   meleeSkeletonPrefab: {fileID: 8282398908945130151, guid: 2466d15c19041db4fba290b6fc587695, type: 3}

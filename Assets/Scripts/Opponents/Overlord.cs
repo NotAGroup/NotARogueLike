@@ -25,8 +25,14 @@ public class Overlord : Opponent
     public Transform[] summonPoints;
 
     private Phase currentPhase;
+    private Vector2Int bottomLeftAreaCorner, topRightAreaCorner;
     private Vector3 idlePosition;
     private bool initialized = false;
+
+    private bool risen = false;
+    private float riseDistance;
+    private float riseDuration = 1.5f;
+    private float riseTimer = 0.0f;
 
     private float jumpCooldown = 0.0f;
     private float jumpDistance = 10.0f;
@@ -47,7 +53,10 @@ public class Overlord : Opponent
 
         if (spawnRoom != null)
         {
-            Vector2Int roomCenter = (spawnRoom.BottomLeftAreaCorner + spawnRoom.TopRightAreaCorner) / 2;
+            bottomLeftAreaCorner = spawnRoom.BottomLeftAreaCorner;
+            topRightAreaCorner = spawnRoom.TopRightAreaCorner;
+
+            Vector2Int roomCenter = (bottomLeftAreaCorner + topRightAreaCorner) / 2;
             spawnRoomCenter = new Vector3(roomCenter.x, 0.0f, roomCenter.y);
 
             aimPoints = spawnRoom.GetCorridorOpenings();
@@ -70,13 +79,37 @@ public class Overlord : Opponent
 
     protected override bool CanSeePlayer()
     {
-        Vector3 direction = playerTransform.position - transform.position;
-        //return Vector3.Angle(transform.forward, direction.normalized) < viewAngle;
+        Vector3 playerPos = playerTransform.position;
+
+        if (playerPos.x > bottomLeftAreaCorner.x && playerPos.x < topRightAreaCorner.x &&
+            playerPos.z > bottomLeftAreaCorner.y && playerPos.z < topRightAreaCorner.y)
+        {
+            Vector3 direction = playerTransform.position - transform.position;
+            return Vector3.Angle(transform.forward, direction.normalized) < viewAngle;
+        }
+
         return false;
     }
 
     protected override void Combat()
     {
+        if(!CanSeePlayer())
+        {
+            memoryTimer -= Time.deltaTime;
+
+            if (memoryTimer <= 0f)
+            {
+                memoryTimer = 0.0f;
+                currentPhase = Phase.None;
+                state = OpponentState.Idle;
+                return;
+            }
+        }
+        else
+        {
+            memoryTimer = stats.memoryDuration;
+        }
+
         UpdatePhase();
 
         if (!initialized)
@@ -87,7 +120,7 @@ public class Overlord : Opponent
 
         navMeshAgent.SetDestination(playerTransform.position);
 
-        float distance = Vector3.Distance(transform.position, playerTransform.position);
+        float distance = Vector3.Distance(playerTransform.position, transform.position);
 
         if (attackCooldown == 0f && distance <= stats.attackRange)
         {
@@ -99,8 +132,18 @@ public class Overlord : Opponent
     {
         if (CanSeePlayer() && !player.isDead)
         {
-            memoryTimer = stats.memoryDuration;
-            state = OpponentState.Combat;
+            float distance = Vector3.Distance(playerTransform.position, transform.position);
+
+            if (distance <= riseDistance)
+            {
+                Rise();
+            }
+
+            if (risen)
+            {
+                memoryTimer = stats.memoryDuration;
+                state = OpponentState.Combat;
+            }
 
             return;
         }
@@ -124,6 +167,31 @@ public class Overlord : Opponent
         direction.y = 0.0f;
 
         RotateTowards(direction);
+    }
+
+    public override void TakeDamage(float damage, Vector3? direction = null)
+    {
+        if (risen)
+        {
+            // Ensure that overlord only takes damage after being resurrected
+            base.TakeDamage(damage, direction);
+        }
+    }
+
+    private void Rise()
+    {
+        if (!risen)
+        {
+            riseTimer += Time.deltaTime;
+
+            float blend = riseTimer / riseDuration;
+            SetBlending(Mathf.Lerp(1.0f, 0.0f, blend));
+
+            if (blend >= 1.0f)
+            {
+                risen = true;
+            }
+        }
     }
 
     private void InitializePhase()
@@ -153,7 +221,7 @@ public class Overlord : Opponent
 
         foreach (Material material in materials)
         {
-            material.SetFloat("_Blend", 1.0f);
+            material.SetFloat("_Blend", blend);
         }
     }
 
@@ -163,16 +231,16 @@ public class Overlord : Opponent
 
         if (spawnRoom != null)
         {
-            Vector2Int bottomLeftAreaCorner = spawnRoom.BottomLeftAreaCorner;
-            Vector2Int topRightAreaCorner = spawnRoom.TopRightAreaCorner;
+            float length = Mathf.Abs(bottomLeftAreaCorner.x - topRightAreaCorner.x);
+            float width = Mathf.Abs(bottomLeftAreaCorner.y - topRightAreaCorner.y);
 
-            float length = bottomLeftAreaCorner.x - topRightAreaCorner.x;
-            float width = bottomLeftAreaCorner.y - topRightAreaCorner.y;
+            float smallerDistance = Mathf.Min(width, length);
+            float offset = smallerDistance * 0.25f;
 
-            float offset = Mathf.Min(width, length) * 0.25f;
+            riseDistance =  smallerDistance * 0.375f;
+
             Vector3 direction = (aimPoints[0].transform.position - spawnRoomCenter).normalized;
-
-            Vector3 position = spawnRoomCenter + direction * offset;
+            Vector3 position = spawnRoomCenter - direction * offset;
             
             if (NavMesh.SamplePosition(position, out NavMeshHit hit, maxDistance, NavMesh.AllAreas))
             {
