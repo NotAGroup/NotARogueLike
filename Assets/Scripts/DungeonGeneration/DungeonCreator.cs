@@ -101,7 +101,9 @@ public class DungeonCreator : MonoBehaviour
                 roomBottomCornerModifier,
                 roomTopCornerMidifier,
                 roomOffset,
-                corridorWidth);
+                corridorWidth,
+                properties[DungeonPropertyKey.HasBoss] > 1.0f
+                );
 
             dungeonLevel = new GameObject("DungeonLevel");
             dungeonLevel.transform.parent = transform;
@@ -130,7 +132,7 @@ public class DungeonCreator : MonoBehaviour
                 segment.horizontalWallPositions = new HashSet<Vector3Int>();
                 segment.verticalWallPositions = new HashSet<Vector3Int>();
 
-                CreateMesh(bottomLeftAreaCorner, topRightAreaCorner, segment, type);
+                CreateMesh(bottomLeftAreaCorner, topRightAreaCorner, segment);
                 StoreOnlyOpeningCentres(segment);
 
                 dungeonSegments[i] = segment;
@@ -156,11 +158,14 @@ public class DungeonCreator : MonoBehaviour
 
     private void CreatePlayer(List<Node> listOfRooms)
     {
-        Node room = listOfRooms[UnityEngine.Random.Range(0, listOfRooms.Count)];
-
-        int playerPosX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.TopRightAreaCorner.x - 1);
-        int playerPosY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopRightAreaCorner.y - 1);
-        Vector3 playerPos = new Vector3(playerPosX, 2, playerPosY);
+        Node room = listOfRooms.Find(r => r.Type == "starting_room");
+        float playerPosX = (room.BottomLeftAreaCorner.x + room.TopRightAreaCorner.x) / 2f + UnityEngine.Random.Range(-2f, 2f);
+        float playerPosY = (room.BottomLeftAreaCorner.y + room.TopLeftAreaCorner.y) / 2f + UnityEngine.Random.Range(-2f, 2f);
+        Vector3 playerPos = new Vector3(
+            playerPosX,
+            2,
+            playerPosY
+            );
 
         Player player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         player.transform.SetPositionAndRotation(playerPos, Quaternion.identity);
@@ -856,7 +861,7 @@ public class DungeonCreator : MonoBehaviour
         meshCollider.convex = false;
     }
 
-    private void CreateMesh(Vector2 bottomLeftCorner, Vector2 topRightCorner, DungeonSegment segment, String roomType)
+    private void CreateMesh(Vector2 bottomLeftCorner, Vector2 topRightCorner, DungeonSegment segment)
     {
         Vector3 bottomLeftV = new Vector3(bottomLeftCorner.x, 0, bottomLeftCorner.y);
         Vector3 bottomRightV = new Vector3(topRightCorner.x, 0, bottomLeftCorner.y);
