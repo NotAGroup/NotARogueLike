@@ -8,13 +8,15 @@ public class FlickeringEffect : MonoBehaviour
     [Header("Parameters")]
     [Range(0f,1f)]
     public float flickerMin = 0.5f;
-    [Range(1f,3f)]
-    public float flickerMax = 1.5f;
-    public float flickerReturnRate = 5f;
+    [Range(0f,1f)]
+    public float flickerMax = 0.5f;
+    [Header("Mass-Spring-Damper-like return of intensity")]
+    public float flickerMass = 0.05f;
+    public float flickerDampening = 0.4f;
 
     [Header("flicker events")]
     [Tooltip("expected number of flicker events per second")]
-    public float lambda = 0.1f;
+    public float lambda = 0.5f;
 
     // intensities to apply the dynamic multiplier to
     private float[] baseIntensity;
@@ -22,8 +24,10 @@ public class FlickeringEffect : MonoBehaviour
     // internal state
     private float time = 0f;
     private float factor = 1f;
+    private float dfactor = 1f;
+    private float ddfactor = 1f;
 
-    void Start()
+    void OnEnable()
     {
         // store base intensities
         baseIntensity = new float[targets.Length];
@@ -31,28 +35,41 @@ public class FlickeringEffect : MonoBehaviour
         {
             baseIntensity[i] = targets[i].intensity;
         }
-        factor = 1f;
+        factor = 0f;
+        dfactor = 0f;
     }
 
-    void Update()
+    void OnDisable()
+    {
+        for (int i = 0; i < targets.Length; i++)
+        {
+            targets[i].intensity = baseIntensity[i];
+        }
+    }
+
+    void FixedUpdate()
+    {
+        Simulate(Time.fixedDeltaTime);
+    }
+
+    void Simulate(float delta)
     {
         // apply current intensities
         for (int i = 0; i < targets.Length && i < baseIntensity.Length; i++)
         {
-            targets[i].intensity = baseIntensity[i] * factor;
+            targets[i].intensity = baseIntensity[i] * (1f + factor);
         }
 
-        // return factor towards 1
-        float interpolationRate = flickerReturnRate * Time.deltaTime;
-        factor = factor * (1 - interpolationRate) + interpolationRate;
+        // simulate spring-mass-damper
+        ddfactor = (-factor - flickerDampening * dfactor) / flickerMass;
+        dfactor += ddfactor * delta;
+        factor  += dfactor;
 
         if (time <= 0f) {
             // flicker event occured, compute waiting time until next one
             time = Distributions.Exponential.Sample(lambda);
 
             // set new intensity factor by sampling something 
-            // in expectation, sets factor to either 1 + (flickerMax - 1) / 2
-            //                          or to either 1 - (1 - flickerMin) / 2
             float value = Distributions.Bates.Sample(0f,1f, 3);
             if (UnityEngine.Random.Range(0f, 1f) > 0.7)
             {
@@ -60,10 +77,10 @@ public class FlickeringEffect : MonoBehaviour
             } 
             else
             {
-                factor = 1f - (1f - flickerMin) * value;
+                factor = flickerMin * value;
             }
         }
 
-        time -= Time.deltaTime;
+        time -= delta;
     }
 }
