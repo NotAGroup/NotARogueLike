@@ -145,9 +145,9 @@ public class DungeonCreator : MonoBehaviour
             CreateWalls();
             CreatePillars(listOfRooms);
             if (hasBossRoom) CreateBossDoor(listOfRooms);
+            CreateNavPoints(listOfRooms);
             CreateEnemy(listOfRooms);
             CreateLoot(listOfRooms);
-            CreateNavPoints(listOfRooms);
             CreateShop(listOfRooms);
 
             navMeshSurface.BuildNavMesh();
@@ -194,7 +194,9 @@ public class DungeonCreator : MonoBehaviour
     private void CreateEncounter(List<Node> listOfRooms, int index, int enemyCount, int totalEnemyCount) 
     {
 	    Node room = listOfRooms[index];
+        int cornerCount = room.GetCorners().Count;
 
+        int meleeEnemies = 0;
         int rangedEnemies = 0;
 
 	    for (int i = 0; i < enemyCount; ) {
@@ -208,14 +210,20 @@ public class DungeonCreator : MonoBehaviour
                     continue;
             }
 
-    
             int enemyPosX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.BottomRightAreaCorner.x - 1);
             int enemyPosY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopLeftAreaCorner.y - 1);
             Vector3 enemyPos = new Vector3(enemyPosX, 1, enemyPosY);
     
             GameObject foe = Instantiate(opponentDefinitions.classes[opponentClass].prefab, enemyPos, Quaternion.identity, dungeonSegments[index].area.transform);
             foe.name = opponentDefinitions.classes[opponentClass].prefab.name;
-    
+
+            // ensures that not all skeletons want to go to the same NavPoint
+            if (opponentDefinitions.classes[opponentClass].className == "Melee Skeleton")
+            {
+                foe.GetComponent<MeleeSkeleton>().SetNavPointID(meleeEnemies);
+                meleeEnemies = (meleeEnemies + 1) % cornerCount;
+            }
+
             // assign spawn room
             if (foe.TryGetComponent<Opponent>(out Opponent opponent))
             {
@@ -886,6 +894,7 @@ public class DungeonCreator : MonoBehaviour
         }
         GameObject door = Instantiate(bossDoorPrefab, doorPosition, rotation, segment.area.transform);
         door.name = bossDoorPrefab.name;
+        door.SetActive(false);
     }
     
 

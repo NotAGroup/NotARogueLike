@@ -37,7 +37,7 @@ public abstract class Opponent : MonoBehaviour
 
     public Node spawnRoom;
     protected Vector3 spawnRoomCenter;
-    protected int nextNavPointID = 0;
+    protected int navPointID = 0;
     protected List<NavPoint> navPoints;
 
     protected OptionalVector3 damageDirection;
