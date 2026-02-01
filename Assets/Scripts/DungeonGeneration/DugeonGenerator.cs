@@ -60,42 +60,42 @@ public class DugeonGenerator
                 preBossRoom = roomList[i];
             }
         }
-
-        preBossRoom.Type = "pre_boss_room";
+        preBossRoom.name = "PreBossRoom";
         RelativePosition relativePosition = StructureHelper.CheckPositionStructure2AgainstStructure1(start_room, preBossRoom);
         RoomNode bossRoom = null;
         Vector2Int bossRoomOpening;
         if (relativePosition == RelativePosition.Up)
         {
             bossRoomOpening = StructureHelper.CalculateMiddlePoint(preBossRoom.TopLeftAreaCorner, preBossRoom.TopRightAreaCorner);
-            Vector2Int BossRoomBottomLeft = new Vector2Int(bossRoomOpening.x - 28, bossRoomOpening.y + 6);
-            Vector2Int BossRoomTopRight = new Vector2Int(bossRoomOpening.x + 28, bossRoomOpening.y + 56);
+            Vector2Int BossRoomBottomLeft = new Vector2Int(bossRoomOpening.x - 25, bossRoomOpening.y + 6);
+            Vector2Int BossRoomTopRight = new Vector2Int(bossRoomOpening.x + 25, bossRoomOpening.y + 56);
             bossRoom = new RoomNode(BossRoomBottomLeft, BossRoomTopRight, bossRoom, preBossRoom.TreeLayerIndex);
         }
         else if (relativePosition == RelativePosition.Down)
         {
             bossRoomOpening = StructureHelper.CalculateMiddlePoint(preBossRoom.BottomLeftAreaCorner, preBossRoom.BottomRightAreaCorner);
-            Vector2Int BossRoomBottomLeft = new Vector2Int(bossRoomOpening.x - 28, bossRoomOpening.y - 56);
-            Vector2Int BossRoomTopRight = new Vector2Int(bossRoomOpening.x + 28, bossRoomOpening.y - 6);
+            Vector2Int BossRoomBottomLeft = new Vector2Int(bossRoomOpening.x - 25, bossRoomOpening.y - 56);
+            Vector2Int BossRoomTopRight = new Vector2Int(bossRoomOpening.x + 25, bossRoomOpening.y - 6);
             bossRoom = new RoomNode(BossRoomBottomLeft, BossRoomTopRight, bossRoom, preBossRoom.TreeLayerIndex);
         }
         else if (relativePosition == RelativePosition.Left)
         {
             bossRoomOpening = StructureHelper.CalculateMiddlePoint(preBossRoom.TopLeftAreaCorner, preBossRoom.BottomLeftAreaCorner);
-            Vector2Int BossRoomBottomLeft = new Vector2Int(bossRoomOpening.x - 56, bossRoomOpening.y - 28);
-            Vector2Int BossRoomTopRight = new Vector2Int(bossRoomOpening.x - 6, bossRoomOpening.y + 28);
+            Vector2Int BossRoomBottomLeft = new Vector2Int(bossRoomOpening.x - 56, bossRoomOpening.y - 25);
+            Vector2Int BossRoomTopRight = new Vector2Int(bossRoomOpening.x - 6, bossRoomOpening.y + 25);
             bossRoom = new RoomNode(BossRoomBottomLeft, BossRoomTopRight, bossRoom, preBossRoom.TreeLayerIndex);
         }
         else
         {
             bossRoomOpening = StructureHelper.CalculateMiddlePoint(preBossRoom.TopRightAreaCorner, preBossRoom.BottomRightAreaCorner);
-            Vector2Int BossRoomBottomLeft = new Vector2Int(bossRoomOpening.x + 6, bossRoomOpening.y - 28);
-            Vector2Int BossRoomTopRight = new Vector2Int(bossRoomOpening.x + 56, bossRoomOpening.y + 28);
+            Vector2Int BossRoomBottomLeft = new Vector2Int(bossRoomOpening.x + 6, bossRoomOpening.y - 25);
+            Vector2Int BossRoomTopRight = new Vector2Int(bossRoomOpening.x + 56, bossRoomOpening.y + 25);
             bossRoom = new RoomNode(BossRoomBottomLeft, BossRoomTopRight, bossRoom, preBossRoom.TreeLayerIndex);
         }
         bossRoom.Type = "boss_room";
         CorridorNode bossCorridor = new CorridorNode(preBossRoom, bossRoom, 6);
         bossCorridor.Type = "corridor";
+        bossCorridor.name = "BossCorridor";
         List<Node> bossRoomRes = new List<Node>
         {
             bossRoom,
