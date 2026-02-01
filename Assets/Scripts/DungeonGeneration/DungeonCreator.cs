@@ -298,7 +298,7 @@ public class DungeonCreator : MonoBehaviour
         int actualEncounters = (int)(Distributions.Poisson.Sample(8f) / 8f * encounters);
         for (int j = 0; j < actualEncounters; )
         {
-            int i = UnityEngine.Random.Range(0, listOfRooms.Count() - 1);
+            int i = UnityEngine.Random.Range(0, listOfRooms.Count());
             Node room = listOfRooms[i];
 
             if (room.Type == "room")
@@ -375,7 +375,7 @@ public class DungeonCreator : MonoBehaviour
     {
         if (UnityEngine.Random.Range(0f, 1f) < shopProb)
         {
-            int i = UnityEngine.Random.Range(0, listOfRooms.Count() - 1);
+            int i = UnityEngine.Random.Range(0, listOfRooms.Count());
             Node room = listOfRooms[i];
 
             if (room.Type == "room")
@@ -519,7 +519,7 @@ public class DungeonCreator : MonoBehaviour
         ItemSlot result = new ItemSlot();
         if (budget.Count < 1) return result;
         
-        int slot = UnityEngine.Random.Range(0, budget.Count - 1);
+        int slot = UnityEngine.Random.Range(0, budget.Count);
         result.storedItem = availableLootItems[slot].storedItem;
         result.count      = availableLootItems[slot].count;
         budget.ConsumeItem(slot);
@@ -570,7 +570,7 @@ public class DungeonCreator : MonoBehaviour
     private void CreateLoot(List<Node> listOfRooms)
     {
         // large chest, contains a larger portion of the available loot
-        int i = UnityEngine.Random.Range(0, listOfRooms.Count() - 1);
+        int i = UnityEngine.Random.Range(0, listOfRooms.Count());
         Node room = listOfRooms[i];
         if (room.Type == "room")
         {
@@ -609,7 +609,7 @@ public class DungeonCreator : MonoBehaviour
         int itemChestCount = availableLootItems.Count; // lambda for poisson distribution
         for (float time = 0f; time < 1f && availableLootItems.Count > 0; time += Distributions.Exponential.Sample(itemChestCount))
         {
-            i = UnityEngine.Random.Range(0, listOfRooms.Count() - 1);
+            i = UnityEngine.Random.Range(0, listOfRooms.Count());
             room = listOfRooms[i];
             if (room.Type == "room")
             {
@@ -622,7 +622,7 @@ public class DungeonCreator : MonoBehaviour
         int xpChestCount = (int)(numberOfChests - itemChestCount) / 2;
         for (float time = Distributions.Exponential.Sample(xpChestCount); time < 1f && availableLootCurrencies[Currency.XP] > 0; time += Distributions.Exponential.Sample(xpChestCount))
         {
-            i = UnityEngine.Random.Range(0, listOfRooms.Count() - 1);
+            i = UnityEngine.Random.Range(0, listOfRooms.Count());
             room = listOfRooms[i];
             if (room.Type == "room")
             {
@@ -635,7 +635,7 @@ public class DungeonCreator : MonoBehaviour
         int goldChestCount = (int)(numberOfChests - itemChestCount) / 2;
         for (float time = Distributions.Exponential.Sample(goldChestCount); time < 1f && availableLootCurrencies[Currency.Gold] > 0; time += Distributions.Exponential.Sample(goldChestCount))
         {
-            i = UnityEngine.Random.Range(0, listOfRooms.Count() - 1);
+            i = UnityEngine.Random.Range(0, listOfRooms.Count());
             room = listOfRooms[i];
             if (room.Type == "room")
             {
@@ -650,7 +650,7 @@ public class DungeonCreator : MonoBehaviour
         int emptyChests = (int)(fractionOfEmptyChests * numberOfChests);
         for (float time = Distributions.Exponential.Sample(emptyChests); time < 1f; time += Distributions.Exponential.Sample(emptyChests))
         {
-            i = UnityEngine.Random.Range(0, listOfRooms.Count() - 1);
+            i = UnityEngine.Random.Range(0, listOfRooms.Count());
             room = listOfRooms[i];
             if (room.Type == "room")
             {
