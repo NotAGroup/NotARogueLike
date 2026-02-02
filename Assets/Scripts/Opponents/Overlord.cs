@@ -142,7 +142,20 @@ public class Overlord : Opponent
 
             if (selectedAttack == "punch")
             {
+                yield return new WaitForSeconds(0.3f);
+                hitZone.gameObject.SetActive(true);
 
+                yield return new WaitForSeconds(1.8f);
+                hitZone.gameObject.SetActive(false);
+            }
+
+            if (selectedAttack == "swiping")
+            {
+                yield return new WaitForSeconds(0.06f);
+                hitZone.gameObject.SetActive(true);
+
+                yield return new WaitForSeconds(0.94f);
+                hitZone.gameObject.SetActive(false);
             }
         }
 
@@ -354,11 +367,11 @@ public class Overlord : Opponent
 
     private void SelectAttack(float distance)
     {
-        //"breathFire" "grab" "jumpAttack" "punch"
+        //"breathFire" "grab" "jumpAttack" "punch" "swiping"
         switch (currentPhase)
         {
             case Phase.One:
-                selectedAttack = "grab";
+                selectedAttack = "swiping";
                 break;
             case Phase.Two:
                 break;
