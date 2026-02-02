@@ -14,6 +14,7 @@ public class Overlord : Opponent
 
     private SkinnedMeshRenderer meshRenderer;
     private Material[] materials;
+    private Rigidbody rigidBody;
 
     private Transform area;
     private OpponentDefinitions opponentDefinitions;
@@ -26,9 +27,6 @@ public class Overlord : Opponent
 
     public GameObject meleeSkeletonPrefab, rangedSkeletonPrefab;
     public Transform[] summonPoints;
-
-    private int attackIndex = 0;
-    private string[] attackPattern;
 
     private Phase currentPhase;
     private Vector2Int bottomLeftAreaCorner, topRightAreaCorner;
@@ -46,12 +44,11 @@ public class Overlord : Opponent
 
     private float roarDuration = 2.3f;
 
+    private string selectedAttack;
     private float smallerDistance = 0.0f;
 
-    private float jumpCooldown = 0.0f;
-    private float jumpDistance = 10.0f;
-
-    private float jumpTimer;
+    private float jumpForwardForce = 12.0f;
+    private float jumpUpForce = 5.0f;
 
     protected override void Start()
     {
@@ -64,6 +61,7 @@ public class Overlord : Opponent
 
         meshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
         materials = meshRenderer.materials;
+        rigidBody = GetComponent<Rigidbody>();
 
         opponentDefinitions = GameObject.Find("Definitions").GetComponent<OpponentDefinitions>();
 
@@ -87,25 +85,59 @@ public class Overlord : Opponent
     {
         attacking = true;
 
+        Debug.Log("AttackRoutine");
+
         navMeshAgent.isStopped = true;
         navMeshAgent.velocity = Vector3.zero;
 
-        Debug.Log("Attack pattern length: " + attackPattern.Length);
+        animator.SetTrigger(selectedAttack);
 
-        string attack = attackPattern[attackIndex];
-
-        animator.SetTrigger(attack);
-
-        if (attack == "breathFire")
+        if (selectedAttack == "breathFire")
         {
+            yield return new WaitForSeconds(1.2f);
             fireBreath.gameObject.SetActive(true);
-            yield return new WaitForSeconds(5.1f);
+            yield return new WaitForSeconds(3.9f);
             fireBreath.gameObject.SetActive(false);
         }
 
-        attacking = false;
+        if (selectedAttack == "grab")
+        {
+
+        }
+
+        if (selectedAttack == "jumpAttack")
+        {
+            yield return new WaitForSeconds(0.15f);
+
+            navMeshAgent.enabled = false;
+
+            rigidBody.angularVelocity = Vector3.zero;
+            rigidBody.linearVelocity = Vector3.zero;
+            rigidBody.constraints = RigidbodyConstraints.FreezeRotation;
+
+            Vector3 jumpForce = (transform.forward * jumpForwardForce) + (Vector3.up * jumpUpForce);
+            rigidBody.AddForce(jumpForce, ForceMode.Impulse);
+
+            yield return new WaitForSeconds(0.5f);
+
+            yield return new WaitUntil(IsGrounded);
+            Debug.Log("Grounded");
+
+            rigidBody.angularVelocity = Vector3.zero;
+            rigidBody.linearVelocity = Vector3.zero;
+            rigidBody.constraints = RigidbodyConstraints.FreezeAll;
+
+            navMeshAgent.enabled = true;
+        }
+
+        if (selectedAttack == "punch")
+        {
+
+        }
+
         attackCooldown = 1.0f / stats.alertRange;
-        attackIndex = (attackIndex + 1) % attackPattern.Length;
+
+        attacking = false;
         attackCoroutine = null;
     }
 
@@ -163,8 +195,11 @@ public class Overlord : Opponent
             }
         }
 
-        navMeshAgent.isStopped = false;
-        navMeshAgent.updateRotation = false;
+        if (navMeshAgent.enabled)
+        {
+            navMeshAgent.isStopped = false;
+            navMeshAgent.updateRotation = false;
+        }
 
         float distance = Vector3.Distance(playerTransform.position, transform.position);
 
@@ -175,10 +210,14 @@ public class Overlord : Opponent
 
         Vector3 playerOppDir = (transform.position - playerTransform.position).normalized;
 
-        navMeshAgent.SetDestination(playerTransform.position + playerOppDir * stats.minDistanceToPlayer);
+        if (navMeshAgent.enabled)
+        {
+            navMeshAgent.SetDestination(playerTransform.position + playerOppDir * stats.minDistanceToPlayer);
+        }
 
         if (attackCooldown == 0.0f && distance <= stats.attackRange * aggressionModifier && initializedPhase)
         {
+            SelectAttack(distance);
             Attack();
         }
     }
@@ -254,20 +293,14 @@ public class Overlord : Opponent
         switch (currentPhase)
         {
             case Phase.One:
-                attackIndex = 0;
-                attackPattern = new string[] { "breathFire" };
                 //SpawnMeleeSkeletons(4);
                 break;
 
             case Phase.Two:
-                attackIndex = 0;
-                //attackPattern = new string[] { "breathFire" };
                 SpawnRangedSkeletons(4);
                 break;
 
             case Phase.Three:
-                attackIndex = 0;
-                //attackPattern = new string[] { "breathFire" };
                 SpawnMeleeSkeletons(4);
                 SpawnRangedSkeletons(2);
                 break;
@@ -275,6 +308,11 @@ public class Overlord : Opponent
 
         navMeshAgent.isStopped = false;
         initialize = false;
+    }
+
+    private bool IsGrounded()
+    {
+        return Physics.Raycast(transform.position, Vector3.down, 1.85f);
     }
 
     private void Rise()
@@ -300,6 +338,21 @@ public class Overlord : Opponent
         foreach (Material material in materials)
         {
             material.SetFloat("_Blend", blend);
+        }
+    }
+
+    private void SelectAttack(float distance)
+    {
+        //"breathFire" "grab" "jumpAttack" "punch"
+        switch (currentPhase)
+        {
+            case Phase.One:
+                selectedAttack = "jumpAttack";
+                break;
+            case Phase.Two:
+                break;
+            case Phase.Three:
+                break;
         }
     }
 

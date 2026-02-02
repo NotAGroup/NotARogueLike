@@ -162,8 +162,9 @@ public class RangedSkeleton : Opponent
         projectile.Shoot(direction, "Opponent", 60.0f);
         projectile.transform.parent = null;
 
+        attackCooldown = 1.0f / stats.alertRange;
+
         attacking = false;
-        attackCooldown = 1.0f / stats.attackRate;
         attackCoroutine = null;
     }
 

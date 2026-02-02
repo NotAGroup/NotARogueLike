@@ -109,8 +109,9 @@ public class MeleeSkeleton : Opponent
             state = OpponentState.Idle;
         }
 
+        attackCooldown = 1.0f / stats.alertRange;
+
         attacking = false;
-        attackCooldown = 1.0f / stats.attackRate;
         attackCoroutine = null;
     }
 

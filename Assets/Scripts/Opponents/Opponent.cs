@@ -79,8 +79,12 @@ public abstract class Opponent : MonoBehaviour
             if (state != OpponentState.Idle)
             {
                 attacking = false;
-                navMeshAgent.isStopped = false;
                 state = OpponentState.Idle;
+
+                if (navMeshAgent.enabled)
+                {
+                    navMeshAgent.isStopped = false;
+                }
             }
         }
 
@@ -126,7 +130,7 @@ public abstract class Opponent : MonoBehaviour
 
     protected virtual void Attack()
     {
-        if (attacking)
+        if (attacking || attackCooldown > 0.0f)
         {
             return;
         }
@@ -149,7 +153,10 @@ public abstract class Opponent : MonoBehaviour
     {
         if (damageDirection.hasValue)
         {
-            navMeshAgent.isStopped = true;
+            if (navMeshAgent.enabled)
+            {
+                navMeshAgent.isStopped = true;
+            }
 
             velocity = Vector3.zero;
             UpdateMovementAnimation();
@@ -171,7 +178,10 @@ public abstract class Opponent : MonoBehaviour
         {
             stunCooldown = 0.0f;
 
-            navMeshAgent.isStopped = false;
+            if (navMeshAgent.enabled)
+            {
+                navMeshAgent.isStopped = false;
+            }
 
             if (CanSeePlayer() && !player.isDead)
             {
@@ -194,7 +204,10 @@ public abstract class Opponent : MonoBehaviour
 
     protected virtual void Die()
     {
-        navMeshAgent.isStopped = true;
+        if (navMeshAgent.enabled)
+        {
+            navMeshAgent.isStopped = true;
+        }
 
         animator.SetBool("isDead", true);
         state = OpponentState.Dead;
@@ -237,7 +250,11 @@ public abstract class Opponent : MonoBehaviour
 
     public virtual void TakeDamage(float damage, Vector3? direction = null)
     {
-        navMeshAgent.isStopped = true;
+        if (navMeshAgent.enabled)
+        {
+            navMeshAgent.isStopped = true;
+        }
+
         animator.SetTrigger("gotHit");
 
         if (direction.HasValue)
