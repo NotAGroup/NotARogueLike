@@ -1,12 +1,16 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+using TMPro;
+
 public class UserInterface : MonoBehaviour
 {
     // Components
     private Slider healthBar;
     // private Slider manaBar;
     private Slider staminaBar;
+
+    private TMP_Text levelText;
 
     private Constitution playerConstitution;
     private PlayerStats playerStats;
@@ -20,6 +24,13 @@ public class UserInterface : MonoBehaviour
         healthBar = GameObject.Find("Health Bar").GetComponent<Slider>();
         // manaBar = GameObject.Find("Mana Bar").GetComponent<Slider>();
         staminaBar = GameObject.Find("Stamina Bar").GetComponent<Slider>();
+
+        levelText = GameObject.Find("LevelText").GetComponent<TMP_Text>();
+    }
+
+    void OnEnable()
+    {
+        levelText.text = RunData.Instance.level.ToString();
     }
 
     // Update is called once per frame
