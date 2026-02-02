@@ -137,8 +137,10 @@ public class Overlord : Opponent
                     StopCoroutine(initializePhaseCoroutine);
                     initializedPhase = true;
                 }
-
-                initializePhaseCoroutine = StartCoroutine(InitializePhase());
+                else
+                {
+                    initializePhaseCoroutine = StartCoroutine(InitializePhase());
+                }
             }
         }
 
