@@ -96,43 +96,54 @@ public class Overlord : Opponent
         {
             yield return new WaitForSeconds(1.2f);
             fireBreath.gameObject.SetActive(true);
+
             yield return new WaitForSeconds(3.9f);
             fireBreath.gameObject.SetActive(false);
         }
-
-        if (selectedAttack == "grab")
+        else
         {
+            hitZone.SetDamage(stats.attackDamage);
 
-        }
+            if (selectedAttack == "grab")
+            {
+                yield return new WaitForSeconds(1.4f);
+                hitZone.gameObject.SetActive(true);
 
-        if (selectedAttack == "jumpAttack")
-        {
-            yield return new WaitForSeconds(0.15f);
+                yield return new WaitForSeconds(2.8f);
+                hitZone.gameObject.SetActive(false);
+            }
 
-            navMeshAgent.enabled = false;
+            if (selectedAttack == "jumpAttack")
+            {
+                yield return new WaitForSeconds(0.15f);
 
-            rigidBody.angularVelocity = Vector3.zero;
-            rigidBody.linearVelocity = Vector3.zero;
-            rigidBody.constraints = RigidbodyConstraints.FreezeRotation;
+                navMeshAgent.enabled = false;
 
-            Vector3 jumpForce = (transform.forward * jumpForwardForce) + (Vector3.up * jumpUpForce);
-            rigidBody.AddForce(jumpForce, ForceMode.Impulse);
+                rigidBody.angularVelocity = Vector3.zero;
+                rigidBody.linearVelocity = Vector3.zero;
+                rigidBody.constraints = RigidbodyConstraints.FreezeRotation;
 
-            yield return new WaitForSeconds(0.5f);
+                Vector3 jumpForce = (transform.forward * jumpForwardForce) + (Vector3.up * jumpUpForce);
+                rigidBody.AddForce(jumpForce, ForceMode.Impulse);
 
-            yield return new WaitUntil(IsGrounded);
-            Debug.Log("Grounded");
+                yield return new WaitForSeconds(0.5f);
+                hitZone.gameObject.SetActive(true);
 
-            rigidBody.angularVelocity = Vector3.zero;
-            rigidBody.linearVelocity = Vector3.zero;
-            rigidBody.constraints = RigidbodyConstraints.FreezeAll;
+                yield return new WaitUntil(IsGrounded);
 
-            navMeshAgent.enabled = true;
-        }
+                rigidBody.angularVelocity = Vector3.zero;
+                rigidBody.linearVelocity = Vector3.zero;
+                rigidBody.constraints = RigidbodyConstraints.FreezeAll;
 
-        if (selectedAttack == "punch")
-        {
+                hitZone.gameObject.SetActive(false);
 
+                navMeshAgent.enabled = true;
+            }
+
+            if (selectedAttack == "punch")
+            {
+
+            }
         }
 
         attackCooldown = 1.0f / stats.alertRange;
@@ -347,7 +358,7 @@ public class Overlord : Opponent
         switch (currentPhase)
         {
             case Phase.One:
-                selectedAttack = "jumpAttack";
+                selectedAttack = "grab";
                 break;
             case Phase.Two:
                 break;
