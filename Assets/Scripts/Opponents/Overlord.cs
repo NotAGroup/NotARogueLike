@@ -27,6 +27,9 @@ public class Overlord : Opponent
     public GameObject meleeSkeletonPrefab, rangedSkeletonPrefab;
     public Transform[] summonPoints;
 
+    private int attackIndex = 0;
+    private string[] attackPattern;
+
     private Phase currentPhase;
     private Vector2Int bottomLeftAreaCorner, topRightAreaCorner;
     private Vector3 idlePosition;
@@ -84,10 +87,26 @@ public class Overlord : Opponent
     {
         attacking = true;
 
-        attacking = false;
-        attackCoroutine = null;
+        navMeshAgent.isStopped = true;
+        navMeshAgent.velocity = Vector3.zero;
 
-        yield break;
+        Debug.Log("Attack pattern length: " + attackPattern.Length);
+
+        string attack = attackPattern[attackIndex];
+
+        animator.SetTrigger(attack);
+
+        if (attack == "breathFire")
+        {
+            fireBreath.gameObject.SetActive(true);
+            yield return new WaitForSeconds(5.1f);
+            fireBreath.gameObject.SetActive(false);
+        }
+
+        attacking = false;
+        attackCooldown = 1.0f / stats.alertRange;
+        attackIndex = (attackIndex + 1) % attackPattern.Length;
+        attackCoroutine = null;
     }
 
     protected override bool CanSeePlayer()
@@ -98,13 +117,13 @@ public class Overlord : Opponent
 
         Vector3 direction = playerTransform.position - transform.position;
         bool inSight = (Vector3.Angle(transform.forward, direction.normalized) < viewAngle);
-        
-        return inRoom && inSight; 
+
+        return inRoom && inSight;
     }
 
     protected override void Combat()
     {
-        if(!CanSeePlayer())
+        if (!CanSeePlayer())
         {
             memoryTimer -= Time.deltaTime;
 
@@ -144,11 +163,21 @@ public class Overlord : Opponent
             }
         }
 
-        navMeshAgent.SetDestination(playerTransform.position);
+        navMeshAgent.isStopped = false;
+        navMeshAgent.updateRotation = false;
 
         float distance = Vector3.Distance(playerTransform.position, transform.position);
 
-        if (attackCooldown == 0f && distance <= stats.attackRange)
+        direction = (playerTransform.position - transform.position).normalized;
+        direction.y = 0.0f;
+
+        RotateTowards(direction);
+
+        Vector3 playerOppDir = (transform.position - playerTransform.position).normalized;
+
+        navMeshAgent.SetDestination(playerTransform.position + playerOppDir * stats.minDistanceToPlayer);
+
+        if (attackCooldown == 0.0f && distance <= stats.attackRange * aggressionModifier && initializedPhase)
         {
             Attack();
         }
@@ -225,14 +254,20 @@ public class Overlord : Opponent
         switch (currentPhase)
         {
             case Phase.One:
-                SpawnMeleeSkeletons(4);
+                attackIndex = 0;
+                attackPattern = new string[] { "breathFire" };
+                //SpawnMeleeSkeletons(4);
                 break;
 
             case Phase.Two:
+                attackIndex = 0;
+                //attackPattern = new string[] { "breathFire" };
                 SpawnRangedSkeletons(4);
                 break;
 
             case Phase.Three:
+                attackIndex = 0;
+                //attackPattern = new string[] { "breathFire" };
                 SpawnMeleeSkeletons(4);
                 SpawnRangedSkeletons(2);
                 break;
@@ -376,11 +411,11 @@ public class Overlord : Opponent
             smallerDistance = Mathf.Min(height, width);
             float offset = smallerDistance * 0.25f;
 
-            riseDistance =  smallerDistance * 0.375f;
+            riseDistance = smallerDistance * 0.375f;
 
             Vector3 direction = (aimPoints[0].transform.position - spawnRoomCenter).normalized;
             Vector3 position = spawnRoomCenter - direction * offset;
-            
+
             if (NavMesh.SamplePosition(position, out NavMeshHit hit, maxDistance, NavMesh.AllAreas))
             {
                 idlePosition = hit.position;
