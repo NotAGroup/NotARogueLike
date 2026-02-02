@@ -773,9 +773,9 @@ MonoBehaviour:
         points:
         - level: 0
           value: 1
-        - level: 100
+        - level: 10
           value: 10
-        - level: 1000
+        - level: 30
           value: 50
         cyclic: 0
     - key: AvailableGold
@@ -784,8 +784,8 @@ MonoBehaviour:
         points:
         - level: 0
           value: 1
-        - level: 100
-          value: 10
+        - level: 10
+          value: 5
         cyclic: 0
     - key: AvailableAmmoPerEnemy
       def:
