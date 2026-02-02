@@ -102,7 +102,7 @@ public class SlimeOpponent : Opponent
             return;
         }
 
-        if (aggroed)
+        if (aggroed && !player.isDead)
             Combat();
         else
             Idle();
