@@ -18,6 +18,13 @@ public class Constitution : MonoBehaviour
         state = RunData.Instance.constitution;
     }
 
+    public void Reset() 
+    {
+        state.health = stats.maxHealth;
+        state.mana = stats.maxMana;
+        state.stamina = stats.maxStamina;
+    }
+
     public void RegenerateHealth()
     {
         if (state.health < stats.maxHealth)
