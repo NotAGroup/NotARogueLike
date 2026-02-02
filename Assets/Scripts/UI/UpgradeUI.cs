@@ -20,7 +20,7 @@ public class UpgradeUI : MonoBehaviour
     public TMP_Text statInfoText;
 
     private int selectedIndex;
-    public BaseStatKey selectedStat { get => (BaseStatKey)stats.GetValue(selectedIndex); }
+    public BaseStatKey selectedStat { get => stats[selectedIndex]; }
 
     private GameObject[] uiInstances;
     private UpgradeCostDefinitions defs;
@@ -29,8 +29,8 @@ public class UpgradeUI : MonoBehaviour
     private PlayerUpgrades upgrades;
     private GameObject player;
 
-    // get array of stats
-    private Array stats = Enum.GetValues(typeof(BaseStatKey));
+    [Tooltip("array of stats to show (in this order)")]
+    public BaseStatKey[] stats;
     
 
     // 
@@ -109,7 +109,7 @@ public class UpgradeUI : MonoBehaviour
         int index = 0;
         foreach (GameObject i in uiInstances) {
             var disp = i.GetComponent<StatDisplay>();
-            var stat = (BaseStatKey)stats.GetValue(index);
+            var stat = stats[index];
             int currentLevel = player.GetComponent<PlayerUpgrades>()[stat];
             int maxLevel = defs.MaxLevel(stat);
             int[] costs = defs[stat];

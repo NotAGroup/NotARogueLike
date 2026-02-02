@@ -2675,6 +2675,7 @@ MonoBehaviour:
   statTransformEnd: {fileID: 1478916222683482963}
   statNameText: {fileID: 6302165386999173938}
   statInfoText: {fileID: 6366769092732951360}
+  stats: 000000000400000001000000020000000300000005000000
 --- !u!114 &267371259086297132
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4504,7 +4505,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3740608686759468009, guid: 8ab8870e4ce9871f99d59bd181fbcf79, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 45
+      value: 48
       objectReference: {fileID: 0}
     - target: {fileID: 3740608686759468009, guid: 8ab8870e4ce9871f99d59bd181fbcf79, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -4708,7 +4709,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3740608686759468009, guid: 8ab8870e4ce9871f99d59bd181fbcf79, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -45
+      value: -48
       objectReference: {fileID: 0}
     - target: {fileID: 3740608686759468009, guid: 8ab8870e4ce9871f99d59bd181fbcf79, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

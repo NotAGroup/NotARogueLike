@@ -137,6 +137,10 @@ public class InventoryUI : MonoBehaviour
         UpdateSlots();
     }
 
+    public void ToggleItemGrabbed() {
+        ToggleItemGrabbed(false);
+    }
+
     public void ToggleItemGrabbed(bool resetSelection = false) {
         if (grabbed)
         {
