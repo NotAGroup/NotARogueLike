@@ -236,8 +236,11 @@ public class SlimeOpponent : Opponent
         navMeshAgent.updatePosition = false;
         navMeshAgent.nextPosition = transform.position;
 
+        // compute leap target
+        Vector3 delta = (transform.position - playerTransform.position);
+        float distance = GetComponent<CapsuleCollider>().radius + playerTransform.GetComponent<CapsuleCollider>().radius;
         leapStart = transform.position;
-        leapTarget = playerTransform.position;
+        leapTarget = playerTransform.position + delta.normalized * distance;
         leapTarget.y = leapStart.y;
 
         if (hitZone != null)
