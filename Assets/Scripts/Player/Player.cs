@@ -363,7 +363,7 @@ public class Player : MonoBehaviour
             return;
         }
 
-        animator.SetFloat("AttackSpeed", 1f/stats.hitRate);
+        animator.SetFloat("AttackSpeed", stats.hitRate);
 
         hitState = HitState.Swing;
         hitTime = 0.0f;
