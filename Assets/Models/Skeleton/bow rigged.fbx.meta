@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 8480c70890dc96934a96450124a44d45
+guid: b4d08000ec609d44681a86410bd16abc
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
@@ -7,8 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Gold
-    second: {fileID: 2100000, guid: 94a89a819519c0e4abf2cf07e17f6928, type: 2}
+      name: Bow
+    second: {fileID: 2100000, guid: cdf07d76a229d6347b2f1d2e1aeb6024, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
