@@ -676,6 +676,7 @@ public class DungeonCreator : MonoBehaviour
             Vector3 topRightCorner = new Vector3(room.TopRightAreaCorner.x, 0, room.TopRightAreaCorner.y);
             CreatePillar(topRightCorner, area);
         }
+
         if (hasBossRoom)
         {
             Node room = listOfRooms.Find(r => r.Type == "boss_room");
@@ -901,28 +902,35 @@ public class DungeonCreator : MonoBehaviour
 
         if (opponentClass.bossEnemy)
         {
-            int bossPosX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.BottomRightAreaCorner.x - 1);
-            int bossPosY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopLeftAreaCorner.y - 1);
-            Vector3 bossPos = new Vector3(bossPosX, 1, bossPosY);
+            int level = (int)(properties[DungeonPropertyKey.EnemyLevel]);
+            
+            int positionX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.BottomRightAreaCorner.x - 1);
+            int positionY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopLeftAreaCorner.y - 1);
+            Vector3 position = new Vector3(positionX, 1, positionY);
 
-            GameObject boss = Instantiate(opponentClass.prefab, bossPos, Quaternion.identity, segment.area.transform);
-            boss.name = opponentClass.prefab.name;
+            GameObject instance = Instantiate(opponentClass.prefab, position, Quaternion.identity, segment.area.transform);
+            instance.name = opponentClass.prefab.name;
+
+            if (instance.TryGetComponent<Overlord>(out Overlord overlord))
+            {
+                overlord.SetArea(segment.area.transform);
+                overlord.SetLevel(level);
+            }
 
             // assign spawn room
-            if (boss.TryGetComponent<Opponent>(out Opponent opponent))
+            if (instance.TryGetComponent<Opponent>(out Opponent opponent))
             {
                 opponent.spawnRoom = room;
             }
 
             // assign level
-            if (boss.TryGetComponent<OpponentStats>(out OpponentStats stats))
+            if (instance.TryGetComponent<OpponentStats>(out OpponentStats stats))
             {
-                int level = (int)(properties[DungeonPropertyKey.EnemyLevel]);
                 stats.ComputeFrom(opponentClass, level);
             }
 
             // add loot
-            if (boss.TryGetComponent<Rewards>(out Rewards enemyRewards))
+            if (instance.TryGetComponent<Rewards>(out Rewards enemyRewards))
             {
                 int type = UnityEngine.Random.Range(0, 3);
                 switch (type)

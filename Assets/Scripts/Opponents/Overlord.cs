@@ -15,8 +15,11 @@ public class Overlord : Opponent
     private SkinnedMeshRenderer meshRenderer;
     private Material[] materials;
 
+    private Transform area;
+    private OpponentDefinitions opponentDefinitions;
+
     private List<NavPoint> aimPoints;
-    private int aimPointIndex = 0;
+    private readonly HashSet<GameObject> minions = new();
 
     public FireBreath fireBreath;
     public OpponentHitZone hitZone;
@@ -29,10 +32,14 @@ public class Overlord : Opponent
     private Vector3 idlePosition;
     private bool initialized = false;
 
+    private int level = 0;
+
     private bool risen = false;
     private float riseDistance;
     private float riseDuration = 1.5f;
     private float riseTimer = 0.0f;
+
+    private float smallerDistance = 0.0f;
 
     private float jumpCooldown = 0.0f;
     private float jumpDistance = 10.0f;
@@ -50,6 +57,8 @@ public class Overlord : Opponent
 
         meshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
         materials = meshRenderer.materials;
+
+        opponentDefinitions = GameObject.Find("Definitions").GetComponent<OpponentDefinitions>();
 
         if (spawnRoom != null)
         {
@@ -99,6 +108,7 @@ public class Overlord : Opponent
 
             if (memoryTimer <= 0f)
             {
+                DestroyAllMinions();
                 memoryTimer = 0.0f;
                 currentPhase = Phase.None;
                 state = OpponentState.Idle;
@@ -177,6 +187,34 @@ public class Overlord : Opponent
             base.TakeDamage(damage, direction);
         }
     }
+    private void DestroyAllMinions()
+    {
+        foreach (GameObject minion in minions)
+        {
+            DestroyImmediate(minion);
+        }
+    }
+
+    private void InitializePhase()
+    {
+        //animator.SetTrigger("Roar");
+
+        switch (currentPhase)
+        {
+            case Phase.One:
+                SpawnMeleeSkeletons(4);
+                break;
+
+            case Phase.Two:
+                SpawnRangedSkeletons(4);
+                break;
+
+            case Phase.Three:
+                SpawnMeleeSkeletons(4);
+                SpawnRangedSkeletons(2);
+                break;
+        }
+    }
 
     private void Rise()
     {
@@ -194,27 +232,6 @@ public class Overlord : Opponent
         }
     }
 
-    private void InitializePhase()
-    {
-        //animator.SetTrigger("Roar");
-
-        switch (currentPhase)
-        {
-            case Phase.One:
-                //SpawnMeleeSkeletons(5);
-                break;
-
-            case Phase.Two:
-                //SpawnRangedSkeletons(4);
-                break;
-
-            case Phase.Three:
-                //SpawnMeleeSkeletons(3);
-                //SpawnRangedSkeletons(3);
-                break;
-        }
-    }
-
     private void SetBlending(float value)
     {
         float blend = Mathf.Clamp01(value);
@@ -225,16 +242,112 @@ public class Overlord : Opponent
         }
     }
 
+    public void SetArea(Transform area)
+    {
+        this.area = area;
+    }
+
+    public void SetLevel(int level)
+    {
+        this.level = level;
+    }
+
+    private void SpawnMeleeSkeletons(int value)
+    {
+        OpponentClassDefinition opponentClass = opponentDefinitions["Melee Skeleton"];
+        int index = 0;
+
+        for (int i = 0; i < value; i++)
+        {
+            Vector3 position = navPoints[index].transform.position;
+            index = (index + 1) % navPoints.Count;
+
+            GameObject instance = Instantiate(meleeSkeletonPrefab, position, Quaternion.identity, area);
+            instance.name = meleeSkeletonPrefab.name;
+
+            if (instance.TryGetComponent<MeleeSkeleton>(out MeleeSkeleton skeleton))
+            {
+                skeleton.SetNavPointID(index);
+            }
+
+            if (instance.TryGetComponent<Opponent>(out Opponent opponent))
+            {
+                opponent.spawnRoom = spawnRoom;
+            }
+
+            if (instance.TryGetComponent<OpponentStats>(out OpponentStats stats))
+            {
+                stats.ComputeFrom(opponentClass, level);
+            }
+
+            minions.Add(instance);
+        }
+    }
+
+    private void SpawnRangedSkeletons(int value)
+    {
+        OpponentClassDefinition opponentClass = opponentDefinitions["Ranged Skeleton"];
+        int index = 0;
+
+        for (int i = 0; i < value; i++)
+        {
+            Vector3 direction;
+
+            switch (index)
+            {
+                case 0:
+                    direction = Vector3.left;
+                    break;
+                case 1:
+                    direction = Vector3.right;
+                    break;
+                case 2:
+                    direction = Vector3.back;
+                    break;
+                case 3:
+                    direction = Vector3.forward;
+                    break;
+                default:
+                    direction = Vector3.back;
+                    break;
+            }
+
+            Vector3 position = spawnRoomCenter + direction * (smallerDistance * 0.5f - 2.5f);
+            position.y = 1.0f;
+            index = (index + 1) % 4;
+
+            GameObject instance = Instantiate(rangedSkeletonPrefab, position, Quaternion.identity, area);
+            instance.name = rangedSkeletonPrefab.name;
+
+            if (instance.TryGetComponent<RangedSkeleton>(out RangedSkeleton skeleton))
+            {
+                skeleton.SetIdlePosition(position);
+            }
+
+            if (instance.TryGetComponent<Opponent>(out Opponent opponent))
+            {
+                opponent.spawnRoom = spawnRoom;
+            }
+
+            if (instance.TryGetComponent<OpponentStats>(out OpponentStats stats))
+            {
+                stats.ComputeFrom(opponentClass, level);
+            }
+
+            minions.Add(instance);
+        }
+    }
+
     private void TryGetIdlePosition(float maxDistance)
     {
         idlePosition = transform.position;
 
         if (spawnRoom != null)
         {
-            float length = Mathf.Abs(bottomLeftAreaCorner.x - topRightAreaCorner.x);
-            float width = Mathf.Abs(bottomLeftAreaCorner.y - topRightAreaCorner.y);
+            float height = topRightAreaCorner.y - bottomLeftAreaCorner.y;
+            float width = topRightAreaCorner.x - bottomLeftAreaCorner.x;
 
-            float smallerDistance = Mathf.Min(width, length);
+            smallerDistance = Mathf.Min(height, width);
             float offset = smallerDistance * 0.25f;
 
             riseDistance =  smallerDistance * 0.375f;
