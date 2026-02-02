@@ -30,7 +30,9 @@ public class Overlord : Opponent
     private Phase currentPhase;
     private Vector2Int bottomLeftAreaCorner, topRightAreaCorner;
     private Vector3 idlePosition;
-    private bool initialized = false;
+
+    private bool initialize, initializedPhase = false;
+    private Coroutine initializePhaseCoroutine;
 
     private int level = 0;
 
@@ -38,6 +40,8 @@ public class Overlord : Opponent
     private float riseDistance;
     private float riseDuration = 1.5f;
     private float riseTimer = 0.0f;
+
+    private float roarDuration = 2.3f;
 
     private float smallerDistance = 0.0f;
 
@@ -88,16 +92,14 @@ public class Overlord : Opponent
 
     protected override bool CanSeePlayer()
     {
-        Vector3 playerPos = playerTransform.position;
+        Vector3 playerPosition = playerTransform.position;
+        bool inRoom = (playerPosition.x > bottomLeftAreaCorner.x && playerPosition.x < topRightAreaCorner.x &&
+            playerPosition.z > bottomLeftAreaCorner.y && playerPosition.z < topRightAreaCorner.y);
 
-        if (playerPos.x > bottomLeftAreaCorner.x && playerPos.x < topRightAreaCorner.x &&
-            playerPos.z > bottomLeftAreaCorner.y && playerPos.z < topRightAreaCorner.y)
-        {
-            Vector3 direction = playerTransform.position - transform.position;
-            return Vector3.Angle(transform.forward, direction.normalized) < viewAngle;
-        }
-
-        return false;
+        Vector3 direction = playerTransform.position - transform.position;
+        bool inSight = (Vector3.Angle(transform.forward, direction.normalized) < viewAngle);
+        
+        return inRoom && inSight; 
     }
 
     protected override void Combat()
@@ -122,10 +124,22 @@ public class Overlord : Opponent
 
         UpdatePhase();
 
-        if (!initialized)
+        if (!initializedPhase)
         {
-            InitializePhase();
-            initialized = true;
+            if (initialize)
+            {
+                return;
+            }
+            else
+            {
+                if (initializePhaseCoroutine != null)
+                {
+                    StopCoroutine(initializePhaseCoroutine);
+                    initializedPhase = true;
+                }
+
+                initializePhaseCoroutine = StartCoroutine(InitializePhase());
+            }
         }
 
         navMeshAgent.SetDestination(playerTransform.position);
@@ -195,9 +209,16 @@ public class Overlord : Opponent
         }
     }
 
-    private void InitializePhase()
+    private System.Collections.IEnumerator InitializePhase()
     {
-        //animator.SetTrigger("Roar");
+        initialize = true;
+
+        navMeshAgent.isStopped = true;
+        navMeshAgent.velocity = Vector3.zero;
+
+        animator.SetTrigger("roar");
+
+        yield return new WaitForSeconds(roarDuration);
 
         switch (currentPhase)
         {
@@ -214,6 +235,9 @@ public class Overlord : Opponent
                 SpawnRangedSkeletons(2);
                 break;
         }
+
+        navMeshAgent.isStopped = false;
+        initialize = false;
     }
 
     private void Rise()
@@ -373,7 +397,7 @@ public class Overlord : Opponent
         if (nextPhase != currentPhase)
         {
             currentPhase = nextPhase;
-            initialized = false;
+            initializedPhase = false;
         }
     }
 }
