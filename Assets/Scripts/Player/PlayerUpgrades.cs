@@ -10,9 +10,8 @@ public class PlayerUpgrades : MonoBehaviour
 
     public UnityEvent onStatsChanged;
 
-    public PlayerUpgrades() {
-        levels = RunData.Instance.upgrades;
-        GameSaver.subscribe(levels);
+    public void GetFromRunData(RunData runData) {
+        levels = runData.upgrades;
     }
 
     void Awake() {

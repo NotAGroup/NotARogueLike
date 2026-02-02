@@ -243,7 +243,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 924281665}
         m_TargetAssemblyTypeName: RunDataManager, Assembly-CSharp
-        m_MethodName: InitializeOrLoad
+        m_MethodName: TryLoad
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -277,9 +277,33 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 904684442}
+        m_TargetAssemblyTypeName: PlayerStats, Assembly-CSharp
+        m_MethodName: Recompute
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 62124511}
         m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
         m_MethodName: SwitchToGameplay
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 62124511}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: RedrawCurrentUI
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -394,6 +418,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a19a105278d0957458fb3b8fa9cf068e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &904684442 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1195309795827131598, guid: d519ae4777708f2458fe963b8dba475b, type: 3}
+  m_PrefabInstance: {fileID: 1701881418}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99ff3bef177338594b0de52d0add7e5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
 --- !u!1 &924281662
 GameObject:
   m_ObjectHideFlags: 0

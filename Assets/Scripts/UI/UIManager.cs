@@ -110,6 +110,15 @@ public class UIManager : MonoBehaviour
         ApplyState();
     }
 
+    public void RedrawCurrentUI()
+    {
+        for (int i = 0; i < uiElements.Length; i++) {
+            uiElements[i].uiElement.SetActive(false);
+        }
+
+        ApplyState();
+    }
+
     void Awake() {
         playerStats = GameObject.Find("Player Stats");
         hotbar = GameObject.Find("Hotbar");
