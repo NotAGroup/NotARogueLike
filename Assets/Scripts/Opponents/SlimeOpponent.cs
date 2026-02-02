@@ -1,6 +1,5 @@
-using UnityEngine;
-using UnityEngine.AI;
 using System.Collections;
+using UnityEngine;
 
 public class SlimeOpponent : Opponent
 {
@@ -34,6 +33,7 @@ public class SlimeOpponent : Opponent
     private static readonly int ID_BaseColor = Shader.PropertyToID("_BaseColor");
 
     private bool aggroed;
+    private float attackTimer = 0.0f;
 
     private Vector3 leapStart;
     private Vector3 leapTarget;
@@ -42,8 +42,6 @@ public class SlimeOpponent : Opponent
     private float launchTimer;
     private Vector3 launchDir;
     private Vector3 launchPrevApplied;
-
-    private Vector3 modelRootBaseLocalPos;
 
     protected override void Start()
     {
@@ -74,9 +72,6 @@ public class SlimeOpponent : Opponent
             Transform t = transform.Find("ModelRoot");
             modelRoot = t != null ? t : transform;
         }
-
-        if (modelRoot != null)
-            modelRootBaseLocalPos = modelRoot.localPosition;
 
         navMeshAgent.updateRotation = false;
         navMeshAgent.updatePosition = true;
@@ -150,7 +145,7 @@ public class SlimeOpponent : Opponent
             Die();
             return;
         }
-        attackCooldown = 1.0f / Mathf.Max(0.0001f, stats.hitRate);
+        attackCooldown = 1.0f / Mathf.Max(0.0001f, stats.attackRate);
 
 
         Vector3 xz;
@@ -226,6 +221,11 @@ public class SlimeOpponent : Opponent
         RegenerateHealth();
     }
 
+    protected override IEnumerator AttackRoutine()
+    {
+        yield return null;
+    }
+
     private void StartAttack()
     {
         attacking = true;
@@ -297,7 +297,7 @@ public class SlimeOpponent : Opponent
 
             attacking = false;
 
-            float rate = stats.hitRate;
+            float rate = stats.attackRate;
             if (rate <= 0.0001f) rate = 1.0f;
             attackCooldown = 1.0f / rate;
 
