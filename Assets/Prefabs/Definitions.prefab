@@ -839,7 +839,7 @@ MonoBehaviour:
     prefab: {fileID: 6847619720094373699, guid: 70a999182a7918f418e80047599e8fa5, type: 3}
     stats:
       definitions:
-      - key: HitRate
+      - key: AttackRate
         def:
           baseValue: 0.6
           points:
