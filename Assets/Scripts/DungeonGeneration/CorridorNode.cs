@@ -122,7 +122,8 @@ public class CorridorNode : Node
             leftStructure.BottomRightAreaCorner,
             rightStructure.TopLeftAreaCorner,
             rightStructure.BottomLeftAreaCorner);
-        while(y == -1 && sortedLeftStructure.Count > 1)
+        int iterations = 0;
+        while(iterations++ < 100 && y == -1 && sortedLeftStructure.Count > 1)
         {
             sortedLeftStructure = sortedLeftStructure.Where(
                 child => child.TopLeftAreaCorner.y != leftStructure.TopLeftAreaCorner.y).ToList();
@@ -245,7 +246,8 @@ public class CorridorNode : Node
                 bottomStructure.TopRightAreaCorner,
                 topStructure.BottomLeftAreaCorner,
                 topStructure.BottomRightAreaCorner);
-        while(x==-1 && sortedBottomStructure.Count > 1)
+        int iterations = 0;
+        while(iterations++ < 100 && x==-1 && sortedBottomStructure.Count > 1)
         {
             sortedBottomStructure = sortedBottomStructure.Where(child => child.TopLeftAreaCorner.x != topStructure.TopLeftAreaCorner.x).ToList();
             bottomStructure = sortedBottomStructure[0];

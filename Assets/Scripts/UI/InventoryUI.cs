@@ -25,7 +25,6 @@ public class InventoryUI : MonoBehaviour
     public TMP_Text itemBuffText;
     
     public int  numColumns;
-    private int numHotbarSlots;
     private int numSlots;
 
     // selection state
@@ -78,7 +77,6 @@ public class InventoryUI : MonoBehaviour
     void InitializeSlots() {
         grabbedSourceSlot = -1;
         numSlots = inventory.numItemSlots;
-        numHotbarSlots = inventory.numHotbarSlots;
         slots = new GameObject[numSlots];
 
         for (int i = 0; i < numSlots; i++) {
@@ -123,8 +121,15 @@ public class InventoryUI : MonoBehaviour
             slot.GetComponent<Button>().onClick.AddListener(delegate { OnClick(i); });
         }
 
-        ItemSlot selected = inventory.items[currentSlot];
-        UpdateSelectedItem(selected.storedItem, selected.count);
+        if (currentSlot >= 0 && currentSlot < inventory.numItemSlots)
+        {
+            ItemSlot selected = inventory.items[currentSlot];
+            UpdateSelectedItem(selected.storedItem, selected.count);
+        }
+        else
+        {
+            UpdateSelectedItem(null, 0);
+        }
     }
 
     void OnClick(int slot) {

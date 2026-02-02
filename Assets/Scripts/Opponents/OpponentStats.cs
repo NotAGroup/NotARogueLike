@@ -6,7 +6,7 @@ public class OpponentStats : MonoBehaviour
     public string className;
 
     [Header("Combat")]
-    public float hitRate;
+    public float attackRate;
     public float stunDuration;
 
     public float swingDuration;
@@ -28,38 +28,57 @@ public class OpponentStats : MonoBehaviour
     [Header("Perception")]
     public float memoryDuration;
     public float detectionRange;
+    public float alertRange;
+
+    [Header("Ranged Enemies")]
+    public float aggressionDuration;
+    public float aimDuration;
+
+    public float avoidRadius;
+    public float minDistanceToPlayer;
+
+    public float shootDuration;
 
     public void ComputeFrom(OpponentClassDefinition def, int level) {
         className = def.className;
 
-        hitRate = def[OpponentStatKey.HitRate].ComputeFrom(level);
-		stunDuration = def[OpponentStatKey.StunDuration].ComputeFrom(level);
+        attackRate = def[OpponentStatKey.AttackRate]?.ComputeFrom(level) ?? 1f;
+		stunDuration = def[OpponentStatKey.StunDuration]?.ComputeFrom(level) ?? 1f;
 
-		swingDuration = def[OpponentStatKey.SwingDuration].ComputeFrom(level);
-		strikeDuration = def[OpponentStatKey.StrikeDuration].ComputeFrom(level);
-		returnDuration = def[OpponentStatKey.ReturnDuration].ComputeFrom(level);
-		attackRange = def[OpponentStatKey.AttackRange].ComputeFrom(level);
-		attackDamage = def[OpponentStatKey.AttackDamage].ComputeFrom(level);
+		swingDuration = def[OpponentStatKey.SwingDuration]?.ComputeFrom(level) ?? 1f;
+		strikeDuration = def[OpponentStatKey.StrikeDuration]?.ComputeFrom(level) ?? 1f;
+		returnDuration = def[OpponentStatKey.ReturnDuration]?.ComputeFrom(level) ?? 1f;
+		attackRange = def[OpponentStatKey.AttackRange]?.ComputeFrom(level) ?? 1f;
+		attackDamage = def[OpponentStatKey.AttackDamage]?.ComputeFrom(level) ?? 1f;
 
-		maxHealth = def[OpponentStatKey.MaxHealth].ComputeFrom(level);
-		healthRegRate = def[OpponentStatKey.HealthRegRate].ComputeFrom(level);
+		maxHealth = def[OpponentStatKey.MaxHealth]?.ComputeFrom(level) ?? 1f;
+		healthRegRate = def[OpponentStatKey.HealthRegRate]?.ComputeFrom(level) ?? 1f;
 
-		wanderInterval = def[OpponentStatKey.WanderInterval].ComputeFrom(level);
-		wanderRadius = def[OpponentStatKey.WanderRadius].ComputeFrom(level);
-		rotationSpeed = def[OpponentStatKey.RotationSpeed].ComputeFrom(level);
-		movementSpeed = def[OpponentStatKey.MovementSpeed].ComputeFrom(level);
+		wanderInterval = def[OpponentStatKey.WanderInterval]?.ComputeFrom(level) ?? 1f;
+		wanderRadius = def[OpponentStatKey.WanderRadius]?.ComputeFrom(level) ?? 1f;
+		rotationSpeed = def[OpponentStatKey.RotationSpeed]?.ComputeFrom(level) ?? 1f;
+		movementSpeed = def[OpponentStatKey.MovementSpeed]?.ComputeFrom(level) ?? 1f;
 
-		memoryDuration = def[OpponentStatKey.MemoryDuration].ComputeFrom(level);
-		detectionRange = def[OpponentStatKey.DetectionRange].ComputeFrom(level);
+		memoryDuration = def[OpponentStatKey.MemoryDuration]?.ComputeFrom(level) ?? 1f;
+		detectionRange = def[OpponentStatKey.DetectionRange]?.ComputeFrom(level) ?? 1f;
+
+        aimDuration = def[OpponentStatKey.AimDuration]?.ComputeFrom(level) ?? 1f;
+
+        alertRange = def[OpponentStatKey.AlertRange]?.ComputeFrom(level) ?? 1f;
+        avoidRadius = def[OpponentStatKey.AvoidRadius]?.ComputeFrom(level) ?? 1f;
+        minDistanceToPlayer = def[OpponentStatKey.MinDistanceToPlayer]?.ComputeFrom(level) ?? 1f;
+
+        shootDuration = def[OpponentStatKey.ShootDuration]?.ComputeFrom(level) ?? 1f;
+        aggressionDuration = def[OpponentStatKey.AggressionDuration]?.ComputeFrom(level) ?? 1f;
     }
 }
 
 public enum OpponentStatKey {
-    HitRate,
     StunDuration,
     SwingDuration,
     StrikeDuration,
     ReturnDuration,
+    AttackRate,
     AttackRange,
     AttackDamage,
     MaxHealth,
@@ -69,7 +88,15 @@ public enum OpponentStatKey {
     RotationSpeed,
     MovementSpeed,
     MemoryDuration,
-    DetectionRange
+    DetectionRange,
+
+    // ranged opponents
+    AimDuration,
+    AlertRange,
+    AvoidRadius,
+    MinDistanceToPlayer,
+    ShootDuration,
+    AggressionDuration
 };
 
 

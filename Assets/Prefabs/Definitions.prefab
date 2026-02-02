@@ -83,8 +83,8 @@ MonoBehaviour:
         name: xp
         displayName: XP
         description: Makes you wiser
-        currencyModel: {fileID: 0}
-        currencySprite: {fileID: 0}
+        currencyModel: {fileID: 2081972560401928170, guid: 5763e11502e7343ea9e697d1b413d81b, type: 3}
+        currencySprite: {fileID: 21300000, guid: d61b2880fdb8119cbb9f0b1f22bb33a1, type: 3}
 --- !u!114 &5196027272824433926
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -101,11 +101,11 @@ MonoBehaviour:
   - name: health_fruit
     type: 1
     displayName: Health Fruit
-    description: Restores health when eaten
+    description: Eat to restore health (recommended by 9/10 druids)
     itemModel: {fileID: 5994598806465713049, guid: 4aed6631bfdec9c9fb8bc0e542fa7be5, type: 3}
     itemSprite: {fileID: 21300000, guid: 31bedb11f541e99b681572d881aabe0a, type: 3}
-    dropProbability: 0.157
-    shopProbability: 0.151
+    dropProbability: 0.2
+    shopProbability: 0.2
     cost: 2
     maxPerShopSlot: 1
     weight: 0
@@ -115,11 +115,11 @@ MonoBehaviour:
   - name: stamina_fruit
     type: 1
     displayName: Stamina Fruit
-    description: Restores stamina when eaten
+    description: Eat to restore stamina
     itemModel: {fileID: 1662156151352070245, guid: 78b72048a27746fa39395f10735ff60d, type: 3}
     itemSprite: {fileID: 21300000, guid: 56820fe5803f5871f993b90ae3cfddd5, type: 3}
-    dropProbability: 0.301
-    shopProbability: 0.147
+    dropProbability: 0.3
+    shopProbability: 0.1
     cost: 1
     maxPerShopSlot: 2
     weight: 0
@@ -129,11 +129,11 @@ MonoBehaviour:
   - name: mana_fruit
     type: 1
     displayName: Mana Fruit
-    description: Restores mana when eaten
+    description: Eat to restore mana
     itemModel: {fileID: 8399732216031229202, guid: e9625c90e3b36bfbf829a333b7333109, type: 3}
     itemSprite: {fileID: 21300000, guid: 3934fdf3cb658e67da1baa0e2beb14d4, type: 3}
-    dropProbability: 0.126
-    shopProbability: 0.063
+    dropProbability: 0.1
+    shopProbability: 0.1
     cost: 2
     maxPerShopSlot: 4
     weight: 0
@@ -160,8 +160,8 @@ MonoBehaviour:
     description: Makes its owner faster
     itemModel: {fileID: 5994598806465713049, guid: cb2cc647910d12c0db740d8ff661c926, type: 3}
     itemSprite: {fileID: 21300000, guid: 0e441b28d0af49ab18d7cb3c48552317, type: 3}
-    dropProbability: 0.031
-    shopProbability: 0.23
+    dropProbability: 0.01
+    shopProbability: 0.05
     cost: 100
     maxPerShopSlot: 1
     weight: 0
@@ -492,13 +492,23 @@ MonoBehaviour:
         baseValue: 1
         points:
         - level: 0
-          value: 1
+          value: 2
         - level: 1
           value: 3
         - level: 2
-          value: 0.5
+          value: 2
         - level: 3
-          value: 0.25
+          value: 2
+        cyclic: 1
+    - key: EncounterCount
+      def:
+        baseValue: 3
+        points: []
+        cyclic: 1
+    - key: EnemyMaxRangedCount
+      def:
+        baseValue: 2
+        points: []
         cyclic: 1
     - key: EnemyLevel
       def:
@@ -545,12 +555,28 @@ MonoBehaviour:
           value: 1
         - level: 100
           value: 10
-        cyclic: 1
+        cyclic: 0
     - key: AvailableAmmoPerEnemy
       def:
-        baseValue: 5
+        baseValue: 1
+        points:
+        - level: 0
+          value: 3
+        - level: 20
+          value: 0.5
+        - level: 21
+          value: 0.5
+        cyclic: 0
+    - key: AvailableItemsPerArea
+      def:
+        baseValue: 2
         points: []
-        cyclic: 1
+        cyclic: 0
+    - key: ChestsPerArea
+      def:
+        baseValue: 2
+        points: []
+        cyclic: 0
 --- !u!114 &149643943944928172
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -569,7 +595,7 @@ MonoBehaviour:
     prefab: {fileID: 8282398908945130151, guid: 2466d15c19041db4fba290b6fc587695, type: 3}
     stats:
       definitions:
-      - key: HitRate
+      - key: AttackRate
         def:
           baseValue: 2
           points:
@@ -581,11 +607,7 @@ MonoBehaviour:
       - key: StunDuration
         def:
           baseValue: 0.6
-          points:
-          - level: 0
-            value: 1
-          - level: 0
-            value: 0.5
+          points: []
           cyclic: 0
       - key: SwingDuration
         def:
@@ -657,7 +679,37 @@ MonoBehaviour:
           cyclic: 0
       - key: DetectionRange
         def:
-          baseValue: 20
+          baseValue: 30
+          points: []
+          cyclic: 0
+      - key: AlertRange
+        def:
+          baseValue: 5
+          points: []
+          cyclic: 0
+      - key: AimDuration
+        def:
+          baseValue: 4
+          points: []
+          cyclic: 0
+      - key: AvoidRadius
+        def:
+          baseValue: 1.2
+          points: []
+          cyclic: 0
+      - key: MinDistanceToPlayer
+        def:
+          baseValue: 3
+          points: []
+          cyclic: 0
+      - key: ShootDuration
+        def:
+          baseValue: 0.3
+          points: []
+          cyclic: 0
+      - key: AggressionDuration
+        def:
+          baseValue: 10
           points: []
           cyclic: 0
   - className: Ranged Skeleton
@@ -665,23 +717,19 @@ MonoBehaviour:
     prefab: {fileID: 8282398908945130151, guid: b2f353518050c5e4387c48f25a9229f2, type: 3}
     stats:
       definitions:
-      - key: HitRate
+      - key: AttackRate
         def:
-          baseValue: 2
+          baseValue: 5
           points:
           - level: 0
             value: 1
-          - level: 1
+          - level: 5
             value: 2
           cyclic: 0
       - key: StunDuration
         def:
           baseValue: 0.6
-          points:
-          - level: 0
-            value: 1
-          - level: 0
-            value: 0.5
+          points: []
           cyclic: 0
       - key: SwingDuration
         def:
@@ -700,7 +748,7 @@ MonoBehaviour:
           cyclic: 0
       - key: AttackRange
         def:
-          baseValue: 9
+          baseValue: 20
           points: []
           cyclic: 0
       - key: AttackDamage
@@ -753,7 +801,37 @@ MonoBehaviour:
           cyclic: 0
       - key: DetectionRange
         def:
-          baseValue: 15
+          baseValue: 40
+          points: []
+          cyclic: 0
+      - key: AlertRange
+        def:
+          baseValue: 5
+          points: []
+          cyclic: 0
+      - key: AimDuration
+        def:
+          baseValue: 4
+          points: []
+          cyclic: 0
+      - key: AvoidRadius
+        def:
+          baseValue: 1.2
+          points: []
+          cyclic: 0
+      - key: MinDistanceToPlayer
+        def:
+          baseValue: 3
+          points: []
+          cyclic: 0
+      - key: ShootDuration
+        def:
+          baseValue: 0.3
+          points: []
+          cyclic: 0
+      - key: AggressionDuration
+        def:
+          baseValue: 10
           points: []
           cyclic: 0
   - className: Slime

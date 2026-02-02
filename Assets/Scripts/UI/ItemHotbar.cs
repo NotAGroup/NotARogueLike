@@ -3,7 +3,7 @@ using System;
 
 public class ItemHotbar : MonoBehaviour
 {
-    private GameObject player;
+    private Player player;
     private Inventory playerInventory;
 
     [Header("Rendering")]
@@ -17,8 +17,8 @@ public class ItemHotbar : MonoBehaviour
 
     public void Awake() 
     {
-        player = GameObject.Find("Player");
-        playerInventory = player.GetComponent<Inventory>();
+        player = GameObject.Find("Player").GetComponent<Player>();
+        playerInventory = GameObject.Find("Player").GetComponent<Inventory>();
     }
 
     void InitializeSlots() {
@@ -26,7 +26,7 @@ public class ItemHotbar : MonoBehaviour
             foreach (GameObject s in slots)
                 GameObject.Destroy(s);
 
-        int numSlots = Math.Min(playerInventory.numHotbarSlots, playerInventory.numItemSlots);
+        int numSlots = Math.Min(player.numHotbarSlots, playerInventory.numItemSlots);
         slots = new GameObject[numSlots];
 
         for (int i = 0; i < numSlots; i++) {
@@ -50,7 +50,7 @@ public class ItemHotbar : MonoBehaviour
     void Update()
     {
         // check if slot count has changed
-        int numSlots = Math.Min(playerInventory.numHotbarSlots, playerInventory.numItemSlots);
+        int numSlots = Math.Min(player.numHotbarSlots, playerInventory.numItemSlots);
         if (slots == null || numSlots != slots.Length)
             InitializeSlots();
 
