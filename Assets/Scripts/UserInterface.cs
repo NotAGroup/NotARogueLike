@@ -5,7 +5,7 @@ public class UserInterface : MonoBehaviour
 {
     // Components
     private Slider healthBar;
-    private Slider manaBar;
+    // private Slider manaBar;
     private Slider staminaBar;
 
     private Constitution playerConstitution;
@@ -18,7 +18,7 @@ public class UserInterface : MonoBehaviour
         playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
         
         healthBar = GameObject.Find("Health Bar").GetComponent<Slider>();
-        manaBar = GameObject.Find("Mana Bar").GetComponent<Slider>();
+        // manaBar = GameObject.Find("Mana Bar").GetComponent<Slider>();
         staminaBar = GameObject.Find("Stamina Bar").GetComponent<Slider>();
     }
 
@@ -27,8 +27,8 @@ public class UserInterface : MonoBehaviour
     {
         healthBar.maxValue = playerStats.maxHealth;
         healthBar.value = playerConstitution.Health;
-        manaBar.maxValue = playerStats.maxMana;
-        manaBar.value = playerConstitution.Mana;
+        // manaBar.maxValue = playerStats.maxMana;
+        // manaBar.value = playerConstitution.Mana;
         staminaBar.maxValue = playerStats.maxStamina;
         staminaBar.value = playerConstitution.Stamina;
     }
