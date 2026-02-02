@@ -141,10 +141,17 @@ Shader "Custom/SlimeWobble"
                 Light mainLight = GetMainLight();
                 float3 L = normalize(mainLight.direction);
                 float3 H = normalize(L + V);
-                float spec = pow(saturate(dot(N, H)), _SpecPower) * _Spec * mainLight.shadowAttenuation;
 
-                col += spec;
-                col += fresnel * _Rim;
+                float nh = saturate(dot(N, H));
+                float specRaw = pow(nh, _SpecPower);
+                float specSoft = specRaw * _Spec * 0.5;
+                specSoft *= saturate(fresnel);
+
+                half3 specColor = _BaseColor.rgb * 0.6;
+                col += specSoft * specColor * mainLight.shadowAttenuation;
+
+                half3 fresnelColor = lerp(_BaseColor.rgb, half3(0.3, 1.0, 0.6), 0.6);
+                col += fresnel * _Rim * fresnelColor;
 
                 half alpha = saturate(_BaseColor.a + fresnel * 0.10);
 

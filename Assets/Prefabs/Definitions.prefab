@@ -591,7 +591,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   classes:
   - className: Melee Skeleton
-    spawnProbability: 0.6
+    spawnProbability: 0.4
     prefab: {fileID: 8282398908945130151, guid: 2466d15c19041db4fba290b6fc587695, type: 3}
     bossEnemy: 0
     stats:
@@ -714,7 +714,7 @@ MonoBehaviour:
           points: []
           cyclic: 0
   - className: Ranged Skeleton
-    spawnProbability: 0.4
+    spawnProbability: 0.2
     prefab: {fileID: 8282398908945130151, guid: b2f353518050c5e4387c48f25a9229f2, type: 3}
     bossEnemy: 0
     stats:
@@ -834,6 +834,103 @@ MonoBehaviour:
       - key: AggressionDuration
         def:
           baseValue: 10
+          points: []
+          cyclic: 0
+  - className: Slime
+    spawnProbability: 0.5
+    prefab: {fileID: 6847619720094373699, guid: 70a999182a7918f418e80047599e8fa5, type: 3}
+    bossEnemy: 0
+    stats:
+      definitions:
+      - key: AttackRate
+        def:
+          baseValue: 0.6
+          points:
+          - level: 0
+            value: 1
+          - level: 1
+            value: 2
+          cyclic: 0
+      - key: StunDuration
+        def:
+          baseValue: 0.6
+          points:
+          - level: 0
+            value: 1
+          - level: 0
+            value: 0.5
+          cyclic: 0
+      - key: SwingDuration
+        def:
+          baseValue: 0.05
+          points: []
+          cyclic: 0
+      - key: StrikeDuration
+        def:
+          baseValue: 1.45
+          points: []
+          cyclic: 0
+      - key: ReturnDuration
+        def:
+          baseValue: 0.2
+          points: []
+          cyclic: 0
+      - key: AttackRange
+        def:
+          baseValue: 6
+          points: []
+          cyclic: 0
+      - key: AttackDamage
+        def:
+          baseValue: 13
+          points:
+          - level: 0
+            value: 1
+          - level: 10
+            value: 2
+          cyclic: 0
+      - key: MaxHealth
+        def:
+          baseValue: 200
+          points:
+          - level: 0
+            value: 1
+          - level: 10
+            value: 5
+          cyclic: 0
+      - key: HealthRegRate
+        def:
+          baseValue: 5
+          points: []
+          cyclic: 0
+      - key: WanderInterval
+        def:
+          baseValue: 3
+          points: []
+          cyclic: 0
+      - key: WanderRadius
+        def:
+          baseValue: 5
+          points: []
+          cyclic: 0
+      - key: RotationSpeed
+        def:
+          baseValue: 90
+          points: []
+          cyclic: 0
+      - key: MovementSpeed
+        def:
+          baseValue: 3
+          points: []
+          cyclic: 0
+      - key: MemoryDuration
+        def:
+          baseValue: 1
+          points: []
+          cyclic: 0
+      - key: DetectionRange
+        def:
+          baseValue: 20
           points: []
           cyclic: 0
   - className: Overlord
