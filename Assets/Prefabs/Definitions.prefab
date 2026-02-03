@@ -703,7 +703,7 @@ MonoBehaviour:
         - level: 2
           value: 1
         - level: 3
-          value: 6
+          value: 3
         cyclic: 1
     - key: TrapCount
       def:
