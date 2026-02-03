@@ -84,7 +84,7 @@ GameObject:
   - component: {fileID: 7694551200114560616}
   m_Layer: 0
   m_Name: Overlord
-  m_TagString: Opponent
+  m_TagString: Boss
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
