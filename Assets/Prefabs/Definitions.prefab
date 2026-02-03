@@ -984,7 +984,7 @@ MonoBehaviour:
           cyclic: 0
       - key: MaxHealth
         def:
-          baseValue: 100
+          baseValue: 300
           points:
           - level: 0
             value: 1
@@ -993,7 +993,7 @@ MonoBehaviour:
           cyclic: 0
       - key: HealthRegRate
         def:
-          baseValue: 5
+          baseValue: 20
           points: []
           cyclic: 0
       - key: WanderInterval
@@ -1013,7 +1013,7 @@ MonoBehaviour:
           cyclic: 0
       - key: MovementSpeed
         def:
-          baseValue: 3
+          baseValue: 4
           points: []
           cyclic: 0
       - key: MemoryDuration
@@ -1043,7 +1043,7 @@ MonoBehaviour:
           cyclic: 0
       - key: MinDistanceToPlayer
         def:
-          baseValue: 3
+          baseValue: 2.5
           points: []
           cyclic: 0
       - key: ShootDuration
