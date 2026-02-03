@@ -98,7 +98,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  opponentTag: Opponent
+  opponentTags:
+  - Opponent
+  - Boss
 --- !u!114 &3051982175118773285
 MonoBehaviour:
   m_ObjectHideFlags: 0

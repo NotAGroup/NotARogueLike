@@ -33,6 +33,8 @@ public class ItemCountDisplay : MonoBehaviour
     }
 
     public void UpdateSlots() {
+        if (playerInventory == null || playerInventory.items == null) return;
+
         // check if slot count has changed
         if (slots == null || 1 != slots.Length)
             InitializeSlots();

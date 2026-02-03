@@ -703,7 +703,7 @@ MonoBehaviour:
         - level: 2
           value: 1
         - level: 3
-          value: 6
+          value: 3
         cyclic: 1
     - key: TrapCount
       def:
@@ -729,7 +729,7 @@ MonoBehaviour:
         - level: 2
           value: 2
         - level: 3
-          value: 2
+          value: 1.5
         cyclic: 1
     - key: EncounterCount
       def:
@@ -759,13 +759,13 @@ MonoBehaviour:
         baseValue: 1
         points:
         - level: 0
-          value: 1
+          value: 0
         - level: 1
-          value: 3
+          value: 0
         - level: 2
-          value: 0.5
+          value: 1
         - level: 3
-          value: 0.25
+          value: 0
         cyclic: 1
     - key: AvailableXP
       def:
@@ -824,6 +824,7 @@ MonoBehaviour:
   - className: Melee Skeleton
     spawnProbability: 0.4
     prefab: {fileID: 8282398908945130151, guid: 2466d15c19041db4fba290b6fc587695, type: 3}
+    bossEnemy: 0
     stats:
       definitions:
       - key: AttackRate
@@ -946,6 +947,7 @@ MonoBehaviour:
   - className: Ranged Skeleton
     spawnProbability: 0.2
     prefab: {fileID: 8282398908945130151, guid: b2f353518050c5e4387c48f25a9229f2, type: 3}
+    bossEnemy: 0
     stats:
       definitions:
       - key: AttackRate
@@ -1080,6 +1082,7 @@ MonoBehaviour:
   - className: Slime
     spawnProbability: 0.5
     prefab: {fileID: 6847619720094373699, guid: 70a999182a7918f418e80047599e8fa5, type: 3}
+    bossEnemy: 0
     stats:
       definitions:
       - key: AttackRate
@@ -1171,6 +1174,129 @@ MonoBehaviour:
       - key: DetectionRange
         def:
           baseValue: 20
+          points: []
+          cyclic: 0
+  - className: Overlord
+    spawnProbability: 0
+    prefab: {fileID: 8282398908945130151, guid: 1fbf8e7dc85098e49b31c42a4ce476f7, type: 3}
+    bossEnemy: 1
+    stats:
+      definitions:
+      - key: AttackRate
+        def:
+          baseValue: 4
+          points:
+          - level: 0
+            value: 1
+          - level: 5
+            value: 2
+          cyclic: 0
+      - key: StunDuration
+        def:
+          baseValue: 0.4
+          points: []
+          cyclic: 0
+      - key: SwingDuration
+        def:
+          baseValue: 0.05
+          points: []
+          cyclic: 0
+      - key: StrikeDuration
+        def:
+          baseValue: 1.45
+          points: []
+          cyclic: 0
+      - key: ReturnDuration
+        def:
+          baseValue: 0.2
+          points: []
+          cyclic: 0
+      - key: AttackRange
+        def:
+          baseValue: 20
+          points: []
+          cyclic: 0
+      - key: AttackDamage
+        def:
+          baseValue: 30
+          points:
+          - level: 0
+            value: 1
+          - level: 10
+            value: 2
+          cyclic: 0
+      - key: MaxHealth
+        def:
+          baseValue: 300
+          points:
+          - level: 0
+            value: 1
+          - level: 10
+            value: 5
+          cyclic: 0
+      - key: HealthRegRate
+        def:
+          baseValue: 20
+          points: []
+          cyclic: 0
+      - key: WanderInterval
+        def:
+          baseValue: 3
+          points: []
+          cyclic: 0
+      - key: WanderRadius
+        def:
+          baseValue: 5
+          points: []
+          cyclic: 0
+      - key: RotationSpeed
+        def:
+          baseValue: 90
+          points: []
+          cyclic: 0
+      - key: MovementSpeed
+        def:
+          baseValue: 4
+          points: []
+          cyclic: 0
+      - key: MemoryDuration
+        def:
+          baseValue: 1
+          points: []
+          cyclic: 0
+      - key: DetectionRange
+        def:
+          baseValue: 40
+          points: []
+          cyclic: 0
+      - key: AlertRange
+        def:
+          baseValue: 5
+          points: []
+          cyclic: 0
+      - key: AimDuration
+        def:
+          baseValue: 4
+          points: []
+          cyclic: 0
+      - key: AvoidRadius
+        def:
+          baseValue: 1.2
+          points: []
+          cyclic: 0
+      - key: MinDistanceToPlayer
+        def:
+          baseValue: 2.5
+          points: []
+          cyclic: 0
+      - key: ShootDuration
+        def:
+          baseValue: 0.3
+          points: []
+          cyclic: 0
+      - key: AggressionDuration
+        def:
+          baseValue: 10
           points: []
           cyclic: 0
 --- !u!114 &7895014659698534790

@@ -15,6 +15,8 @@ public class BossDoor : MonoBehaviour
 
     public void Interact()
     {
+        if (!isEnabled) return;
+
         GetComponent<Collider>().enabled = false;
     }
 

@@ -83,7 +83,7 @@ GameObject:
   - component: {fileID: 6203246334397239979}
   m_Layer: 0
   m_Name: Slime
-  m_TagString: Untagged
+  m_TagString: Opponent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -140,7 +140,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   className: Slime
-  hitRate: 2
+  attackRate: 2
   stunDuration: 0
   swingDuration: 0
   strikeDuration: 0.3
@@ -155,6 +155,12 @@ MonoBehaviour:
   movementSpeed: 0
   memoryDuration: 5
   detectionRange: 20
+  alertRange: 0
+  aggressionDuration: 0
+  aimDuration: 0
+  avoidRadius: 0
+  minDistanceToPlayer: 0
+  shootDuration: 0
 --- !u!114 &4613161508608724711
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -174,6 +180,7 @@ MonoBehaviour:
   leapHeight: 0.9
   damageWindowStart: 0.1
   damageWindowEnd: 0.38
+  stopBeforePlayer: 1
   launchDistance: 5
   launchDuration: 0.7
   slimeRenderer: {fileID: 7908234258597172828}
