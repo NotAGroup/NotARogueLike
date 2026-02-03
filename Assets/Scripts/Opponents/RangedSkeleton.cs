@@ -16,6 +16,7 @@ public class RangedSkeleton : Opponent
     private float aimTimer;
 
     private Vector3 idlePosition;
+    private bool setManually = false;
 
     protected override void Start()
     {
@@ -37,7 +38,10 @@ public class RangedSkeleton : Opponent
             navPoints = spawnRoom.GetCorners();
         }
 
-        TryGetIdlePosition(2.0f);
+        if (!setManually)
+        {
+            TryGetIdlePosition(2.0f);
+        }
     }
 
     protected override void Combat()
@@ -158,9 +162,9 @@ public class RangedSkeleton : Opponent
         projectile.Shoot(direction, "Opponent", 60.0f);
         projectile.transform.parent = null;
 
+        attackCooldown = 1.0f / stats.alertRange;
+
         attacking = false;
-        attackCooldown = 1.0f / stats.attackRate;
-        attackCoroutine = null;
     }
 
     protected override bool CanSeePlayer()
@@ -265,13 +269,22 @@ public class RangedSkeleton : Opponent
         return false;
     }
 
-    private void TryGetIdlePosition(float maxRadius)
+    public void SetIdlePosition (Vector3 position)
     {
+        setManually = true;
+        TryGetIdlePosition(1.0f, position);
+    }
+
+    private void TryGetIdlePosition(float maxRadius, Vector3? sourcePosition = null)
+    {
+        bool hasValue = sourcePosition.HasValue;
         idlePosition = transform.position;
 
-        if (spawnRoom != null)
+        if (hasValue || spawnRoom != null)
         {
-            if (NavMesh.SamplePosition(spawnRoomCenter, out NavMeshHit hit, 0.25f, NavMesh.AllAreas))
+            Vector3 position = hasValue ? sourcePosition.Value : spawnRoomCenter;
+
+            if (NavMesh.SamplePosition(position, out NavMeshHit hit, 0.25f, NavMesh.AllAreas))
             {
                 idlePosition = hit.position;
             }
@@ -292,7 +305,7 @@ public class RangedSkeleton : Opponent
                         Mathf.Sin(angle)
                         ) * radius;
 
-                    if (NavMesh.SamplePosition(spawnRoomCenter + offset, out hit, 0.25f, NavMesh.AllAreas))
+                    if (NavMesh.SamplePosition(position + offset, out hit, 0.25f, NavMesh.AllAreas))
                     {
                         idlePosition = hit.position;
                     }

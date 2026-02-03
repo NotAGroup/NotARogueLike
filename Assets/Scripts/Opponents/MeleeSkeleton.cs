@@ -21,16 +21,21 @@ public class MeleeSkeleton : Opponent
 
     protected override void Combat()
     {
-        if (!CanSeePlayer() && navMeshAgent.remainingDistance <= 1f)
+        if (!CanSeePlayer())
         {
-            memoryTimer -= Time.deltaTime;
-
-            if (memoryTimer <= 0f)
+            if (navMeshAgent.remainingDistance <= 1f)
             {
-                memoryTimer = 0.0f;
-                state = OpponentState.Idle;
-                return;
+                memoryTimer -= Time.deltaTime;
+
+                if (memoryTimer <= 0f)
+                {
+                    memoryTimer = 0.0f;
+                    state = OpponentState.Idle;
+                    return;
+                }
             }
+
+            return;
         }
         else
         {
@@ -105,12 +110,12 @@ public class MeleeSkeleton : Opponent
             state = OpponentState.Idle;
         }
 
+        attackCooldown = 1.0f / stats.alertRange;
+
         attacking = false;
-        attackCooldown = 1.0f / stats.attackRate;
-        attackCoroutine = null;
     }
 
-    void Wander()
+    private void Wander()
     {
         if (navMeshAgent.remainingDistance < 1)
         {
@@ -136,7 +141,7 @@ public class MeleeSkeleton : Opponent
 
         if (!wandering && navPoints != null)
         {
-            Vector3 targetPos = navPoints[nextNavPointID].transform.position;
+            Vector3 targetPos = navPoints[navPointID].transform.position;
 
             NavMeshHit navHit;
             NavMesh.SamplePosition(targetPos, out navHit, stats.wanderRadius, NavMesh.AllAreas);
@@ -146,7 +151,7 @@ public class MeleeSkeleton : Opponent
             wanderTimer = Random.Range(stats.wanderInterval * 0.5f, stats.wanderInterval * 2.0f);
             wandering = true;
 
-            nextNavPointID = (nextNavPointID + 1) % navPoints.Count;
+            navPointID = (navPointID + 1) % navPoints.Count;
         }
     }
 
@@ -183,5 +188,10 @@ public class MeleeSkeleton : Opponent
         }
 
         return false;
+    }
+
+    public void SetNavPointID(int id)
+    {
+        navPointID = id;
     }
 }

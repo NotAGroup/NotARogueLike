@@ -22,6 +22,8 @@ public class CurrencyDisplay : MonoBehaviour
     }
 
     public void UpdateSlots() {
+        if (playerInventory == null || playerInventory.currency == null) return;
+
         // check if slot count has changed
         if (slots == null || playerInventory.numCurrencySlots != slots.Length)
             InitializeSlots();
