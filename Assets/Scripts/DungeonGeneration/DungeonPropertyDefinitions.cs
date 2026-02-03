@@ -56,7 +56,7 @@ public class InterpolationScaling {
         int index = 0;
 
         if (cyclic) {
-            level = level % (points[points.Length - 1].level);
+            level = level % (points[points.Length - 1].level + 1);
         }
 
         for (; index + 1 < points.Length && points[index + 1].level <= level; index++);
