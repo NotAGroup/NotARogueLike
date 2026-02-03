@@ -121,16 +121,17 @@ public abstract class Opponent : MonoBehaviour
         {
             attackCooldown -= Time.deltaTime;
 
-            if (attackCooldown < 0.0f)
+            if (attackCooldown <= 0.0f)
             {
                 attackCooldown = 0.0f;
+                attackCoroutine = null;
             }
         }
     }
 
     protected virtual void Attack()
     {
-        if (attacking || attackCooldown > 0.0f)
+        if (attacking)
         {
             return;
         }
@@ -139,8 +140,10 @@ public abstract class Opponent : MonoBehaviour
         {
             StopCoroutine(attackCoroutine);
         }
-
-        attackCoroutine = StartCoroutine(AttackRoutine());
+        else
+        {
+            attackCoroutine = StartCoroutine(AttackRoutine());
+        }
     }
 
     protected abstract System.Collections.IEnumerator AttackRoutine();

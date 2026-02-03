@@ -83,9 +83,14 @@ public class Overlord : Opponent
 
     protected override System.Collections.IEnumerator AttackRoutine()
     {
+        if (selectedAttack == null)
+        {
+            yield break;
+        }
+
         attacking = true;
 
-        Debug.Log("AttackRoutine");
+        Debug.Log("Attack: " + selectedAttack);
 
         navMeshAgent.isStopped = true;
         navMeshAgent.velocity = Vector3.zero;
@@ -97,7 +102,7 @@ public class Overlord : Opponent
             yield return new WaitForSeconds(1.2f);
             fireBreath.gameObject.SetActive(true);
 
-            yield return new WaitForSeconds(3.9f);
+            yield return new WaitForSeconds(8.5f);
             fireBreath.gameObject.SetActive(false);
         }
         else
@@ -160,9 +165,7 @@ public class Overlord : Opponent
         }
 
         attackCooldown = 1.0f / stats.alertRange;
-
         attacking = false;
-        attackCoroutine = null;
     }
 
     protected override bool CanSeePlayer()
@@ -186,7 +189,9 @@ public class Overlord : Opponent
             if (memoryTimer <= 0f)
             {
                 DestroyAllMinions();
+
                 memoryTimer = 0.0f;
+                aggressionModifier = 1.0f;
                 currentPhase = Phase.None;
                 state = OpponentState.Idle;
                 return;
@@ -205,17 +210,15 @@ public class Overlord : Opponent
             {
                 return;
             }
+
+            if (initializePhaseCoroutine != null)
+            {
+                StopCoroutine(initializePhaseCoroutine);
+                initializedPhase = true;
+            }
             else
             {
-                if (initializePhaseCoroutine != null)
-                {
-                    StopCoroutine(initializePhaseCoroutine);
-                    initializedPhase = true;
-                }
-                else
-                {
-                    initializePhaseCoroutine = StartCoroutine(InitializePhase());
-                }
+                initializePhaseCoroutine = StartCoroutine(InitializePhase());
             }
         }
 
@@ -233,16 +236,22 @@ public class Overlord : Opponent
         RotateTowards(direction);
 
         Vector3 playerOppDir = (transform.position - playerTransform.position).normalized;
+        float modifier = stats.minDistanceToPlayer * 0.8f;
 
         if (navMeshAgent.enabled)
         {
-            navMeshAgent.SetDestination(playerTransform.position + playerOppDir * stats.minDistanceToPlayer);
+            navMeshAgent.SetDestination(playerTransform.position + playerOppDir * modifier);
         }
 
-        if (attackCooldown == 0.0f && distance <= stats.attackRange * aggressionModifier && initializedPhase)
+        if (attackCooldown == 0.0f && initializedPhase
+            && distance <= stats.attackRange * aggressionModifier)
         {
             SelectAttack(distance);
-            Attack();
+
+            if (selectedAttack != null)
+            {
+                Attack();
+            }
         }
     }
 
@@ -266,20 +275,23 @@ public class Overlord : Opponent
             return;
         }
 
-        navMeshAgent.isStopped = false;
-        navMeshAgent.updateRotation = true;
-
-        Vector3 position = transform.position;
-        position.y = 0.0f;
-
-        // Move back to the center of the spawn room
-        if (Vector3.Distance(position, idlePosition) > 1.0f)
+        if (navMeshAgent.enabled)
         {
-            navMeshAgent.SetDestination(idlePosition);
-            return;
-        }
+            navMeshAgent.isStopped = false;
+            navMeshAgent.updateRotation = true;
 
-        navMeshAgent.isStopped = true;
+            Vector3 position = transform.position;
+            position.y = 0.0f;
+
+            // Move back to the center of the spawn room
+            if (Vector3.Distance(position, idlePosition) > 1.0f)
+            {
+                navMeshAgent.SetDestination(idlePosition);
+                return;
+            }
+
+            navMeshAgent.isStopped = true;
+        }
 
         direction = (aimPoints[0].transform.position - transform.position).normalized;
         direction.y = 0.0f;
@@ -306,10 +318,9 @@ public class Overlord : Opponent
     private System.Collections.IEnumerator InitializePhase()
     {
         initialize = true;
+        navMeshAgent.enabled = false;
 
-        navMeshAgent.isStopped = true;
-        navMeshAgent.velocity = Vector3.zero;
-
+        Debug.Log("Initialize phase: " + currentPhase);
         animator.SetTrigger("roar");
 
         yield return new WaitForSeconds(roarDuration);
@@ -317,20 +328,23 @@ public class Overlord : Opponent
         switch (currentPhase)
         {
             case Phase.One:
-                //SpawnMeleeSkeletons(4);
+                aggressionModifier = 1.25f;
+                SpawnMeleeSkeletons(4);
                 break;
 
             case Phase.Two:
-                SpawnRangedSkeletons(4);
+                aggressionModifier = 1.5f;
+                SpawnRangedSkeletons(2);
                 break;
 
             case Phase.Three:
+                aggressionModifier = 1.75f;
                 SpawnMeleeSkeletons(4);
                 SpawnRangedSkeletons(2);
                 break;
         }
 
-        navMeshAgent.isStopped = false;
+        navMeshAgent.enabled = true;
         initialize = false;
     }
 
@@ -367,16 +381,35 @@ public class Overlord : Opponent
 
     private void SelectAttack(float distance)
     {
-        //"breathFire" "grab" "jumpAttack" "punch" "swiping"
-        switch (currentPhase)
+        float close = stats.minDistanceToPlayer * 1.5f;
+        float medium = stats.attackRange * aggressionModifier * 0.5f;
+        float far = stats.attackRange * aggressionModifier;
+
+        selectedAttack = null;
+
+        // Attacks: breathFire, grab, jumpAttack, punch, swiping
+
+        if (distance <= close)
         {
-            case Phase.One:
-                selectedAttack = "swiping";
-                break;
-            case Phase.Two:
-                break;
-            case Phase.Three:
-                break;
+            selectedAttack = "grab";
+        }
+
+        if (distance <= medium)
+        {
+            selectedAttack = Random.Range(0.0f, 1.0f) > 0.3f ? "punch" : "swiping";
+        }
+
+        if (distance <= far)
+        {
+            if (currentPhase == Phase.Two)
+            {
+                selectedAttack = "breathFire";
+            }
+
+            if (currentPhase == Phase.Three)
+            {
+                selectedAttack = Random.Range(0.0f, 1.0f) > 0.5f ? "breathFire" : "jumpAttack";
+            }
         }
     }
 
@@ -512,6 +545,7 @@ public class Overlord : Opponent
         {
             currentPhase = nextPhase;
             initializedPhase = false;
+            initializePhaseCoroutine = null;
         }
     }
 }

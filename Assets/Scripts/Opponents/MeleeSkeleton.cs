@@ -112,7 +112,6 @@ public class MeleeSkeleton : Opponent
         attackCooldown = 1.0f / stats.alertRange;
 
         attacking = false;
-        attackCoroutine = null;
     }
 
     private void Wander()

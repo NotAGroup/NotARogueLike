@@ -223,7 +223,7 @@ public class SlimeOpponent : Opponent
 
     protected override IEnumerator AttackRoutine()
     {
-        yield return null;
+        yield break;
     }
 
     private void StartAttack()

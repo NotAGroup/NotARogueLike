@@ -165,7 +165,6 @@ public class RangedSkeleton : Opponent
         attackCooldown = 1.0f / stats.alertRange;
 
         attacking = false;
-        attackCoroutine = null;
     }
 
     protected override bool CanSeePlayer()
