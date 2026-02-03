@@ -101,7 +101,7 @@ public class InventoryUI : MonoBehaviour
                 {
                     slotToShow = inventory.items[grabbedSourceSlot];
                 }
-                else if (i == grabbedSourceSlot)
+                else if (i == grabbedSourceSlot && currentSlot >= 0 && currentSlot < inventory.numItemSlots)
                 {
                     slotToShow = inventory.items[currentSlot];
                 }
