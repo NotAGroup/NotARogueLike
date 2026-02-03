@@ -34,6 +34,11 @@ public class CurrencyDisplay : MonoBehaviour
         }
     }
 
+    void OnEnable()
+    {
+        UpdateSlots();
+    }
+
     void Awake() {
         player = GameObject.Find("Player");
         playerInventory = player.GetComponent<Inventory>();

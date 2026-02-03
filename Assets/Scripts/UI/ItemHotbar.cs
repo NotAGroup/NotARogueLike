@@ -30,6 +30,11 @@ public class ItemHotbar : MonoBehaviour
         grid.Commit();
     }
 
+    void OnEnable()
+    {
+        UpdateSlots();
+    }
+
     public void UpdateSlots() {
         // check if slot count has changed
         int numSlots = Math.Min(player.numHotbarSlots, playerInventory.numItemSlots);
