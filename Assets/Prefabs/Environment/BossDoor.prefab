@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7457245411050779007}
   - component: {fileID: -2611043838591043953}
-  - component: {fileID: 709904706985365192}
   - component: {fileID: -1642769945609199786}
   - component: {fileID: -2057478372122942715}
+  - component: {fileID: 6523584459656764436}
   m_Layer: 0
   m_Name: BossDoor
   m_TagString: Untagged
@@ -57,20 +57,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 5, y: 6, z: 0.5}
   m_Center: {x: 0.010579705, y: 3.013871, z: -0.0044004917}
---- !u!114 &709904706985365192
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8127833966775193383}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac391a5e66c0f0d148a144672a1f5198, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  closedInteractionText: Clear the level first
-  openInteractionText: Enter Boss Room
 --- !u!114 &-1642769945609199786
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -98,6 +84,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FloorClearing
   refObject: {fileID: 8127833966775193383}
   isBossDoor: 1
+--- !u!114 &6523584459656764436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8127833966775193383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 358567f21bf76fe01943a2183a4a5b50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossDoor
+  closedInteractionText: Clear the level first
+  openInteractionText: Enter Final Room
 --- !u!1001 &2894679908761901411
 PrefabInstance:
   m_ObjectHideFlags: 0

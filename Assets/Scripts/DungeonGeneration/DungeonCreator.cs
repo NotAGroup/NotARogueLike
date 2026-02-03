@@ -867,25 +867,45 @@ public class DungeonCreator : MonoBehaviour
             0f,
             (room.BottomLeftAreaCorner.y + room.TopRightAreaCorner.y) / 2f
         );
+        Vector3 leftTorchPos; 
+        Vector3 rightTorchPos;
         Quaternion rotation;
+        Quaternion torchRotation;
+        Debug.Log("Creating boss door at " + doorPosition + " with relative position " + relativePosition);
         if (relativePosition == RelativePosition.Up)
         {
-            rotation = Quaternion.Euler(0, 0, 0);
+            rotation = Quaternion.identity;//Euler(0, 0, 0);
+            leftTorchPos = new Vector3(room.BottomLeftAreaCorner.x, torchHeight, room.TopRightAreaCorner.y + 1.049f);
+            rightTorchPos = new Vector3(room.TopRightAreaCorner.x, torchHeight, room.TopRightAreaCorner.y + 1.049f);
+            torchRotation = Quaternion.Euler(0, 180, 0);
         }
         else if (relativePosition == RelativePosition.Down)
         {
             rotation = Quaternion.Euler(0, 180, 0);
+            leftTorchPos = new Vector3(room.TopRightAreaCorner.x, torchHeight, room.BottomLeftAreaCorner.y - 1.049f);
+            rightTorchPos = new Vector3(room.BottomLeftAreaCorner.x, torchHeight, room.BottomLeftAreaCorner.y - 1.049f);
+            torchRotation = Quaternion.identity;
         }
         else if (relativePosition == RelativePosition.Right)
         {
             rotation = Quaternion.Euler(0, 90, 0);
+            rightTorchPos = new Vector3(room.TopRightAreaCorner.x + 1.049f, torchHeight, room.TopRightAreaCorner.y);
+            leftTorchPos = new Vector3(room.TopRightAreaCorner.x + 1.049f, torchHeight, room.BottomLeftAreaCorner.y);
+            torchRotation = Quaternion.Euler(0, 270, 0);
         }
         else
         {
             rotation = Quaternion.Euler(0, 270, 0);
+            rightTorchPos = new Vector3(room.BottomLeftAreaCorner.x - 1.049f, torchHeight, room.TopRightAreaCorner.y);
+            leftTorchPos = new Vector3(room.BottomLeftAreaCorner.x - 1.049f, torchHeight, room.BottomLeftAreaCorner.y);
+            torchRotation = Quaternion.Euler(0, 90, 0);
         }
         GameObject door = Instantiate(bossDoorPrefab, doorPosition, rotation, segment.area.transform);
+        GameObject leftTorch = Instantiate(torchPrefab, leftTorchPos, torchRotation, segment.area.transform);
+        GameObject rightTorch = Instantiate(torchPrefab, rightTorchPos, torchRotation, segment.area.transform);
         door.name = bossDoorPrefab.name;
+        leftTorch.name = "left_" + torchPrefab.name;
+        rightTorch.name = "right_" + torchPrefab.name;
     }
     
 
