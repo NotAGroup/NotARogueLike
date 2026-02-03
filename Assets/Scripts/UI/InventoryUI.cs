@@ -87,6 +87,8 @@ public class InventoryUI : MonoBehaviour
     }
 
     void UpdateSlots() {
+        if (inventory == null || inventory.items == null) return;
+
         for (int i = 0; i < slots.Length; i++) {
             GameObject slot = slots[i];
             ItemHotbarSlot s = slot.GetComponent<ItemHotbarSlot>();
