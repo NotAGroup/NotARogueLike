@@ -53,36 +53,8 @@ public class RunData {
         // add initial items and currencies
         items.AddItem(defs.GetComponent<ItemDefinitions>()[3], constants.initialAmmo, constants.inventoryMask);
         currencies[Currency.Gold] = constants.initialGold;
-    }
 
-    public void NewGame() {
-        Debug.Log("starting new game");
-        GameObject defs = GameObject.Find("Definitions");
-        StatScalingDefinitions statDef = defs.GetComponent<StatScalingDefinitions>();
-        Constants constants = defs.GetComponent<Constants>();
-
-        // back to first level
-        level = 0;
-
-        // reset all currencies
-        foreach (Currency c in Enum.GetValues(typeof(Currency)))
-            currencies[c] = 0;
-
-        // clear items
-        items.Clear();
-        items.Resize(constants.itemSlots);
-
-        // player upgrades are kept
-
-        // reset constitution
-        constitution.health = PlayerStats.ComputeInitial(StatKey.MaxHealth, statDef, upgrades);
-        constitution.stamina = PlayerStats.ComputeInitial(StatKey.MaxStamina, statDef, upgrades);
-        constitution.mana = PlayerStats.ComputeInitial(StatKey.MaxMana, statDef, upgrades);
-
-        // add initial items and currencies
-        items.AddItem(defs.GetComponent<ItemDefinitions>()[3], constants.initialAmmo, constants.inventoryMask);
-        currencies[Currency.Gold] = constants.initialGold;
-        currencies[Currency.XP] = constants.initialXP;
+        Debug.Log("has XP: " + currencies[Currency.XP]);
     }
     
     public static RunData Instance = new();

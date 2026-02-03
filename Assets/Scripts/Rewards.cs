@@ -58,6 +58,8 @@ public class Rewards : MonoBehaviour
                 GameObject instance = Instantiate(droppedItemPrefab, SamplePosition(), SampleRotation());
                 instance.GetComponent<DroppedItem>().SetItem(slot.storedItem, slot.count);
                 instance.name = slot.storedItem.name;
+
+                slot.count = 0; 
             }
         }
 
@@ -65,12 +67,16 @@ public class Rewards : MonoBehaviour
             GameObject instance = Instantiate(droppedItemPrefab, SamplePosition(), SampleRotation());
             instance.GetComponent<DroppedItem>().SetCurrency(Currency.Gold, gold);
             instance.name = "Gold";
+
+            gold = 0; 
         }
 
         if (xp > 0) {
             GameObject instance = Instantiate(droppedItemPrefab, SamplePosition(), SampleRotation());
             instance.GetComponent<DroppedItem>().SetCurrency(Currency.XP, xp);
             instance.name = "XP";
+
+            xp = 0; 
         }
     }
 
