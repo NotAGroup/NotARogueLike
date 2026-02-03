@@ -85,6 +85,7 @@ public class Player : MonoBehaviour
     public int numHotbarSlots;
 
     private Inventory inventory;
+    private PlayerUpgrades upgrades;
     private Constitution constitution;
     private ItemDefinitions itemDefinitions;
     private PlayerStats stats;
@@ -98,6 +99,7 @@ public class Player : MonoBehaviour
     {
         stats = GetComponent<PlayerStats>();
         inventory = GetComponent<Inventory>();
+        upgrades = GetComponent<PlayerUpgrades>();
         constitution = GetComponent<Constitution>();
         crosshair = GameObject.Find("Canvas/Crosshair").GetComponent<Crosshair>();
         uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
@@ -346,9 +348,9 @@ public class Player : MonoBehaviour
         numHotbarSlots = defs.hotbarSlots;
 
         inventory.GetFromRunData(RunData.Instance);
+        upgrades.GetFromRunData(RunData.Instance);
         inventory.SetItemSlotCount(defs.itemSlots);
         inventory.mask = defs.inventoryMask;
-        GameSaver.subscribe(inventory.currency);
 
         OnInventoryChanged();
         OnStatUpgrade();
@@ -360,6 +362,8 @@ public class Player : MonoBehaviour
         {
             return;
         }
+
+        animator.SetFloat("AttackSpeed", stats.hitRate);
 
         hitState = HitState.Swing;
         hitTime = 0.0f;
@@ -525,7 +529,7 @@ public class Player : MonoBehaviour
             return;
         }
 
-        items.ConsumeItem(bowAmmoSlot);
+        inventory.ConsumeItem(bowAmmoSlot);
 
         Vector3 position = cameraTransform.position + cameraTransform.forward * 1.0f;
         Quaternion rotation = cameraTransform.rotation;
@@ -592,7 +596,7 @@ public class Player : MonoBehaviour
                 break;
         }
 
-        inv.ConsumeItem(itemID);
+        inventory.ConsumeItem(itemID);
     }
 
     public void TakeDamage(float damage)

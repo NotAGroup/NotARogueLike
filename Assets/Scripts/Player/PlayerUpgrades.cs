@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 using System;
 
 [RequireComponent(typeof(Inventory))]
@@ -7,9 +8,10 @@ public class PlayerUpgrades : MonoBehaviour
     public PlayerUpgradeState levels;
     private GameObject definitions;
 
-    public PlayerUpgrades() {
-        levels = RunData.Instance.upgrades;
-        GameSaver.subscribe(levels);
+    public UnityEvent onStatsChanged;
+
+    public void GetFromRunData(RunData runData) {
+        levels = runData.upgrades;
     }
 
     void Awake() {
@@ -40,7 +42,8 @@ public class PlayerUpgrades : MonoBehaviour
     {
         if (CanUpgrade(stat, out int cost)) {
             levels[stat] += 1;
-            GetComponent<Inventory>().currency[Currency.XP] -= cost;
+            GetComponent<Inventory>().AddCurrency(Currency.XP, -cost);
+            onStatsChanged.Invoke();
             return true;
         }
 

@@ -6,12 +6,6 @@ public class ItemHotbar : MonoBehaviour
     private Player player;
     private Inventory playerInventory;
 
-    [Header("Rendering")]
-    public GameObject slotPrefab;
-
-    public Vector2 slotPositionLeft;
-    public Vector2 slotPositionRight;
-
     // 
     private GameObject[] slots;
 
@@ -29,14 +23,23 @@ public class ItemHotbar : MonoBehaviour
         int numSlots = Math.Min(player.numHotbarSlots, playerInventory.numItemSlots);
         slots = new GameObject[numSlots];
 
+        UIGrid grid = GetComponent<UIGrid>();
         for (int i = 0; i < numSlots; i++) {
-            slots[i] = Instantiate(slotPrefab, transform);
-            slots[i].transform.localPosition = Vector2.Lerp(slotPositionLeft, slotPositionRight, (float)i / (numSlots - 1));
+            slots[i] = grid.InstantiateGridEntry(i, 0, numSlots, 1);
         }
+        grid.Commit();
     }
 
-    void UpdateSlots() {
-        if (slots == null) return;
+    void OnEnable()
+    {
+        UpdateSlots();
+    }
+
+    public void UpdateSlots() {
+        // check if slot count has changed
+        int numSlots = Math.Min(player.numHotbarSlots, playerInventory.numItemSlots);
+        if (slots == null || numSlots != slots.Length)
+            InitializeSlots();
 
         for (int i = 0; i < slots.Length; i++) {
             GameObject slot = slots[i];
@@ -44,16 +47,5 @@ public class ItemHotbar : MonoBehaviour
             s.SetItem(playerInventory.items[i].storedItem, playerInventory.items[i].count);
             s.SetSelected(false);
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        // check if slot count has changed
-        int numSlots = Math.Min(player.numHotbarSlots, playerInventory.numItemSlots);
-        if (slots == null || numSlots != slots.Length)
-            InitializeSlots();
-
-        UpdateSlots();
     }
 }
