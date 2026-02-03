@@ -373,6 +373,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b2f353518050c5e4387c48f25a9229f2, type: 3}
+--- !u!23 &308406337 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2737418634339007580, guid: db150fb3554009d3da7e6551031bcea6, type: 3}
+  m_PrefabInstance: {fileID: 1014226790}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &427382501
 GameObject:
   m_ObjectHideFlags: 0
@@ -1057,6 +1062,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d20188fe30c054e2dadefce4edb467f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainMenuCamera
+  floor: {fileID: 868965551}
+  ceiling: {fileID: 308406337}
+--- !u!23 &868965551 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 406594355308794301, guid: db150fb3554009d3da7e6551031bcea6, type: 3}
+  m_PrefabInstance: {fileID: 1014226790}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1014226790
 PrefabInstance:
   m_ObjectHideFlags: 0
