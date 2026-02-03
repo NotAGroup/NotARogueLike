@@ -82,13 +82,14 @@ public class MeleeSkeleton : Opponent
         navMeshAgent.isStopped = true;
         navMeshAgent.velocity = Vector3.zero;
 
+        animator.SetFloat("AttackSpeed", stats.attackRate);
         animator.SetTrigger("swing");
         hitZone.SetDamage(stats.attackDamage);
 
-        yield return new WaitForSeconds(stats.swingDuration);
+        yield return new WaitForSeconds(stats.swingDuration / stats.attackRate);
         hitZone.gameObject.SetActive(true);
 
-        yield return new WaitForSeconds(stats.strikeDuration);
+        yield return new WaitForSeconds(stats.strikeDuration / stats.attackRate);
         hitZone.gameObject.SetActive(false);
 
         navMeshAgent.isStopped = false;

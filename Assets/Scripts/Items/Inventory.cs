@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 using System;
 using System.Text;
 using System.Collections.Generic;
@@ -13,20 +14,25 @@ public class Inventory : MonoBehaviour
     public int numCurrencySlots {get; protected set;} = Enum.GetValues(typeof(Currency)).Length;
     public CurrencyContainer currency { get; protected set; }
 
+    public UnityEvent onInventoryChanged;
+
     public void GetFromRunData(RunData data) 
     {
         items = data.items;
         currency = data.currencies;
+        onInventoryChanged.Invoke();
     }
 
     public void SetItemSlotCount(int size)
     {
         items.Resize(size);
+        onInventoryChanged.Invoke();
     }
 
     public void AddCurrency(Currency currency, int amount) 
     {
         this.currency[currency] += amount;
+        onInventoryChanged.Invoke();
     }
 
     public void AddItem(ItemDefinition item, int count) 
@@ -35,6 +41,12 @@ public class Inventory : MonoBehaviour
             items.AddItem(item, count, mask);
         else
             items.AddItem(item, count);
+        onInventoryChanged.Invoke();
+    }
+
+    public void ConsumeItem(int slot) {
+        items.ConsumeItem(slot);
+        onInventoryChanged.Invoke();
     }
 }
 

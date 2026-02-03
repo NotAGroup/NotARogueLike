@@ -158,8 +158,7 @@ public enum BaseStatKey {
     Strength,
     Agility,
     Stamina,
-    Dexterity,
-    Perception
+    Dexterity
 }
 
 // stats that are relevant to gameplay and depend on base stats
