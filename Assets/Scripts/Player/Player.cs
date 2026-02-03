@@ -400,8 +400,11 @@ public class Player : MonoBehaviour
             item.Disable();
             OnInventoryChanged();
             return true;
-        } else if (transform.gameObject.TryGetComponent<TrapDoor>(out TrapDoor door)){
-            door.Interact();
+        } else if (transform.gameObject.TryGetComponent<BossDoor>(out BossDoor bdoor)){
+            bdoor.Interact();
+            return true;
+        } else if (transform.gameObject.TryGetComponent<TrapDoor>(out TrapDoor tdoor)){
+            tdoor.Interact();
             return true;
         }
 

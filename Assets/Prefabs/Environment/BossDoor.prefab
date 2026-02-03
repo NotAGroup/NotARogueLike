@@ -9,6 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7457245411050779007}
+  - component: {fileID: -2611043838591043953}
+  - component: {fileID: -1642769945609199786}
+  - component: {fileID: -2057478372122942715}
+  - component: {fileID: 6523584459656764436}
   m_Layer: 0
   m_Name: BossDoor
   m_TagString: Untagged
@@ -32,6 +36,82 @@ Transform:
   - {fileID: 3432096371103760008}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &-2611043838591043953
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8127833966775193383}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 5, y: 6, z: 0.5}
+  m_Center: {x: 0.010579705, y: 3.013871, z: -0.0044004917}
+--- !u!114 &-1642769945609199786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8127833966775193383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 539227d16cd76d24e9acd4b28d4b9daa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractionHint
+  Text: 
+--- !u!114 &-2057478372122942715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8127833966775193383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85ff9ab4d503377c38d705f5d95936db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FloorClearing
+  onCleared:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6523584459656764436}
+        m_TargetAssemblyTypeName: BossDoor, Assembly-CSharp
+        m_MethodName: Enable
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  opponentTag: Opponent
+--- !u!114 &6523584459656764436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8127833966775193383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 358567f21bf76fe01943a2183a4a5b50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossDoor
+  closedInteractionText: Clear the level first
+  openInteractionText: Enter Final Room
 --- !u!1001 &2894679908761901411
 PrefabInstance:
   m_ObjectHideFlags: 0

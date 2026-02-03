@@ -52,7 +52,6 @@ MonoBehaviour:
   maxIterations: 12
   corridorWidth: 6
   enemyAmount: 1
-  lootProb: 0.5
   shopProb: 0.1
   floorMaterial: {fileID: 2100000, guid: 6b52bc3eac09f1c40852e8eb63bf1df3, type: 2}
   ceilingMaterial: {fileID: 2100000, guid: 1f8d7b02d10a8e84ea50b9849a47dcb8, type: 2}
@@ -71,6 +70,7 @@ MonoBehaviour:
   shopPrefab: {fileID: 8410230881569839391, guid: fab7d7c351eb0e9c7955ba13c50ba0da, type: 3}
   torchPrefab: {fileID: 4535374378362473899, guid: 39045a6357b3e084c9f485fde993ea18, type: 3}
   trapDoorPrefab: {fileID: 1259973537569220611, guid: 8c17970699437bb2bb400f327f926348, type: 3}
+  bossDoorPrefab: {fileID: 8127833966775193383, guid: 6be8f3a3c1e36a5a7a8d4e1c7657c3dc, type: 3}
   navPointPrefab: {fileID: 9146177703536160206, guid: f2f1d481022bcd044a6c8305272e3bee, type: 3}
 --- !u!114 &6857228739014436680
 MonoBehaviour:
