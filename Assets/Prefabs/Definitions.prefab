@@ -729,7 +729,7 @@ MonoBehaviour:
         - level: 2
           value: 2
         - level: 3
-          value: 2
+          value: 1.5
         cyclic: 1
     - key: EncounterCount
       def:
@@ -759,13 +759,13 @@ MonoBehaviour:
         baseValue: 1
         points:
         - level: 0
-          value: 1
+          value: 0
         - level: 1
-          value: 3
+          value: 0
         - level: 2
-          value: 0.5
+          value: 1
         - level: 3
-          value: 0.25
+          value: 0
         cyclic: 1
     - key: AvailableXP
       def:
