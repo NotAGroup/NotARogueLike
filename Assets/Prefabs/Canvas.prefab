@@ -3783,8 +3783,6 @@ MonoBehaviour:
       def: Stamina
     - key: Dexterity
       def: Dexterity
-    - key: Perception
-      def: Perception
   stats:
     definitions:
     - key: FireRate
