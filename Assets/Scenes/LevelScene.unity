@@ -171,6 +171,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: Definitions
       objectReference: {fileID: 0}
+    - target: {fileID: 8785196659807477998, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
+      propertyPath: data.definitions.Array.data[6].def.points.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8785196659807477998, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
+      propertyPath: data.definitions.Array.data[6].def.points.Array.data[1].value
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8785196659807477998, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
+      propertyPath: data.definitions.Array.data[6].def.points.Array.data[2].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8785196659807477998, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
+      propertyPath: data.definitions.Array.data[6].def.points.Array.data[3].value
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8785196659807477998, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
+      propertyPath: data.definitions.Array.data[6].def.points.Array.data[4].level
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8785196659807477998, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
+      propertyPath: data.definitions.Array.data[6].def.points.Array.data[4].value
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
