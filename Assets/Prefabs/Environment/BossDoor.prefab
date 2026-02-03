@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: -1642769945609199786}
   - component: {fileID: -2057478372122942715}
   - component: {fileID: 6523584459656764436}
+  - component: {fileID: 2527522769324066293}
   m_Layer: 0
   m_Name: BossDoor
   m_TagString: Untagged
@@ -113,6 +114,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BossDoor
   closedInteractionText: Clear the level first
   openInteractionText: Enter Final Room
+  openAnimation: {fileID: 2527522769324066293}
+--- !u!95 &2527522769324066293
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8127833966775193383}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 866b47b5a1aacafd4883eeeb8335777c, type: 3}
+  m_Controller: {fileID: 9100000, guid: eaded8983bc167959a37c64b0df0d24c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &2894679908761901411
 PrefabInstance:
   m_ObjectHideFlags: 0
