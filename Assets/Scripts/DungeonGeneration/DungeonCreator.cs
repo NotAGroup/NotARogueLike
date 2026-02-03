@@ -90,7 +90,7 @@ public class DungeonCreator : MonoBehaviour
 
             properties = dungeonPropertyDefinitions.ComputeFrom(level);
             int size = (int)properties[DungeonPropertyKey.Size];
-            hasBossRoom = properties[DungeonPropertyKey.HasBoss] >= 1f;
+            hasBossRoom = properties[DungeonPropertyKey.HasBoss] % 5 == 4;
             Debug.Log("Generating dungeon with parameters: " + properties.ToString());
 
             DestroyAllChildren();
