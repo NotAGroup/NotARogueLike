@@ -15,22 +15,10 @@ public class BossDoor : MonoBehaviour
 
     public void Interact()
     {
+        GetComponent<Collider>().enabled = false;
     }
 
     void Start() {
         GetComponent<InteractionHint>().Text = closedInteractionText;
-    }
-
-
-    void Update() 
-    {
-#if UNITY_EDITOR
-        // For testing save/load
-        if (Keyboard.current.mKey.wasPressedThisFrame)
-        {
-            isEnabled = true;
-            Interact();
-        }
-#endif
     }
 }
