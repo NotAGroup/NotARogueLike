@@ -76,7 +76,9 @@ public class Player : MonoBehaviour
     Animator animator;
     Animator bowAnimator;
     public Projectile[] projectiles;
-    public GameObject bow, sword;
+    public GameObject bow, sword, arrow;
+    public Transform drawArrowSocket;
+    public Transform quiverArrowSocket;
     public PlayerHitZone hitZone;
     private GameObject quiver;
 
@@ -541,13 +543,29 @@ public class Player : MonoBehaviour
 
     public void DrawBow()
     {
+        ItemContainer items = inventory.items;
+        int bowAmmoSlot = items.GetSlotContaining(itemDefinitions[3], 1);
         animator.SetTrigger("BowDrawn");
         bowAnimator.SetTrigger("Draw");
         bowAudioSource.PlayOneShot(drawSound);
+        if (fireCooldown > 0.0f || projectiles.Length == 0 || bowAmmoSlot == -1)
+            return;
+        else{
+            arrow.transform.SetParent(drawArrowSocket, false);
+            arrow.transform.localPosition = Vector3.zero;
+            arrow.transform.localRotation = Quaternion.identity;
+            arrow.transform.localScale = Vector3.one;
+        }
     }
 
     public void Shoot()
     {
+        
+        arrow.transform.SetParent(quiverArrowSocket, false);
+        arrow.transform.localPosition = Vector3.zero;
+        arrow.transform.localRotation = Quaternion.identity;
+        arrow.transform.localScale = Vector3.one;
+
         ItemContainer items = inventory.items;
         int bowAmmoSlot = items.GetSlotContaining(itemDefinitions[3], 1);
 
