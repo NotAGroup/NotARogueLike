@@ -281,8 +281,8 @@ CharacterController:
   serializedVersion: 3
   m_Height: 2
   m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
+  m_SlopeLimit: 5
+  m_StepOffset: 0.05
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
@@ -334,7 +334,10 @@ MonoBehaviour:
   sword: {fileID: 7462210246599486514}
   hitZone: {fileID: 8822189346619956698}
   interactionDistance: 10
+  numHotbarSlots: 0
   isDead: 0
+  minAngleX: -80
+  maxAngleX: 90
 --- !u!114 &8439484915624340096
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -347,6 +350,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7b0b0bd39727be73b5d90365994a0b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Inventory
+  mask: 
+  onInventoryChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &1939592861400707939
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -361,6 +368,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   levels:
     levels: 00000000000000000000000000000000000000000000000000000000
+  onStatsChanged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &1195309795827131598
 MonoBehaviour:
   m_ObjectHideFlags: 0
