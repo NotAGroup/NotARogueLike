@@ -164,7 +164,7 @@ public class Overlord : Opponent
             }
         }
 
-        attackCooldown = 1.0f / stats.alertRange;
+        attackCooldown = 1.0f / stats.attackRate;
         attacking = false;
     }
 

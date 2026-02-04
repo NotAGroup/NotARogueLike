@@ -18,13 +18,14 @@ public class RangedSkeleton : Opponent
     private Vector3 idlePosition;
     private bool setManually = false;
 
-    private AudioSource audioSource;
     public AudioClip drawSound;
     public AudioClip shootSound;
 
     protected override void Start()
     {
         base.Start();
+
+        animator.SetFloat("MovementSpeed", stats.movementSpeed);
 
         navMeshAgent.SetAreaCost(
             NavMesh.GetAreaFromName("Avoid Player"),
@@ -40,7 +41,6 @@ public class RangedSkeleton : Opponent
 
             aimPoints = spawnRoom.GetCorridorOpenings();
             navPoints = spawnRoom.GetCorners();
-            audioSource = GetComponent<AudioSource>();
         }
 
         if (!setManually)
@@ -164,14 +164,16 @@ public class RangedSkeleton : Opponent
 
         yield return new WaitForSeconds(stats.shootDuration);
 
-        Vector3 direction = (playerTransform.position - transform.position).normalized;
+        Vector3 direction = (playerTransform.position - projectile.transform.position).normalized;
+        direction.y += 0.2f;
+        Debug.Log(direction);
 
         projectile.SetDamage(stats.attackDamage);
         projectile.Shoot(direction, "Opponent", 60.0f);
         projectile.transform.parent = null;
         audioSource.PlayOneShot(shootSound);
 
-        attackCooldown = 1.0f / stats.alertRange;
+        attackCooldown = 3.0f / stats.attackRate;
 
         attacking = false;
     }
