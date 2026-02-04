@@ -1,6 +1,5 @@
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.AI;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(CharacterController)), RequireComponent(typeof(PlayerStats)), DisallowMultipleComponent]
 public class Player : MonoBehaviour
@@ -77,6 +76,7 @@ public class Player : MonoBehaviour
     public Projectile[] projectiles;
     public GameObject bow, sword;
     public PlayerHitZone hitZone;
+    public Image damageIndicator;
 
     [Header("Interaction")]
     public float interactionDistance = 10f;
@@ -95,6 +95,10 @@ public class Player : MonoBehaviour
     public bool isDead = false;
     private bool opponentGotHit;
 
+    private Color damageIndicatorColor;
+    private float damageIndicatorDuration = 0.3f;
+    private float damageIndicatorTime = 0.0f;
+
     void Awake()
     {
         stats = GetComponent<PlayerStats>();
@@ -112,6 +116,14 @@ public class Player : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         rb = GetComponent<Rigidbody>();
         animator = GetComponentInChildren<Animator>();
+        
+        if (damageIndicator != null)
+        {
+            damageIndicatorColor = damageIndicator.color;
+            damageIndicatorColor.a = 0;
+
+            damageIndicator.color = damageIndicatorColor;
+        }
     }
 
     // Update is called once per frame
@@ -207,6 +219,19 @@ public class Player : MonoBehaviour
                         Debug.LogError("Unknown Hit State: " + hitState);
                         return;
                 }
+            }
+        }
+
+        if (damageIndicatorTime > 0.0f)
+        {
+            damageIndicatorTime -= Time.deltaTime;
+
+            if (damageIndicatorTime <= 0.0f)
+            {
+                damageIndicatorColor.a = 0.0f;
+                damageIndicatorTime = 0.0f;
+
+                damageIndicator.color = damageIndicatorColor;
             }
         }
 
@@ -604,6 +629,11 @@ public class Player : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        damageIndicatorColor.a = 0.07f;
+
+        damageIndicator.color = damageIndicatorColor;
+        damageIndicatorTime = damageIndicatorDuration;
+
         constitution.TakeDamage(damage);
 
         if (constitution.Health <= 0.0f)
