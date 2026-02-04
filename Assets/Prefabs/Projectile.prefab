@@ -74,7 +74,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
   droppedItemPrefab: {fileID: 6834112976765427387, guid: 5c8515f40aecf6259b9c3cdb74d0a499, type: 3}
-  speed: 100
+  arrowHitSound: {fileID: 8300000, guid: 2a9cfd7408b89574eb22a52f06a130f9, type: 3}
   lifetime: 30
   tipPosition: {x: 0, y: 0, z: 3}
 --- !u!1001 &7820128142587269539

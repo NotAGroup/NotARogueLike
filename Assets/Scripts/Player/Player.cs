@@ -74,6 +74,7 @@ public class Player : MonoBehaviour
 
     [Header("Combat")]
     Animator animator;
+    Animator bowAnimator;
     public Projectile[] projectiles;
     public GameObject bow, sword;
     public PlayerHitZone hitZone;
@@ -96,6 +97,11 @@ public class Player : MonoBehaviour
     public bool isDead = false;
     private bool opponentGotHit;
 
+    public AudioClip drawSound;
+    public AudioClip shootSound;
+    public AudioSource swordAudioSource;
+    public AudioSource bowAudioSource;
+
     void Awake()
     {
         stats = GetComponent<PlayerStats>();
@@ -112,10 +118,10 @@ public class Player : MonoBehaviour
         cameraTransform = mainCamera.GetComponent<Transform>();
         characterController = GetComponent<CharacterController>();
         rb = GetComponent<Rigidbody>();
-        animator = GetComponentInChildren<Animator>();
+        animator = GameObject.Find("Warrior").GetComponent<Animator>();
+        bowAnimator = bow.GetComponent<Animator>();
 
         quiver = GameObject.Find("quiver");
-        bow = GameObject.Find("bow");
 
         //leftShoulderTransform = GameObject.Find("Left Shoulder").GetComponent<Transform>();
         //rightShoulderTransform = GameObject.Find("Right Shoulder").GetComponent<Transform>();
@@ -536,6 +542,8 @@ public class Player : MonoBehaviour
     public void DrawBow()
     {
         animator.SetTrigger("BowDrawn");
+        bowAnimator.SetTrigger("Draw");
+        bowAudioSource.PlayOneShot(drawSound);
     }
 
     public void Shoot()
@@ -546,10 +554,13 @@ public class Player : MonoBehaviour
         if (fireCooldown > 0.0f || projectiles.Length == 0 || bowAmmoSlot == -1)
         {
             animator.SetTrigger("BowEmpty");
+            bowAnimator.SetTrigger("Empty");
             return;
         }
 
         animator.SetTrigger("Shoot");
+        bowAnimator.SetTrigger("Release");
+        bowAudioSource.PlayOneShot(shootSound);
 
         items.ConsumeItem(bowAmmoSlot);
 

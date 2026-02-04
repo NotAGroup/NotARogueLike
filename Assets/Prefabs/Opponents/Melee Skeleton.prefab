@@ -2010,6 +2010,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Opponent
   playerGotHit: 0
   viewAngle: 60
+  audioSource: {fileID: 1061625173914037779}
   hitZone: {fileID: 2615748330894058864}
 --- !u!114 &7685539837612636914
 MonoBehaviour:
@@ -2343,6 +2344,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c8a8d03b03bb37d4db1dda777932e492, type: 3}
+--- !u!82 &1061625173914037779 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 1107677265013121817, guid: c8a8d03b03bb37d4db1dda777932e492, type: 3}
+  m_PrefabInstance: {fileID: 136485548530339082}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3275064117693335017 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3213240907052435683, guid: c8a8d03b03bb37d4db1dda777932e492, type: 3}

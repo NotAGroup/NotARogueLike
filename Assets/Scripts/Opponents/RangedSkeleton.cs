@@ -18,6 +18,10 @@ public class RangedSkeleton : Opponent
     private Vector3 idlePosition;
     private bool setManually = false;
 
+    private AudioSource audioSource;
+    public AudioClip drawSound;
+    public AudioClip shootSound;
+
     protected override void Start()
     {
         base.Start();
@@ -36,12 +40,15 @@ public class RangedSkeleton : Opponent
 
             aimPoints = spawnRoom.GetCorridorOpenings();
             navPoints = spawnRoom.GetCorners();
+            audioSource = GetComponent<AudioSource>();
         }
 
         if (!setManually)
         {
             TryGetIdlePosition(2.0f);
         }
+
+
     }
 
     protected override void Combat()
@@ -152,6 +159,7 @@ public class RangedSkeleton : Opponent
         projectile.transform.localRotation = Quaternion.Euler(-90.0f, 0.0f, 0.0f);
         projectile.name = ammunition.name;
 
+        audioSource.PlayOneShot(drawSound);
         animator.SetTrigger("shoot");
 
         yield return new WaitForSeconds(stats.shootDuration);
@@ -161,6 +169,7 @@ public class RangedSkeleton : Opponent
         projectile.SetDamage(stats.attackDamage);
         projectile.Shoot(direction, "Opponent", 60.0f);
         projectile.transform.parent = null;
+        audioSource.PlayOneShot(shootSound);
 
         attackCooldown = 1.0f / stats.alertRange;
 

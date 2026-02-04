@@ -48,6 +48,8 @@ public abstract class Opponent : MonoBehaviour
 
     public float viewAngle;
 
+    public AudioSource audioSource;
+
     protected virtual void Start()
     {
         state = OpponentState.Idle;

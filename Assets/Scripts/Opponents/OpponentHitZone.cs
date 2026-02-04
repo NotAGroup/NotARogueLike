@@ -11,6 +11,7 @@ public class OpponentHitZone : HitZone<Opponent>
             {
                 player.TakeDamage(damage);
                 owner.playerGotHit = true;
+                owner.audioSource.Play();
             }
         }
     }
