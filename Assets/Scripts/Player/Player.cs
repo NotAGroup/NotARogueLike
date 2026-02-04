@@ -95,9 +95,15 @@ public class Player : MonoBehaviour
     public bool isDead = false;
     private bool opponentGotHit;
 
-    private Color damageIndicatorColor;
-    private float damageIndicatorDuration = 0.3f;
-    private float damageIndicatorTime = 0.0f;
+    // Damage Indicator
+    private Color dmgIndColor;
+    private float dmgIndAlpha;
+    private float dmgIndAlphaFH = 0.07f;
+    private float dmgIndAlphaLH = 0.16f;
+    private float dmgIndDuration;
+    private float dmgIndDurationFH = 0.3f;
+    private float dmgIndDurationLH = 0.9f;
+    private float dmgIndTime = 0.0f;
 
     void Awake()
     {
@@ -119,10 +125,7 @@ public class Player : MonoBehaviour
         
         if (damageIndicator != null)
         {
-            damageIndicatorColor = damageIndicator.color;
-            damageIndicatorColor.a = 0;
-
-            damageIndicator.color = damageIndicatorColor;
+            SetAlpha(0.0f);
         }
     }
 
@@ -222,16 +225,14 @@ public class Player : MonoBehaviour
             }
         }
 
-        if (damageIndicatorTime > 0.0f)
+        if (dmgIndTime > 0.0f)
         {
-            damageIndicatorTime -= Time.deltaTime;
+            dmgIndTime -= Time.deltaTime;
+            SetAlpha(dmgIndAlpha * (dmgIndTime / dmgIndDuration));
 
-            if (damageIndicatorTime <= 0.0f)
+            if (dmgIndTime <= 0.0f)
             {
-                damageIndicatorColor.a = 0.0f;
-                damageIndicatorTime = 0.0f;
-
-                damageIndicator.color = damageIndicatorColor;
+                dmgIndTime = 0.0f;
             }
         }
 
@@ -629,12 +630,15 @@ public class Player : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        damageIndicatorColor.a = 0.07f;
-
-        damageIndicator.color = damageIndicatorColor;
-        damageIndicatorTime = damageIndicatorDuration;
-
         constitution.TakeDamage(damage);
+
+        float factor = Mathf.InverseLerp(1.0f, 0.25f, constitution.Health / stats.maxHealth);
+
+        dmgIndAlpha = Mathf.Lerp(dmgIndAlphaFH, dmgIndAlphaLH, factor);
+        dmgIndDuration = Mathf.Lerp(dmgIndDurationFH, dmgIndDurationLH, factor);
+
+        SetAlpha(dmgIndAlpha);
+        dmgIndTime = dmgIndDuration;
 
         if (constitution.Health <= 0.0f)
         {
@@ -650,5 +654,12 @@ public class Player : MonoBehaviour
     public bool GetOpponentGotHit()
     {
         return opponentGotHit;
+    }
+
+    private void SetAlpha(float alpha)
+    {
+        dmgIndColor = damageIndicator.color;
+        dmgIndColor.a = alpha;
+        damageIndicator.color = dmgIndColor;
     }
 }
