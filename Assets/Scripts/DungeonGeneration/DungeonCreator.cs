@@ -261,7 +261,7 @@ public class DungeonCreator : MonoBehaviour
                 int type = UnityEngine.Random.Range(0, 3);
                 switch (type) {
                 case 0:
-                    enemyRewards.SetSingleItem(RandomItemFrom(availableLootItems));
+                    enemyRewards.AddItem(RandomItemFrom(availableLootItems));
                     break;
                 case 1:
                     enemyRewards.xp = XpFrom(availableLootCurrencies, (int)(properties[DungeonPropertyKey.AvailableXP] / totalEnemyCount));
@@ -579,7 +579,7 @@ public class DungeonCreator : MonoBehaviour
             // add an item
             if (availableLootItems.Count > 0)
             {
-                chest.GetComponent<Rewards>().SetSingleItem(RandomItemFrom(availableLootItems));
+                chest.GetComponent<Rewards>().AddItem(RandomItemFrom(availableLootItems));
             }
 
             // for currencies use an exponential distribution
@@ -614,7 +614,7 @@ public class DungeonCreator : MonoBehaviour
             if (room.Type == "room")
             {
                 GameObject chest = PlaceChest(listOfRooms, i);
-                chest.GetComponent<Rewards>().SetSingleItem(RandomItemFrom(availableLootItems));
+                chest.GetComponent<Rewards>().AddItem(RandomItemFrom(availableLootItems));
             }
         }
 
@@ -936,7 +936,7 @@ public class DungeonCreator : MonoBehaviour
                 switch (type)
                 {
                     case 0:
-                        enemyRewards.SetSingleItem(RandomItemFrom(availableLootItems));
+                        enemyRewards.AddItem(RandomItemFrom(availableLootItems));
                         break;
                     case 1:
                         enemyRewards.xp = XpFrom(availableLootCurrencies, (int)(properties[DungeonPropertyKey.AvailableXP] / opponents));
