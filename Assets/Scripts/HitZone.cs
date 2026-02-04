@@ -20,7 +20,7 @@ public abstract class HitZone<Owner> : MonoBehaviour
             return;
         }
         
-        Debug.Log($"{GetType().Name} hit: {otherObject.name}");
+        //Debug.Log($"{GetType().Name} hit: {otherObject.name}");
 
         DealDamage(otherObject);
     }

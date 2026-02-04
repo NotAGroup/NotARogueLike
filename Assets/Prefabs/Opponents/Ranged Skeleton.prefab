@@ -1799,6 +1799,7 @@ GameObject:
   - component: {fileID: 2069591081605510192}
   - component: {fileID: 3371453016842928542}
   - component: {fileID: 7685539837612636914}
+  - component: {fileID: 4244391265565454132}
   m_Layer: 0
   m_Name: Ranged Skeleton
   m_TagString: Opponent
@@ -1953,6 +1954,21 @@ MonoBehaviour:
   maximumAttachedObjects: 10
   mesh: {fileID: 5764523598682308999}
   boneSnappingFactor: 0.7
+--- !u!114 &4244391265565454132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8282398908945130151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cce98fa56ffba7b5fac31e256dc81795, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Rewards
+  droppedItemPrefab: {fileID: 6834112976765427387, guid: 5c8515f40aecf6259b9c3cdb74d0a499, type: 3}
+  gold: 0
+  xp: 0
 --- !u!1 &8673311879040220446
 GameObject:
   m_ObjectHideFlags: 0

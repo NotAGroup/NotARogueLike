@@ -1,12 +1,12 @@
 using UnityEngine;
 using System;
+using System.Text;
 using System.Collections.Generic;
 
 public class DungeonPropertyDefinitions : KeyValueStoreComponent<DungeonPropertyKey, InterpolationScaling>
 {
     // returns the dungeon properties for the given level
-    public DungeonProperties
-    ComputeFrom(int level) {
+    public DungeonProperties ComputeFrom(int level) {
         Dictionary<DungeonPropertyKey, float> result = new();
         
         for (int i = 0; i < data._defs.Length; i++) {
@@ -19,6 +19,16 @@ public class DungeonPropertyDefinitions : KeyValueStoreComponent<DungeonProperty
 
 public class DungeonProperties : Dictionary<DungeonPropertyKey, float> {
     public DungeonProperties(Dictionary<DungeonPropertyKey, float> b) : base(b) { }
+
+    public override string ToString() {
+        StringBuilder builder = new();
+
+        foreach(var k in base.Keys)
+        {
+            builder.AppendFormat("{0}:{1},", k, base[k]);
+        }
+        return builder.ToString();
+    }
 }
 
 
@@ -46,7 +56,7 @@ public class InterpolationScaling {
         int index = 0;
 
         if (cyclic) {
-            level = level % (points[points.Length - 1].level);
+            level = level % (points[points.Length - 1].level + 1);
         }
 
         for (; index + 1 < points.Length && points[index + 1].level <= level; index++);
@@ -71,11 +81,16 @@ public enum DungeonPropertyKey {
     EnemyCount,
     EncounterCount,
     EnemyLevel,
+    EnemyMaxRangedCount,
     // probability for having a boss
     HasBoss,
     // allows balancing of (scarce) resources 
     AvailableXP,
     AvailableGold,
-    AvailableAmmoPerEnemy
+    AvailableAmmoPerEnemy,
+
+    // 
+    AvailableItemsPerArea,
+    ChestsPerArea
 }
 

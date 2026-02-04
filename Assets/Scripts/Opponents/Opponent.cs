@@ -37,7 +37,7 @@ public abstract class Opponent : MonoBehaviour
 
     public Node spawnRoom;
     protected Vector3 spawnRoomCenter;
-    protected int nextNavPointID = 0;
+    protected int navPointID = 0;
     protected List<NavPoint> navPoints;
 
     protected OptionalVector3 damageDirection;
@@ -50,6 +50,7 @@ public abstract class Opponent : MonoBehaviour
 
     protected virtual void Start()
     {
+        state = OpponentState.Idle;
         stats = GetComponent<OpponentStats>();
         animator = GetComponentInChildren<Animator>();
 
@@ -78,8 +79,12 @@ public abstract class Opponent : MonoBehaviour
             if (state != OpponentState.Idle)
             {
                 attacking = false;
-                navMeshAgent.isStopped = false;
                 state = OpponentState.Idle;
+
+                if (navMeshAgent.enabled)
+                {
+                    navMeshAgent.isStopped = false;
+                }
             }
         }
 
@@ -116,9 +121,10 @@ public abstract class Opponent : MonoBehaviour
         {
             attackCooldown -= Time.deltaTime;
 
-            if (attackCooldown < 0.0f)
+            if (attackCooldown <= 0.0f)
             {
                 attackCooldown = 0.0f;
+                attackCoroutine = null;
             }
         }
     }
@@ -134,8 +140,10 @@ public abstract class Opponent : MonoBehaviour
         {
             StopCoroutine(attackCoroutine);
         }
-
-        attackCoroutine = StartCoroutine(AttackRoutine());
+        else
+        {
+            attackCoroutine = StartCoroutine(AttackRoutine());
+        }
     }
 
     protected abstract System.Collections.IEnumerator AttackRoutine();
@@ -148,7 +156,10 @@ public abstract class Opponent : MonoBehaviour
     {
         if (damageDirection.hasValue)
         {
-            navMeshAgent.isStopped = true;
+            if (navMeshAgent.enabled)
+            {
+                navMeshAgent.isStopped = true;
+            }
 
             velocity = Vector3.zero;
             UpdateMovementAnimation();
@@ -170,7 +181,10 @@ public abstract class Opponent : MonoBehaviour
         {
             stunCooldown = 0.0f;
 
-            navMeshAgent.isStopped = false;
+            if (navMeshAgent.enabled)
+            {
+                navMeshAgent.isStopped = false;
+            }
 
             if (CanSeePlayer() && !player.isDead)
             {
@@ -193,10 +207,18 @@ public abstract class Opponent : MonoBehaviour
 
     protected virtual void Die()
     {
-        navMeshAgent.isStopped = true;
+        if (navMeshAgent.enabled)
+        {
+            navMeshAgent.isStopped = true;
+        }
 
         animator.SetBool("isDead", true);
         state = OpponentState.Dead;
+
+        if (TryGetComponent<Rewards>(out Rewards rewards))
+        {
+            rewards.Drop();
+        }
 
         Destroy(gameObject, 2.0f);
     }
@@ -231,7 +253,11 @@ public abstract class Opponent : MonoBehaviour
 
     public virtual void TakeDamage(float damage, Vector3? direction = null)
     {
-        navMeshAgent.isStopped = true;
+        if (navMeshAgent.enabled)
+        {
+            navMeshAgent.isStopped = true;
+        }
+
         animator.SetTrigger("gotHit");
 
         if (direction.HasValue)

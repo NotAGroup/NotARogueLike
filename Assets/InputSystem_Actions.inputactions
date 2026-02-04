@@ -25,6 +25,15 @@
                     "initialStateCheck": true
                 },
                 {
+                    "name": "LookSinceLastFrame",
+                    "type": "Value",
+                    "id": "1b0cc6f0-cf1d-4df9-bb55-12e3467661b3",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
                     "name": "Strike",
                     "type": "Button",
                     "id": "6c2ab1b8-8984-453a-af3d-a3c78ae1679a",
@@ -325,19 +334,8 @@
                     "id": "c1f7a91b-d0fd-4a62-997e-7fb9b69bf235",
                     "path": "<Gamepad>/rightStick",
                     "interactions": "",
-                    "processors": "ScaleVector2(x=2.5,y=2.5)",
+                    "processors": "ScaleVector2(x=100,y=100)",
                     "groups": ";Gamepad",
-                    "action": "Look",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "8c8e490b-c610-4785-884f-f04217b23ca4",
-                    "path": "<Pointer>/delta",
-                    "interactions": "",
-                    "processors": "ScaleVector2(x=0.1,y=0.1)",
-                    "groups": ";Keyboard&Mouse;Touch",
                     "action": "Look",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -350,6 +348,17 @@
                     "processors": "",
                     "groups": "Joystick",
                     "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "921407c3-9c67-44dd-83c1-fb74639f2bbf",
+                    "path": "<Pointer>/delta",
+                    "interactions": "",
+                    "processors": "ScaleVector2(x=0.1,y=0.1)",
+                    "groups": ";Keyboard&Mouse;Touch",
+                    "action": "LookSinceLastFrame",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -597,8 +606,8 @@
                 },
                 {
                     "name": "",
-                    "id": "340308cc-b9ce-425e-816e-7ccaedb27461",
-                    "path": "<Gamepad>/leftShoulder",
+                    "id": "c32970a2-9fe2-4754-a2cb-37de08cc951e",
+                    "path": "<Gamepad>/leftTrigger",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -657,7 +666,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Shoot",
+                    "action": "Attack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -685,17 +694,6 @@
                 },
                 {
                     "name": "",
-                    "id": "99499cdc-0659-4be6-a960-277ea8e2c833",
-                    "path": "<Gamepad>/leftTrigger",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Strike",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "4198b828-136f-4817-952f-e2801fae226f",
                     "path": "<Mouse>/scroll/up",
                     "interactions": "",
@@ -712,6 +710,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse;Touch",
+                    "action": "ChangeAttack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2bcf976e-ea8a-48f7-b16c-e09220895e7f",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
                     "action": "ChangeAttack",
                     "isComposite": false,
                     "isPartOfComposite": false

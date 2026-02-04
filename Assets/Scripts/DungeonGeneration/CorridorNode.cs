@@ -22,7 +22,7 @@ public class CorridorNode : Node
 
     private void GenerateCorridor()
     {
-        var relativePositionOfStructure2 = CheckPositionStructure2AgainstStructure1();
+        var relativePositionOfStructure2 = StructureHelper.CheckPositionStructure2AgainstStructure1(this.structure1, this.structure2);
         switch (relativePositionOfStructure2)
         {
             case RelativePosition.Up:
@@ -122,7 +122,8 @@ public class CorridorNode : Node
             leftStructure.BottomRightAreaCorner,
             rightStructure.TopLeftAreaCorner,
             rightStructure.BottomLeftAreaCorner);
-        while(y == -1 && sortedLeftStructure.Count > 1)
+        int iterations = 0;
+        while(iterations++ < 100 && y == -1 && sortedLeftStructure.Count > 1)
         {
             sortedLeftStructure = sortedLeftStructure.Where(
                 child => child.TopLeftAreaCorner.y != leftStructure.TopLeftAreaCorner.y).ToList();
@@ -245,7 +246,8 @@ public class CorridorNode : Node
                 bottomStructure.TopRightAreaCorner,
                 topStructure.BottomLeftAreaCorner,
                 topStructure.BottomRightAreaCorner);
-        while(x==-1 && sortedBottomStructure.Count > 1)
+        int iterations = 0;
+        while(iterations++ < 100 && x==-1 && sortedBottomStructure.Count > 1)
         {
             sortedBottomStructure = sortedBottomStructure.Where(child => child.TopLeftAreaCorner.x != topStructure.TopLeftAreaCorner.x).ToList();
             bottomStructure = sortedBottomStructure[0];
@@ -303,35 +305,6 @@ public class CorridorNode : Node
                 ).x;
         }
         return -1;
-    }
-
-    private RelativePosition CheckPositionStructure2AgainstStructure1()
-    {
-        Vector2 middlePointStructure1Temp = ((Vector2)structure1.TopRightAreaCorner + structure1.BottomLeftAreaCorner) / 2;
-        Vector2 middlePointStructure2Temp = ((Vector2)structure2.TopRightAreaCorner + structure2.BottomLeftAreaCorner) / 2;
-        float angle = CalculateAngle(middlePointStructure1Temp, middlePointStructure2Temp);
-        if ((angle < 45 && angle >= 0) || (angle > -45 && angle < 0))
-        {
-            return RelativePosition.Right;
-        }
-        else if(angle > 45 && angle < 135)
-        {
-            return RelativePosition.Up;
-        }
-        else if(angle > -135 && angle < -45)
-        {
-            return RelativePosition.Down;
-        }
-        else
-        {
-            return RelativePosition.Left;
-        }
-    }
-
-    private float CalculateAngle(Vector2 middlePointStructure1Temp, Vector2 middlePointStructure2Temp)
-    {
-        return Mathf.Atan2(middlePointStructure2Temp.y - middlePointStructure1Temp.y,
-            middlePointStructure2Temp.x - middlePointStructure1Temp.x)*Mathf.Rad2Deg;
     }
 
     public String get_structre1()

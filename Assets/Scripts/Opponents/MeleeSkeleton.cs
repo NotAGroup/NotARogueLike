@@ -23,14 +23,19 @@ public class MeleeSkeleton : Opponent
     {
         if (!CanSeePlayer())
         {
-            memoryTimer -= Time.deltaTime;
-
-            if (memoryTimer <= 0f)
+            if (navMeshAgent.remainingDistance <= 1f)
             {
-                memoryTimer = 0.0f;
-                state = OpponentState.Idle;
-                return;
+                memoryTimer -= Time.deltaTime;
+
+                if (memoryTimer <= 0f)
+                {
+                    memoryTimer = 0.0f;
+                    state = OpponentState.Idle;
+                    return;
+                }
             }
+
+            return;
         }
         else
         {
@@ -82,13 +87,14 @@ public class MeleeSkeleton : Opponent
         navMeshAgent.isStopped = true;
         navMeshAgent.velocity = Vector3.zero;
 
+        animator.SetFloat("AttackSpeed", stats.attackRate);
         animator.SetTrigger("swing");
         hitZone.SetDamage(stats.attackDamage);
 
-        yield return new WaitForSeconds(stats.swingDuration);
+        yield return new WaitForSeconds(stats.swingDuration / stats.attackRate);
         hitZone.gameObject.SetActive(true);
 
-        yield return new WaitForSeconds(stats.strikeDuration);
+        yield return new WaitForSeconds(stats.strikeDuration / stats.attackRate);
         hitZone.gameObject.SetActive(false);
 
         navMeshAgent.isStopped = false;
@@ -104,12 +110,12 @@ public class MeleeSkeleton : Opponent
             state = OpponentState.Idle;
         }
 
+        attackCooldown = 1.0f / stats.alertRange;
+
         attacking = false;
-        attackCooldown = 1.0f / stats.attackRate;
-        attackCoroutine = null;
     }
 
-    void Wander()
+    private void Wander()
     {
         if (navMeshAgent.remainingDistance < 1)
         {
@@ -135,7 +141,7 @@ public class MeleeSkeleton : Opponent
 
         if (!wandering && navPoints != null)
         {
-            Vector3 targetPos = navPoints[nextNavPointID].transform.position;
+            Vector3 targetPos = navPoints[navPointID].transform.position;
 
             NavMeshHit navHit;
             NavMesh.SamplePosition(targetPos, out navHit, stats.wanderRadius, NavMesh.AllAreas);
@@ -145,7 +151,7 @@ public class MeleeSkeleton : Opponent
             wanderTimer = Random.Range(stats.wanderInterval * 0.5f, stats.wanderInterval * 2.0f);
             wandering = true;
 
-            nextNavPointID = (nextNavPointID + 1) % navPoints.Count;
+            navPointID = (navPointID + 1) % navPoints.Count;
         }
     }
 
@@ -164,7 +170,7 @@ public class MeleeSkeleton : Opponent
             return false;
         }
 
-        if (distance < 5.0f && !player.isSneaking())
+        if (distance < stats.alertRange && !player.isSneaking())
         {
             return true;
         }
@@ -182,5 +188,10 @@ public class MeleeSkeleton : Opponent
         }
 
         return false;
+    }
+
+    public void SetNavPointID(int id)
+    {
+        navPointID = id;
     }
 }

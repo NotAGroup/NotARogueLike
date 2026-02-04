@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class TrapDoor : MonoBehaviour
 {
@@ -27,4 +28,16 @@ public class TrapDoor : MonoBehaviour
         GetComponent<InteractionHint>().Text = closedInteractionText;
     }
 
+
+    void Update() 
+    {
+#if UNITY_EDITOR
+        // For testing save/load
+        if (Keyboard.current.mKey.wasPressedThisFrame)
+        {
+            isEnabled = true;
+            Interact();
+        }
+#endif
+    }
 }
