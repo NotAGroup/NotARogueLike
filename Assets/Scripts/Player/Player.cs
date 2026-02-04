@@ -545,6 +545,7 @@ public class Player : MonoBehaviour
 
         if (fireCooldown > 0.0f || projectiles.Length == 0 || bowAmmoSlot == -1)
         {
+            animator.SetTrigger("BowEmpty");
             return;
         }
 
