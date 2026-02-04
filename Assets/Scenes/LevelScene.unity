@@ -176,6 +176,10 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8785196659807477998, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
+      propertyPath: data.definitions.Array.data[6].def.points.Array.data[0].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8785196659807477998, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
       propertyPath: data.definitions.Array.data[6].def.points.Array.data[1].value
       value: 0
       objectReference: {fileID: 0}
