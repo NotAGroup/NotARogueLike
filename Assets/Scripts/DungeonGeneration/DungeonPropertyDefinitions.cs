@@ -91,6 +91,8 @@ public enum DungeonPropertyKey {
 
     // 
     AvailableItemsPerArea,
-    ChestsPerArea
+    ChestsPerArea,
+    // either a probability(0..1) or an expected number
+    ShopsPerLevel
 }
 

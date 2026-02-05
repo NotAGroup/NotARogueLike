@@ -808,6 +808,19 @@ MonoBehaviour:
         baseValue: 2
         points: []
         cyclic: 0
+    - key: ShopsPerLevel
+      def:
+        baseValue: 1
+        points:
+        - level: 0
+          value: 0
+        - level: 1
+          value: 1
+        - level: 2
+          value: 0
+        - level: 3
+          value: 3
+        cyclic: 1
 --- !u!114 &149643943944928172
 MonoBehaviour:
   m_ObjectHideFlags: 0
