@@ -20,7 +20,7 @@ RenderSettings:
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.3018868, g: 0.23600751, b: 0.21644714, a: 1}
+  m_AmbientSkyColor: {r: 0.21568628, g: 0.2221225, b: 0.3019608, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
@@ -170,30 +170,6 @@ PrefabInstance:
     - target: {fileID: 5066985577544289893, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
       propertyPath: m_Name
       value: Definitions
-      objectReference: {fileID: 0}
-    - target: {fileID: 8785196659807477998, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
-      propertyPath: data.definitions.Array.data[6].def.points.Array.size
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 8785196659807477998, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
-      propertyPath: data.definitions.Array.data[6].def.points.Array.data[1].value
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8785196659807477998, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
-      propertyPath: data.definitions.Array.data[6].def.points.Array.data[2].value
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8785196659807477998, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
-      propertyPath: data.definitions.Array.data[6].def.points.Array.data[3].value
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8785196659807477998, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
-      propertyPath: data.definitions.Array.data[6].def.points.Array.data[4].level
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 8785196659807477998, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
-      propertyPath: data.definitions.Array.data[6].def.points.Array.data[4].value
-      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -988,14 +964,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7876353293923923091, guid: 758dd1d80f8f28e41b779b0989e997e1, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8859691983232514703, guid: 758dd1d80f8f28e41b779b0989e997e1, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8859691983232514703, guid: 758dd1d80f8f28e41b779b0989e997e1, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}

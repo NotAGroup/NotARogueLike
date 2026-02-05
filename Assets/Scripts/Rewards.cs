@@ -20,6 +20,25 @@ public class Rewards : MonoBehaviour
             itemSlots = null;
     }
 
+    public void AddItem(ItemSlot slot) 
+    {
+        if (itemSlots == null) 
+        {
+            SetSingleItem(slot);
+            return;
+        }
+
+        var tmpSlots = itemSlots;
+        itemSlots = new ItemSlot[tmpSlots.Length + 1];
+
+        for (int i = 0; i < itemSlots.Length - 1; i++)
+        {
+            itemSlots[i] = tmpSlots[i];
+        }
+
+        itemSlots[itemSlots.Length - 1] = slot;
+    }
+
     public void SetItems(ItemSlot[] slots) 
     {
         itemSlots = slots;
@@ -55,6 +74,7 @@ public class Rewards : MonoBehaviour
             for (int i = 0; i < itemSlots.Length; i++)
             {
                 ItemSlot slot = itemSlots[i];
+                if (slot.count <= 0) continue;
                 GameObject instance = Instantiate(droppedItemPrefab, SamplePosition(), SampleRotation());
                 instance.GetComponent<DroppedItem>().SetItem(slot.storedItem, slot.count);
                 instance.name = slot.storedItem.name;
@@ -62,6 +82,7 @@ public class Rewards : MonoBehaviour
                 slot.count = 0; 
             }
         }
+        itemSlots = null;
 
         if (gold > 0) {
             GameObject instance = Instantiate(droppedItemPrefab, SamplePosition(), SampleRotation());
