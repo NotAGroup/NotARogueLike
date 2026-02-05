@@ -373,30 +373,35 @@ public class DungeonCreator : MonoBehaviour
 
     private void CreateShop(List<Node> listOfRooms)
     {
-        if (UnityEngine.Random.Range(0f, 1f) < shopProb)
+        if (UnityEngine.Random.Range(0f, 1f) <= shopProb)
         {
-            int i = UnityEngine.Random.Range(0, listOfRooms.Count());
-            Node room = listOfRooms[i];
-
-            if (room.Type == "room")
+            // try to find a random room for up to 10 times and place a shop in it
+            for (int j = 0; j < 10; j++)
             {
-                // use center of room
-                int shopX = (room.BottomLeftAreaCorner.x + 1 + room.BottomRightAreaCorner.x) / 2;
-                int shopY = (room.BottomLeftAreaCorner.y + 1 + room.TopLeftAreaCorner.y) / 2;
-                Vector3 shopPos = new Vector3(
-                    shopX,
-                    0f,
-                    shopY);
+                int i = UnityEngine.Random.Range(0, listOfRooms.Count());
+                Node room = listOfRooms[i];
 
-                GameObject shop = Instantiate(shopPrefab, shopPos, Quaternion.identity, dungeonSegments[i].area.transform);
-                shop.name = shopPrefab.name;
+                if (room.Type == "room")
+                {
+                    // use center of room
+                    int shopX = (room.BottomLeftAreaCorner.x + 1 + room.TopRightAreaCorner.x) / 2;
+                    int shopY = (room.BottomLeftAreaCorner.y + 1 + room.TopRightAreaCorner.y) / 2;
+                    Vector3 shopPos = new Vector3(
+                        shopX,
+                        0f,
+                        shopY);
 
-                // compute random inventory of shop
-                ItemContainer items = new();
-                items.Resize(3);
-                SetRandomShopItems(items);
+                    GameObject shop = Instantiate(shopPrefab, shopPos, Quaternion.identity, dungeonSegments[i].area.transform);
+                    shop.name = shopPrefab.name;
 
-                shop.GetComponent<ShopRenderer>().SetItems(items);
+                    // compute random inventory of shop
+                    ItemContainer items = new();
+                    items.Resize(3);
+                    SetRandomShopItems(items);
+
+                    shop.GetComponent<ShopRenderer>().SetItems(items);
+                    break;
+                }
             }
         }
     }
