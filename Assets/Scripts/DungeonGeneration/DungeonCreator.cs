@@ -373,35 +373,40 @@ public class DungeonCreator : MonoBehaviour
 
     private void CreateShop(List<Node> listOfRooms)
     {
-        if (UnityEngine.Random.Range(0f, 1f) <= shopProb)
+        int shopCount = 0;
+        if (shopProb <= 1f)
+            shopCount = (UnityEngine.Random.Range(0f, 1f) <= shopProb) ? 1 : 0;
+        else
+            shopCount =  Distributions.Bates.Sample(shopProb, shopProb / 2, 4);
+
+        // try to find a random room for up to 10 times and place a shop in it
+        for (int j = 0; j < shopCount; j++)
         {
-            // try to find a random room for up to 10 times and place a shop in it
-            for (int j = 0; j < 10; j++)
+            while (true)
             {
                 int i = UnityEngine.Random.Range(0, listOfRooms.Count());
                 Node room = listOfRooms[i];
+                
+                if (room.Type != "room") continue;
 
-                if (room.Type == "room")
-                {
-                    // use center of room
-                    int shopX = (room.BottomLeftAreaCorner.x + 1 + room.TopRightAreaCorner.x) / 2;
-                    int shopY = (room.BottomLeftAreaCorner.y + 1 + room.TopRightAreaCorner.y) / 2;
-                    Vector3 shopPos = new Vector3(
-                        shopX,
-                        0f,
-                        shopY);
+                // use center of room
+                int shopX = (room.BottomLeftAreaCorner.x + 1 + room.TopRightAreaCorner.x) / 2;
+                int shopY = (room.BottomLeftAreaCorner.y + 1 + room.TopRightAreaCorner.y) / 2;
+                Vector3 shopPos = new Vector3(
+                    shopX,
+                    0f,
+                    shopY);
 
-                    GameObject shop = Instantiate(shopPrefab, shopPos, Quaternion.identity, dungeonSegments[i].area.transform);
-                    shop.name = shopPrefab.name;
+                GameObject shop = Instantiate(shopPrefab, shopPos, Quaternion.identity, dungeonSegments[i].area.transform);
+                shop.name = shopPrefab.name;
 
-                    // compute random inventory of shop
-                    ItemContainer items = new();
-                    items.Resize(3);
-                    SetRandomShopItems(items);
+                // compute random inventory of shop
+                ItemContainer items = new();
+                items.Resize(3);
+                SetRandomShopItems(items);
 
-                    shop.GetComponent<ShopRenderer>().SetItems(items);
-                    break;
-                }
+                shop.GetComponent<ShopRenderer>().SetItems(items);
+                break;
             }
         }
     }
@@ -445,9 +450,9 @@ public class DungeonCreator : MonoBehaviour
 
         // place in center of the selected room
         Vector3 pos = new Vector3(
-            (selectedRoom.BottomLeftAreaCorner.x + selectedRoom.BottomRightAreaCorner.x) / 2,
+            (selectedRoom.BottomLeftAreaCorner.x + selectedRoom.TopRightAreaCorner.x) / 2,
             0,
-            (selectedRoom.BottomLeftAreaCorner.y + selectedRoom.TopLeftAreaCorner.y) / 2);
+            (selectedRoom.BottomLeftAreaCorner.y + selectedRoom.TopRightAreaCorner.y) / 2);
         GameObject trapdoor = Instantiate(trapDoorPrefab, pos, Quaternion.identity, selectedAera.transform);
         trapdoor.name = trapDoorPrefab.name;
     }
@@ -549,7 +554,7 @@ public class DungeonCreator : MonoBehaviour
     private GameObject PlaceChest(List<Node> listOfRooms, int index) 
     {
         Node room = listOfRooms[index];
-        int chestX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.BottomRightAreaCorner.x - 1);
+        int chestX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.TopRightAreaCorner.x - 1);
         int chestY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopLeftAreaCorner.y - 1);
         Vector3 chestPos = new Vector3(chestX, 0.35f, chestY);
 
@@ -562,7 +567,7 @@ public class DungeonCreator : MonoBehaviour
     private GameObject PlaceLargeChest(List<Node> listOfRooms, int index) 
     {
         Node room = listOfRooms[index];
-        int chestX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.BottomRightAreaCorner.x - 1);
+        int chestX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.TopRightAreaCorner.x - 1);
         int chestY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopLeftAreaCorner.y - 1);
         Vector3 chestPos = new Vector3(chestX, 0.35f, chestY);
 
@@ -909,7 +914,7 @@ public class DungeonCreator : MonoBehaviour
         {
             int level = (int)(properties[DungeonPropertyKey.EnemyLevel]);
             
-            int positionX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.BottomRightAreaCorner.x - 1);
+            int positionX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.TopRightAreaCorner.x - 1);
             int positionY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopLeftAreaCorner.y - 1);
             Vector3 position = new Vector3(positionX, 1, positionY);
 

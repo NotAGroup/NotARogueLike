@@ -53,17 +53,21 @@ public class FlickeringEffect : MonoBehaviour
 
     void Simulate(float delta)
     {
-        // apply current intensities
-        for (int i = 0; i < targets.Length && i < baseIntensity.Length; i++)
+        if (factor * factor + dfactor * dfactor >= 0.00001f)
         {
-            targets[i].intensity = baseIntensity[i] * (1f + factor);
+            // apply current intensities
+            for (int i = 0; i < targets.Length && i < baseIntensity.Length; i++)
+            {
+                targets[i].intensity = baseIntensity[i] * (1f + factor);
+            }
+
+            // simulate spring-mass-damper
+            ddfactor = (-factor - flickerDampening * dfactor) / flickerMass;
+            dfactor += ddfactor * delta;
+            factor  += dfactor;
         }
 
-        // simulate spring-mass-damper
-        ddfactor = (-factor - flickerDampening * dfactor) / flickerMass;
-        dfactor += ddfactor * delta;
-        factor  += dfactor;
-
+        time -= delta;
         if (time <= 0f) {
             // flicker event occured, compute waiting time until next one
             time = Distributions.Exponential.Sample(lambda);
@@ -72,7 +76,5 @@ public class FlickeringEffect : MonoBehaviour
             float value = Mathf.Exp(UnityEngine.Random.Range(-1f,1f) * flickerAmount);
             factor = flickerAmount * value;
         }
-
-        time -= delta;
     }
 }
