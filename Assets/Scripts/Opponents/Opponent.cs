@@ -58,7 +58,8 @@ public abstract class Opponent : MonoBehaviour
 
         navMeshAgent = GetComponent<NavMeshAgent>();
         navMeshAgent.speed = stats.movementSpeed;
-        animator.SetFloat("movementSpeed", stats.movementSpeed);
+        if(animator)
+            animator.SetFloat("movementSpeed", stats.movementSpeed);
 
         playerTransform = GameObject.Find("Player").transform;
         player = playerTransform?.GetComponent<Player>();

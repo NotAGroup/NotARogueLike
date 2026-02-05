@@ -108,6 +108,12 @@ public class Projectile : MonoBehaviour
                 }
             }
 
+            if (hit.transform.GetComponentInParent<SlimeOpponent>() != null)
+            {
+                damage *= 2f;
+                Debug.Log("Slime hit! Arrow damage x2");
+            }
+
             Debug.Log("Projectile dealing " + damage + " damage to " + name);
             opponent.TakeDamage(damage, new Vector3(-travelDirection.x, 0.0f, -travelDirection.z));
         }
