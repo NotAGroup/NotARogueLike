@@ -10,6 +10,9 @@ public class MeleeSkeleton : Opponent
     {
         base.Start();
 
+        animator.SetFloat("MovementSpeed", stats.movementSpeed);
+        animator.SetFloat("AttackSpeed", stats.attackRate);
+        
         if(hitZone != null)
         {
             hitZone.gameObject.SetActive(false);
@@ -92,7 +95,6 @@ public class MeleeSkeleton : Opponent
         navMeshAgent.isStopped = true;
         navMeshAgent.velocity = Vector3.zero;
 
-        animator.SetFloat("AttackSpeed", stats.attackRate);
         animator.SetTrigger("swing");
         hitZone.SetDamage(stats.attackDamage);
 
@@ -115,7 +117,7 @@ public class MeleeSkeleton : Opponent
             state = OpponentState.Idle;
         }
 
-        attackCooldown = 1.0f / stats.alertRange;
+        attackCooldown = 2.0f / stats.attackRate;
 
         attacking = false;
     }

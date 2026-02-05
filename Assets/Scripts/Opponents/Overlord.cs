@@ -177,7 +177,7 @@ public class Overlord : Opponent
             }
         }
 
-        attackCooldown = 1.0f / stats.alertRange;
+        attackCooldown = 1.0f / stats.attackRate;
         attacking = false;
     }
 
@@ -404,24 +404,31 @@ public class Overlord : Opponent
 
         if (distance <= close)
         {
-            selectedAttack = "grab";
+            float attackChoice = Random.Range(0.0f, 1.0f);
+            if(attackChoice < 0.33f)
+            {
+                selectedAttack = "grab";
+            } else if(attackChoice < 0.67f)
+            {
+                selectedAttack = "punch";
+            } else
+            {
+                selectedAttack = "swiping";
+            }
         }
 
         if (distance <= medium)
         {
-            selectedAttack = Random.Range(0.0f, 1.0f) > 0.3f ? "punch" : "swiping";
+            if (currentPhase == Phase.Two || currentPhase == Phase.Three)
+            {
+                selectedAttack = "breathFire";
+            }
         }
 
         if (distance <= far)
         {
-            if (currentPhase == Phase.Two)
+            if (currentPhase == Phase.Two || currentPhase == Phase.Three)
             {
-                selectedAttack = "breathFire";
-            }
-
-            if (currentPhase == Phase.Three)
-            {
-                selectedAttack = Random.Range(0.0f, 1.0f) > 0.5f ? "breathFire" : "jumpAttack";
             }
         }
     }

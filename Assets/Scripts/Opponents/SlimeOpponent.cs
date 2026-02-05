@@ -106,8 +106,6 @@ public class SlimeOpponent : Opponent
             Combat();
         else
             Idle();
-
-        velocity = transform.InverseTransformDirection(navMeshAgent.velocity);
     }
 
     private Vector3 GetChaseTarget()
