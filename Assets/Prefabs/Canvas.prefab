@@ -3963,6 +3963,7 @@ GameObject:
   - component: {fileID: 4982561935838159226}
   - component: {fileID: 913310690716687541}
   - component: {fileID: 1161126889849539145}
+  - component: {fileID: 3600349193833024909}
   m_Layer: 5
   m_Name: Damage Indicator
   m_TagString: Untagged
@@ -4027,6 +4028,22 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3600349193833024909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7160685322600944584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 822c43df25ffbc449b79c502e9383f5e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  alphaFullHealth: 0.07
+  alphaLowHealth: 0.16
+  durationFullHealth: 0.3
+  durationLowHealth: 0.9
 --- !u!1 &7458238497939715555
 GameObject:
   m_ObjectHideFlags: 0

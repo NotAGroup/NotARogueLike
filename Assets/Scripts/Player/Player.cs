@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 [RequireComponent(typeof(CharacterController)), RequireComponent(typeof(PlayerStats)), DisallowMultipleComponent]
 public class Player : MonoBehaviour
@@ -76,7 +75,6 @@ public class Player : MonoBehaviour
     public Projectile[] projectiles;
     public GameObject bow, sword;
     public PlayerHitZone hitZone;
-    public Image damageIndicator;
 
     [Header("Interaction")]
     public float interactionDistance = 10f;
@@ -87,6 +85,7 @@ public class Player : MonoBehaviour
     private Inventory inventory;
     private PlayerUpgrades upgrades;
     private Constitution constitution;
+    private DamageIndicator damageIndicator;
     private ItemDefinitions itemDefinitions;
     private PlayerStats stats;
     private Crosshair crosshair;
@@ -94,16 +93,6 @@ public class Player : MonoBehaviour
 
     public bool isDead = false;
     private bool opponentGotHit;
-
-    // Damage Indicator
-    private Color dmgIndColor;
-    private float dmgIndAlpha;
-    private float dmgIndAlphaFH = 0.07f;
-    private float dmgIndAlphaLH = 0.16f;
-    private float dmgIndDuration;
-    private float dmgIndDurationFH = 0.3f;
-    private float dmgIndDurationLH = 0.9f;
-    private float dmgIndTime = 0.0f;
 
     void Awake()
     {
@@ -113,6 +102,7 @@ public class Player : MonoBehaviour
         constitution = GetComponent<Constitution>();
         crosshair = GameObject.Find("Canvas/Crosshair").GetComponent<Crosshair>();
         uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+        damageIndicator = GameObject.Find("Damage Indicator").GetComponent<DamageIndicator>();
         itemDefinitions = GameObject.Find("Definitions").GetComponent<ItemDefinitions>();
 
         GameObject mainCamera = GameObject.Find("Main Camera");
@@ -122,11 +112,6 @@ public class Player : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         rb = GetComponent<Rigidbody>();
         animator = GetComponentInChildren<Animator>();
-        
-        if (damageIndicator != null)
-        {
-            SetAlpha(0.0f);
-        }
     }
 
     // Update is called once per frame
@@ -222,17 +207,6 @@ public class Player : MonoBehaviour
                         Debug.LogError("Unknown Hit State: " + hitState);
                         return;
                 }
-            }
-        }
-
-        if (dmgIndTime > 0.0f)
-        {
-            dmgIndTime -= Time.deltaTime;
-            SetAlpha(dmgIndAlpha * (dmgIndTime / dmgIndDuration));
-
-            if (dmgIndTime <= 0.0f)
-            {
-                dmgIndTime = 0.0f;
             }
         }
 
@@ -631,14 +605,7 @@ public class Player : MonoBehaviour
     public void TakeDamage(float damage)
     {
         constitution.TakeDamage(damage);
-
-        float factor = Mathf.InverseLerp(1.0f, 0.25f, constitution.Health / stats.maxHealth);
-
-        dmgIndAlpha = Mathf.Lerp(dmgIndAlphaFH, dmgIndAlphaLH, factor);
-        dmgIndDuration = Mathf.Lerp(dmgIndDurationFH, dmgIndDurationLH, factor);
-
-        SetAlpha(dmgIndAlpha);
-        dmgIndTime = dmgIndDuration;
+        damageIndicator.Flash();
 
         if (constitution.Health <= 0.0f)
         {
@@ -654,12 +621,5 @@ public class Player : MonoBehaviour
     public bool GetOpponentGotHit()
     {
         return opponentGotHit;
-    }
-
-    private void SetAlpha(float alpha)
-    {
-        dmgIndColor = damageIndicator.color;
-        dmgIndColor.a = alpha;
-        damageIndicator.color = dmgIndColor;
     }
 }
