@@ -54,6 +54,11 @@ public class Overlord : Opponent
     {
         base.Start();
 
+        if (hitZone != null)
+        {
+            hitZone.gameObject.SetActive(false);
+        }
+
         currentPhase = Phase.None;
 
         fireBreath = GetComponentInChildren<FireBreath>();
@@ -116,6 +121,8 @@ public class Overlord : Opponent
 
                 yield return new WaitForSeconds(2.8f);
                 hitZone.gameObject.SetActive(false);
+
+                playerGotHit = false;
             }
 
             if (selectedAttack == "jumpAttack")
@@ -141,6 +148,8 @@ public class Overlord : Opponent
                 rigidBody.constraints = RigidbodyConstraints.FreezeAll;
 
                 hitZone.gameObject.SetActive(false);
+                
+                playerGotHit = false;
 
                 navMeshAgent.enabled = true;
             }
@@ -152,6 +161,8 @@ public class Overlord : Opponent
 
                 yield return new WaitForSeconds(1.8f);
                 hitZone.gameObject.SetActive(false);
+
+                playerGotHit = false;
             }
 
             if (selectedAttack == "swiping")
@@ -161,6 +172,8 @@ public class Overlord : Opponent
 
                 yield return new WaitForSeconds(0.94f);
                 hitZone.gameObject.SetActive(false);
+
+                playerGotHit = false;
             }
         }
 

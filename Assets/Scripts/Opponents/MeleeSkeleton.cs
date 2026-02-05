@@ -10,6 +10,11 @@ public class MeleeSkeleton : Opponent
     {
         base.Start();
 
+        if(hitZone != null)
+        {
+            hitZone.gameObject.SetActive(false);
+        }
+
         if (spawnRoom != null)
         {
             Vector2Int roomCenter = (spawnRoom.BottomLeftAreaCorner + spawnRoom.TopRightAreaCorner) / 2;
