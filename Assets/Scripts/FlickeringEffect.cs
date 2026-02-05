@@ -7,9 +7,8 @@ public class FlickeringEffect : MonoBehaviour
     
     [Header("Parameters")]
     [Range(0f,1f)]
-    public float flickerMin = 0.5f;
-    [Range(0f,1f)]
-    public float flickerMax = 0.5f;
+    [Tooltip("intensity will vary by a factor between e^(+/- flickerAmount)")]
+    public float flickerAmount = 0.3f;
     [Header("Mass-Spring-Damper-like return of intensity")]
     public float flickerMass = 0.05f;
     public float flickerDampening = 0.4f;
@@ -69,16 +68,9 @@ public class FlickeringEffect : MonoBehaviour
             // flicker event occured, compute waiting time until next one
             time = Distributions.Exponential.Sample(lambda);
 
-            // set new intensity factor by sampling something 
-            float value = Distributions.Bates.Sample(0f,1f, 3);
-            if (UnityEngine.Random.Range(0f, 1f) > 0.7)
-            {
-                factor = flickerMax * value;
-            } 
-            else
-            {
-                factor = flickerMin * value;
-            }
+            // set new intensity factor by sampling 
+            float value = Mathf.Exp(UnityEngine.Random.Range(-1f,1f) * flickerAmount);
+            factor = flickerAmount * value;
         }
 
         time -= delta;

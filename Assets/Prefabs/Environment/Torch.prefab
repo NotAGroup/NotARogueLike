@@ -218,8 +218,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   targets:
   - {fileID: 3254112855071667933}
-  flickerMin: 0.6
-  flickerMax: 0.2
+  flickerAmount: 0.3
   flickerMass: 0.04
   flickerDampening: 0.4
   lambda: 0.5
