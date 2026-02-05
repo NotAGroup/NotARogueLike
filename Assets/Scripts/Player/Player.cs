@@ -30,7 +30,7 @@ public class Player : MonoBehaviour
         Strike
     }
 
-    private AttackType attackType;
+    public AttackType attackType;
     private HitState hitState;
 
     private float gravity = -9.81f;
@@ -43,6 +43,7 @@ public class Player : MonoBehaviour
     private Vector3 motion;
     private Vector3 scale;
     private float SprintAnimSpeed;
+    private float SwingAnimSpeed;
 
     private float currentFOV;
 
@@ -72,11 +73,14 @@ public class Player : MonoBehaviour
     public float zoomSpeed = 10.0f;
 
     [Header("Combat")]
-    Vector3 localVelocity;
     Animator animator;
+    Animator bowAnimator;
     public Projectile[] projectiles;
-    public GameObject bow, sword;
+    public GameObject bow, sword, arrow;
+    public Transform drawArrowSocket;
+    public Transform quiverArrowSocket;
     public PlayerHitZone hitZone;
+    private GameObject quiver;
 
     [Header("Interaction")]
     public float interactionDistance = 10f;
@@ -95,6 +99,11 @@ public class Player : MonoBehaviour
     public bool isDead = false;
     private bool opponentGotHit;
 
+    public AudioClip drawSound;
+    public AudioClip shootSound;
+    public AudioSource swordAudioSource;
+    public AudioSource bowAudioSource;
+
     void Awake()
     {
         stats = GetComponent<PlayerStats>();
@@ -111,7 +120,13 @@ public class Player : MonoBehaviour
         cameraTransform = mainCamera.GetComponent<Transform>();
         characterController = GetComponent<CharacterController>();
         rb = GetComponent<Rigidbody>();
-        animator = GetComponentInChildren<Animator>();
+        animator = GameObject.Find("Warrior").GetComponent<Animator>();
+        bowAnimator = bow.GetComponent<Animator>();
+
+        quiver = GameObject.Find("quiver");
+
+        //leftShoulderTransform = GameObject.Find("Left Shoulder").GetComponent<Transform>();
+        //rightShoulderTransform = GameObject.Find("Right Shoulder").GetComponent<Transform>();
     }
 
     // Update is called once per frame
@@ -123,13 +138,14 @@ public class Player : MonoBehaviour
 
         scale.y = slide ? defaultYScale * 0.5f : sneak ? defaultYScale * 0.75f : defaultYScale;
         transform.localScale = scale;
-        SprintAnimSpeed = run ? 2f : 1f;
+        SprintAnimSpeed = run ? stats.runSpeed : stats.walkSpeed;
         animator.SetFloat("SprintAnimSpeed", SprintAnimSpeed);
 
-        localVelocity = transform.InverseTransformDirection(rb.linearVelocity);
+        SwingAnimSpeed = stats.hitRate;
+        animator.SetFloat("SwingAnimSpeed", SwingAnimSpeed);
 
-        float moveX = localVelocity.x;
-        float moveZ = localVelocity.z;
+        float moveX = Input.GetAxisRaw("Horizontal");
+        float moveZ = Input.GetAxisRaw("Vertical");
         animator.SetFloat("MoveX", moveX, 0.1f, Time.deltaTime);
         animator.SetFloat("MoveZ", moveZ, 0.1f, Time.deltaTime);
 
@@ -259,6 +275,8 @@ public class Player : MonoBehaviour
         }
     }
 
+
+
     public void Aim(bool value)
     {
         if (value)
@@ -294,6 +312,9 @@ public class Player : MonoBehaviour
     {
         this.attackType = attackType;
         sword.gameObject.SetActive(attackType == AttackType.Hit);
+        quiver.gameObject.SetActive(attackType == AttackType.Shoot);
+        bow.gameObject.SetActive(attackType == AttackType.Shoot);
+        animator.SetBool("hasBow", attackType == AttackType.Shoot);
 
         RunData.Instance.selectedAttack = attackType;
     }
@@ -522,17 +543,46 @@ public class Player : MonoBehaviour
         cameraTransform.localRotation = Quaternion.AngleAxis(angleX, Vector3.left);
     }
 
+    public void DrawBow()
+    {
+        ItemContainer items = inventory.items;
+        int bowAmmoSlot = items.GetSlotContaining(itemDefinitions[3], 1);
+        animator.SetTrigger("BowDrawn");
+        bowAnimator.SetTrigger("Draw");
+        bowAudioSource.PlayOneShot(drawSound);
+        if (fireCooldown > 0.0f || projectiles.Length == 0 || bowAmmoSlot == -1)
+            return;
+        else{
+            arrow.transform.SetParent(drawArrowSocket, false);
+            arrow.transform.localPosition = Vector3.zero;
+            arrow.transform.localRotation = Quaternion.identity;
+            arrow.transform.localScale = Vector3.one;
+        }
+    }
+
     public void Shoot()
     {
+        
+        arrow.transform.SetParent(quiverArrowSocket, false);
+        arrow.transform.localPosition = Vector3.zero;
+        arrow.transform.localRotation = Quaternion.identity;
+        arrow.transform.localScale = Vector3.one;
+
         ItemContainer items = inventory.items;
         int bowAmmoSlot = items.GetSlotContaining(itemDefinitions[3], 1);
 
         if (fireCooldown > 0.0f || projectiles.Length == 0 || bowAmmoSlot == -1)
         {
+            animator.SetTrigger("BowEmpty");
+            bowAnimator.SetTrigger("Empty");
             return;
         }
 
-        inventory.ConsumeItem(bowAmmoSlot);
+        animator.SetTrigger("Shoot");
+        bowAnimator.SetTrigger("Release");
+        bowAudioSource.PlayOneShot(shootSound);
+
+        items.ConsumeItem(bowAmmoSlot);
 
         Vector3 position = cameraTransform.position + cameraTransform.forward * 1.0f;
         Quaternion rotation = cameraTransform.rotation;

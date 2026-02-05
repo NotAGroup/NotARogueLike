@@ -9,6 +9,7 @@ public class PlayerHitZone : HitZone<Player>
         {
             Debug.Log("Zone dealing " + damage + " damage to " + other.gameObject.name);
             destroyableObject.TakeDamage(damage);
+            owner.swordAudioSource.Play();
         }
 
         if (other.TryGetComponent<Opponent>(out Opponent opponent))
@@ -18,6 +19,7 @@ public class PlayerHitZone : HitZone<Player>
             {
                 opponent.TakeDamage(damage);
                 owner.SetOpponentGotHit(true);
+                owner.swordAudioSource.Play();
             }
         }
     }

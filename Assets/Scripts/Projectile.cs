@@ -9,6 +9,7 @@ public class Projectile : MonoBehaviour
     private Rigidbody rigidBody;
 
     public GameObject droppedItemPrefab;
+    public AudioClip arrowHitSound;
 
     private ItemDefinitions itemDefinitions;
     private ItemDefinition bowAmmo;
@@ -66,6 +67,8 @@ public class Projectile : MonoBehaviour
         GameObject hitObject = hit.transform.gameObject;
         string name = hitObject.name;
         string tag = hitObject.tag;
+
+        AudioSource.PlayClipAtPoint(arrowHitSound, transform.position);
 
         if (tag.Equals(ignoreTag)) {
             return;

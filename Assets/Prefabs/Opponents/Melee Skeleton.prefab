@@ -109,7 +109,7 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: f3d5d500492484b4180400302ff2595e, type: 3}
   m_Controller: {fileID: 9100000, guid: d730ce3e6e6e41043a5bf530ee40a124, type: 2}
-  m_CullingMode: 1
+  m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
@@ -1975,7 +1975,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   className: 
-  hitRate: 2
+  attackRate: 0
   stunDuration: 0
   swingDuration: 0
   strikeDuration: 0.3
@@ -1990,6 +1990,12 @@ MonoBehaviour:
   movementSpeed: 0
   memoryDuration: 5
   detectionRange: 20
+  alertRange: 0
+  aggressionDuration: 0
+  aimDuration: 0
+  avoidRadius: 0
+  minDistanceToPlayer: 0
+  shootDuration: 0
 --- !u!114 &2506817616126039836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2004,6 +2010,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Opponent
   playerGotHit: 0
   viewAngle: 60
+  audioSource: {fileID: 1061625173914037779}
   hitZone: {fileID: 2615748330894058864}
 --- !u!114 &7685539837612636914
 MonoBehaviour:
@@ -2337,6 +2344,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c8a8d03b03bb37d4db1dda777932e492, type: 3}
+--- !u!82 &1061625173914037779 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 1107677265013121817, guid: c8a8d03b03bb37d4db1dda777932e492, type: 3}
+  m_PrefabInstance: {fileID: 136485548530339082}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3275064117693335017 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3213240907052435683, guid: c8a8d03b03bb37d4db1dda777932e492, type: 3}

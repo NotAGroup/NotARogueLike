@@ -169,16 +169,35 @@ public class UserInput : MonoBehaviour
 
         // input using selected attack
         if (changeAttackAction.WasPerformedThisFrame()) {player.ChangeAttack(); }
-        if (attackAction.WasPerformedThisFrame()) {player.Attack(); }
+
+        if (attackAction.WasPressedThisFrame()) {
+            if(player.attackType == Player.AttackType.Shoot) {
+                player.DrawBow();
+            } else
+            {
+                player.Attack();
+            }
+        }
+
+        if(attackAction.WasReleasedThisFrame()) {
+            if(player.attackType == Player.AttackType.Shoot) {
+                player.Shoot();
+            }
+        }
 
         // attack-type-specific inputs 
         if (strikeAction.WasPerformedThisFrame()) {
             player.ChangeAttack(Player.AttackType.Hit);
             player.Attack();
         }
-        if (shootAction.WasPerformedThisFrame()) {
+        if (shootAction.WasPressedThisFrame()) {
             player.ChangeAttack(Player.AttackType.Shoot);
-            player.Attack();
+            player.DrawBow();
+        }
+
+        if(shootAction.WasReleasedThisFrame())
+        {
+            player.Shoot();
         }
 
 
