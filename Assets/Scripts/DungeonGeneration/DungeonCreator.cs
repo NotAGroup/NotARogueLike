@@ -26,7 +26,6 @@ public class DungeonCreator : MonoBehaviour
     public int maxIterations;
     public int corridorWidth;
     public int enemyAmount;
-    public float shopProb;
 
     [Header("Materials")]
     public Material floorMaterial;
@@ -350,64 +349,82 @@ public class DungeonCreator : MonoBehaviour
         }
     }
 
-    private void SetRandomShopItems(ItemContainer items)
+    // selects random shop items, using probabilities raised to the given exponent
+    // 0 corresponds to a uniform distribution on the items meaning that otherwise 
+    // rare items appear more frequently
+    private void SetRandomShopItems(ItemContainer items, float probabilityExponent)
     {
+        float[] adjustedProbabilities = new float[itemDefinitions.definitions.Length];
+        float adjustedProbabilitySum = 0;
+        int index = 0;
+        foreach (ItemDefinition def in itemDefinitions.definitions)
+        {
+            adjustedProbabilities[index] = Mathf.Pow(def.shopProbability, probabilityExponent);
+            adjustedProbabilitySum += adjustedProbabilities[index];
+            index++;
+        }
+
+        // normalize adjusted probabilities
+        for (int i = 0; i < adjustedProbabilities.Length; i++)
+        {
+            adjustedProbabilities[i] /= adjustedProbabilitySum;
+        }
+        
         foreach (ItemSlot slot in items.slots)
         {
             slot.storedItem = null;
 
             // select random definition
             float random = UnityEngine.Random.Range(0f, 1f);
+            index = 0;
             foreach (ItemDefinition def in itemDefinitions.definitions)
             {
-                if (random <= def.shopProbability)
+                if (random <= adjustedProbabilities[index])
                 {
                     slot.storedItem = def;
-                    slot.count = 1;
+                    slot.count = UnityEngine.Random.Range(1, def.maxPerShopSlot + 1);
                     break;
                 }
-                random -= def.shopProbability;
+                random -= adjustedProbabilities[index];
+                index++;
             }
         }
     }
 
     private void CreateShop(List<Node> listOfRooms)
     {
+        float shopProb = properties[DungeonPropertyKey.ShopsPerLevel];
         int shopCount = 0;
-        if (shopProb <= 1f)
-            shopCount = (UnityEngine.Random.Range(0f, 1f) <= shopProb) ? 1 : 0;
-        else
-            shopCount =  Distributions.Bates.Sample(shopProb, shopProb / 2, 4);
+        shopCount = (int)Distributions.Bates.Sample(shopProb, shopProb, 4);
 
-        // try to find a random room for up to 10 times and place a shop in it
-        for (int j = 0; j < shopCount; j++)
+        for (int j = 0; j < shopCount; /*j only incremented on sucessful spawn*/)
         {
-            while (true)
-            {
-                int i = UnityEngine.Random.Range(0, listOfRooms.Count());
-                Node room = listOfRooms[i];
-                
-                if (room.Type != "room") continue;
+            // randomly select a dungeon segment
+            int i = UnityEngine.Random.Range(0, listOfRooms.Count());
+            Node room = listOfRooms[i];
+            
+            if (room.Type != "room") continue;
 
-                // use center of room
-                int shopX = (room.BottomLeftAreaCorner.x + 1 + room.TopRightAreaCorner.x) / 2;
-                int shopY = (room.BottomLeftAreaCorner.y + 1 + room.TopRightAreaCorner.y) / 2;
-                Vector3 shopPos = new Vector3(
-                    shopX,
-                    0f,
-                    shopY);
+            // use center of room
+            int shopX = (room.BottomLeftAreaCorner.x + 1 + room.TopRightAreaCorner.x) / 2;
+            int shopY = (room.BottomLeftAreaCorner.y + 1 + room.TopRightAreaCorner.y) / 2;
+            Vector3 shopPos = new Vector3(
+                shopX,
+                0f,
+                shopY);
 
-                GameObject shop = Instantiate(shopPrefab, shopPos, Quaternion.identity, dungeonSegments[i].area.transform);
-                shop.name = shopPrefab.name;
+            GameObject shop = Instantiate(shopPrefab, shopPos, Quaternion.identity, dungeonSegments[i].area.transform);
+            shop.name = shopPrefab.name;
 
-                // compute random inventory of shop
-                ItemContainer items = new();
-                items.Resize(3);
-                SetRandomShopItems(items);
+            // compute random inventory of shop
+            ItemContainer items = new();
+            items.Resize(3);
+            SetRandomShopItems(items, 1f / ((level + 4) / 4));
 
-                shop.GetComponent<ShopRenderer>().SetItems(items);
-                break;
-            }
+            shop.GetComponent<ShopRenderer>().SetItems(items);
+            Debug.Log("Spawned shop with items " + items);
+
+            j++;
         }
     }
 
