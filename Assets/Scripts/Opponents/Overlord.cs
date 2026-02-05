@@ -301,7 +301,7 @@ public class Overlord : Opponent
 
     public override void TakeDamage(float damage, Vector3? direction = null)
     {
-        if (risen)
+        if (risen && !initialize)
         {
             // Ensure that overlord only takes damage after being resurrected
             base.TakeDamage(damage, direction);

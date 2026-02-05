@@ -80,6 +80,11 @@ public class CorridorNode : Node
         {
             foreach(var rightRoom in sortedRightStructure)
             {
+                if(leftRoom.TopRightAreaCorner.y <= rightRoom.BottomLeftAreaCorner.y - this.corridorWidth - 2 ||
+                 rightRoom.TopRightAreaCorner.y <= leftRoom.BottomLeftAreaCorner.y - this.corridorWidth - 2)
+                {
+                    continue;
+                }
                 int topLeftBottomRight = Math.Abs(leftRoom.TopRightAreaCorner.y - rightRoom.BottomLeftAreaCorner.y);
                 int topRightBottomLeft = Math.Abs(rightRoom.TopLeftAreaCorner.y - leftRoom.BottomRightAreaCorner.y);
                 if (topLeftBottomRight <= topRightBottomLeft){
@@ -211,6 +216,11 @@ public class CorridorNode : Node
         {
             foreach(var topRoom in sortedTopStructure)
             {
+                if(bottomRoom.TopRightAreaCorner.x <= topRoom.BottomLeftAreaCorner.x - this.corridorWidth - 2 ||
+                 topRoom.TopRightAreaCorner.x <= bottomRoom.BottomLeftAreaCorner.x - this.corridorWidth - 2)
+                {
+                    continue;
+                }
                 int topLeftBottomRight = Math.Abs(bottomRoom.TopRightAreaCorner.x - topRoom.BottomLeftAreaCorner.x);
                 int topRightBottomLeft = Math.Abs(topRoom.BottomRightAreaCorner.x - bottomRoom.TopLeftAreaCorner.x);
                 scale = topLeftBottomRight <= topRightBottomLeft ?

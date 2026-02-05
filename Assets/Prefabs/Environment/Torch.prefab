@@ -43,9 +43,9 @@ Light:
   m_Enabled: 1
   serializedVersion: 11
   m_Type: 2
-  m_Color: {r: 1, g: 0.84313726, b: 0, a: 1}
+  m_Color: {r: 1, g: 0.7901089, b: 0.32549024, a: 1}
   m_Intensity: 15
-  m_Range: 10
+  m_Range: 30
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -218,7 +218,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   targets:
   - {fileID: 3254112855071667933}
-  flickerMin: 0.2
-  flickerMax: 1.5
-  flickerReturnRate: 5
+  flickerAmount: 0.3
+  flickerMass: 0.04
+  flickerDampening: 0.4
   lambda: 0.5

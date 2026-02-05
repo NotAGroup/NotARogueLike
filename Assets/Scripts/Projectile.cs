@@ -34,7 +34,7 @@ public class Projectile : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if (!fired)
         {
@@ -106,6 +106,12 @@ public class Projectile : MonoBehaviour
                     Debug.Log("Headshot!");
                     damage *= 1.25f; // headshot multiplier
                 }
+            }
+
+            if (hit.transform.GetComponentInParent<SlimeOpponent>() != null)
+            {
+                damage *= 2f;
+                Debug.Log("Slime hit! Arrow damage x2");
             }
 
             Debug.Log("Projectile dealing " + damage + " damage to " + name);
