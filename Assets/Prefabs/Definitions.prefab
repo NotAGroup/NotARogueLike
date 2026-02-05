@@ -829,7 +829,7 @@ MonoBehaviour:
       definitions:
       - key: AttackRate
         def:
-          baseValue: 2
+          baseValue: 1
           points:
           - level: 0
             value: 1
@@ -843,12 +843,12 @@ MonoBehaviour:
           cyclic: 0
       - key: SwingDuration
         def:
-          baseValue: 0.05
+          baseValue: 0.5
           points: []
           cyclic: 0
       - key: StrikeDuration
         def:
-          baseValue: 1.45
+          baseValue: 0.2
           points: []
           cyclic: 0
       - key: ReturnDuration
@@ -952,7 +952,7 @@ MonoBehaviour:
       definitions:
       - key: AttackRate
         def:
-          baseValue: 0.5
+          baseValue: 1
           points:
           - level: 0
             value: 1
@@ -1071,7 +1071,7 @@ MonoBehaviour:
           cyclic: 0
       - key: ShootDuration
         def:
-          baseValue: 0.3
+          baseValue: 0.7
           points: []
           cyclic: 0
       - key: AggressionDuration
@@ -1286,7 +1286,7 @@ MonoBehaviour:
           cyclic: 0
       - key: MinDistanceToPlayer
         def:
-          baseValue: 2.5
+          baseValue: 2
           points: []
           cyclic: 0
       - key: ShootDuration
