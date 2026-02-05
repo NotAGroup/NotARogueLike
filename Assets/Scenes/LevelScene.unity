@@ -147,6 +147,10 @@ PrefabInstance:
       propertyPath: classes.Array.data[1].stats.definitions.Array.data[19].def.baseValue
       value: 0.7
       objectReference: {fileID: 0}
+    - target: {fileID: 149643943944928172, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
+      propertyPath: classes.Array.data[3].stats.definitions.Array.data[18].def.baseValue
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 3264794840061447751, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
