@@ -1,6 +1,4 @@
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.AI;
 
 [RequireComponent(typeof(CharacterController)), RequireComponent(typeof(PlayerStats)), DisallowMultipleComponent]
 public class Player : MonoBehaviour
@@ -91,6 +89,7 @@ public class Player : MonoBehaviour
     private Inventory inventory;
     private PlayerUpgrades upgrades;
     private Constitution constitution;
+    private DamageIndicator damageIndicator;
     private ItemDefinitions itemDefinitions;
     private PlayerStats stats;
     private Crosshair crosshair;
@@ -112,6 +111,7 @@ public class Player : MonoBehaviour
         constitution = GetComponent<Constitution>();
         crosshair = GameObject.Find("Canvas/Crosshair").GetComponent<Crosshair>();
         uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+        damageIndicator = GameObject.Find("Damage Indicator").GetComponent<DamageIndicator>();
         itemDefinitions = GameObject.Find("Definitions").GetComponent<ItemDefinitions>();
 
         GameObject mainCamera = GameObject.Find("Main Camera");
@@ -655,6 +655,7 @@ public class Player : MonoBehaviour
     public void TakeDamage(float damage)
     {
         constitution.TakeDamage(damage);
+        damageIndicator.Flash();
 
         if (constitution.Health <= 0.0f)
         {
