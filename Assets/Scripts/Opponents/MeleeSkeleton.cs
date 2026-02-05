@@ -12,6 +12,11 @@ public class MeleeSkeleton : Opponent
 
         animator.SetFloat("MovementSpeed", stats.movementSpeed);
         animator.SetFloat("AttackSpeed", stats.attackRate);
+        
+        if(hitZone != null)
+        {
+            hitZone.gameObject.SetActive(false);
+        }
 
         if (spawnRoom != null)
         {

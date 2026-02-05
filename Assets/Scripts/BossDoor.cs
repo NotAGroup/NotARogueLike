@@ -40,7 +40,7 @@ public class BossDoor : MonoBehaviour
         if(open && stateInfo.normalizedTime > 1f && stateInfo.IsName("Open"))
         {
             GetComponent<Collider>().enabled = false;
-            Debug.Log("Door finish opening");
+            //Debug.Log("Door finish opening");
         }
             
     }
