@@ -1,10 +1,19 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class ListNavigation : MonoBehaviour
 {
     public RectTransform[] uiElements;
     private int selected = 0;
+
+    void OnEnable()
+    {
+        selected = 0;
+        if (uiElements == null || uiElements.Length == 0) return;
+
+        EventSystem.current.SetSelectedGameObject(uiElements[selected].gameObject);
+    }
 
     public void UpdateSelection(Vector2 delta)
     {
@@ -23,7 +32,6 @@ public class ListNavigation : MonoBehaviour
 
         if (uiElements[selected].TryGetComponent<Button>(out Button b))
         {
-            Debug.Log("selection " + uiElements[selected].name);
             b.Select();
         }
     }
@@ -34,7 +42,6 @@ public class ListNavigation : MonoBehaviour
 
         if (uiElements[selected].TryGetComponent<Button>(out Button b))
         {
-            Debug.Log("invoking " + uiElements[selected].name);
             b.onClick.Invoke();
         }
     }
