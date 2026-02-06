@@ -188,8 +188,13 @@ public class DungeonCreator : MonoBehaviour
             );
 
         Player player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        CharacterController cc = player.GetComponent<CharacterController>();
+        cc.enabled = false;
+
         player.transform.SetPositionAndRotation(playerPos, Quaternion.identity);
         player.name = "Player";
+
+        cc.enabled = true;
     }
 
     // selects opponent class randomly
