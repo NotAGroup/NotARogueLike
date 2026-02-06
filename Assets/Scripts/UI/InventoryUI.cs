@@ -17,6 +17,7 @@ public class InventoryUI : MonoBehaviour
     public TMP_Text itemBuffText;
     
     public int  numColumns;
+    private int numRows { get => numSlots / numColumns; }
     private int numSlots;
 
     // selection state
@@ -144,9 +145,9 @@ public class InventoryUI : MonoBehaviour
     public void MoveSelection(Vector2 delta) {
         if (numSlots == 0) return;
 
-        int newSlot = (currentSlot + (int)Math.Round(delta.x) + numSlots) % numSlots;
-        newSlot = (newSlot + (int)Math.Round(delta.y) * numColumns + numSlots) % numSlots;
-        currentSlot = newSlot;
+        int y = (currentSlot / numColumns + (int)Mathf.Round(delta.y) + numRows) % numRows;
+        int x = (currentSlot + (int)Mathf.Round(delta.x) + numColumns) % numColumns;
+        currentSlot = (y * numColumns + x + numSlots) % numSlots;
 
         UpdateSlots();
     }
