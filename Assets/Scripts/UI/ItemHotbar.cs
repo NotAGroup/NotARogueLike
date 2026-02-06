@@ -45,7 +45,7 @@ public class ItemHotbar : MonoBehaviour
             GameObject slot = slots[i];
             ItemHotbarSlot s = slot.GetComponent<ItemHotbarSlot>();
             s.SetItem(playerInventory.items[i].storedItem, playerInventory.items[i].count);
-            s.SetSelected(false);
+            s.SetUnselected();
         }
     }
 }

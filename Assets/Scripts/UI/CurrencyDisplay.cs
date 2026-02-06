@@ -32,7 +32,7 @@ public class CurrencyDisplay : MonoBehaviour
             GameObject slot = slots[i];
             ItemHotbarSlot s = slot.GetComponent<ItemHotbarSlot>();
             s.SetCurrency(currencyDefinitions[(Currency)i], playerInventory.currency[(Currency)i]);
-            s.SetSelected(false);
+            s.SetUnselected();
         }
     }
 

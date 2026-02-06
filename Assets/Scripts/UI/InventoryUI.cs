@@ -100,15 +100,27 @@ public class InventoryUI : MonoBehaviour
                 if (i == currentSlot)
                 {
                     slotToShow = inventory.items[grabbedSourceSlot];
+                    s.SetGrabbed();
                 }
                 else if (i == grabbedSourceSlot && currentSlot >= 0 && currentSlot < inventory.numItemSlots)
                 {
                     slotToShow = inventory.items[currentSlot];
+                    s.SetSelected();
                 }
+                else
+                {
+                    s.SetUnselected();
+                }
+            }
+            else
+            {
+                if (i == currentSlot)
+                    s.SetSelected();
+                else
+                    s.SetUnselected();
             }
 
             s.SetItem(slotToShow.storedItem, slotToShow.count);
-            s.SetSelected(i == currentSlot);
         }
 
         if (currentSlot >= 0 && currentSlot < inventory.numItemSlots)
