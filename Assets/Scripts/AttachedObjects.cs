@@ -24,7 +24,7 @@ public class AttachedObjects : MonoBehaviour
         visible = true;
     }
 
-    void Update() {
+    void FixedUpdate() {
         if (!visible) return;
 
         UpdatePositions();
