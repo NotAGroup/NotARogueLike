@@ -28,7 +28,7 @@ public class FloorClearing : MonoBehaviour
         return cachedOpponent == null;
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if (!cleared && CheckClearingCondition()) {
             cleared = true;
