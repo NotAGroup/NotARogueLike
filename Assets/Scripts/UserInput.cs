@@ -15,7 +15,7 @@ public class UserInput : MonoBehaviour
     private Vector2 rotation;
 
     private bool controlPlayer {
-        get => !uiController.upgradesOpen && !uiController.inventoryOpen && !player.isDead;
+        get => !uiController.upgradesOpen && !uiController.inventoryOpen && !uiController.pauseState.isPaused && !player.isDead;
     }
 
     // movement actions
