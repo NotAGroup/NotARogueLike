@@ -155,6 +155,28 @@ public class UserInput : MonoBehaviour
 
             if (uiDirection == Vector2.zero)
                 uiNavigateTimer = 0f;
+
+            if (uiSelectAction.WasPerformedThisFrame()) {
+                if (uiController.TryGetFocusedWindow(out GameObject obj)) 
+                {
+                    if (obj.TryGetComponent<UINavigationReceiver>(out UINavigationReceiver receiver)) 
+                    {
+                        // control active ui
+                        receiver.Submit();
+                    }
+                }
+            }
+
+            if (uiCloseAction.WasPerformedThisFrame()) {
+                if (uiController.TryGetFocusedWindow(out GameObject obj)) 
+                {
+                    if (obj.TryGetComponent<UINavigationReceiver>(out UINavigationReceiver receiver)) 
+                    {
+                        // control active ui
+                        receiver.Cancel();
+                    }
+                }
+            }
         } 
 
         // items
@@ -201,17 +223,6 @@ public class UserInput : MonoBehaviour
         }
 
 
-        if (uiSelectAction.WasPerformedThisFrame()) {
-            if (uiController.TryGetFocusedWindow(out GameObject obj)) 
-            {
-                if (obj.TryGetComponent<UINavigationReceiver>(out UINavigationReceiver receiver)) 
-                {
-                    // control active ui
-                    receiver.Submit();
-                }
-            }
-        }
-
         if (switchUIAction.WasPerformedThisFrame()) {
             // handle switching between UIs
             if (uiController.upgradesOpen) {
@@ -237,7 +248,7 @@ public class UserInput : MonoBehaviour
 
         if (toggleUIAction.WasPerformedThisFrame()) {
             // handle toggling of ui
-            if (uiController.upgradesOpen || uiController.inventoryOpen) {
+            if (uiController.upgradesOpen || uiController.inventoryOpen || uiController.pauseState.isPaused) {
                 uiController.SwitchToGameplay();
             } else {
                 uiController.SwitchToInventory();

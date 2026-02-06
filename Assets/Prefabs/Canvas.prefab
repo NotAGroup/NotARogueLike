@@ -1480,6 +1480,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  cancelEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &3308767246589829261
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3249,6 +3252,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  cancelEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &6653213252484057589
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3598,6 +3604,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  cancelEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &4578608274821937363
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4548,7 +4557,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9238566f73bd5d5df8f0abf244b9260d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIManager
-  pauseState: {fileID: 0}
   uiElements:
   - uiElement: {fileID: 8027994548421002953}
     visibleIn: 128
@@ -4583,7 +4591,7 @@ MonoBehaviour:
   - name: ToggleUI
     enabledIn: 77
   - name: TogglePause
-    enabledIn: 77
+    enabledIn: 13
   - name: ToggleInventory
     enabledIn: 13
   - name: ToggleUpgrades
@@ -5426,6 +5434,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  cancelEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &1447241590585008992
 MonoBehaviour:
   m_ObjectHideFlags: 0
