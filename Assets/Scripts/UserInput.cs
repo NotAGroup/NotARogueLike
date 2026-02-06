@@ -226,6 +226,15 @@ public class UserInput : MonoBehaviour
             uiController.SwitchToGameplay();
         }
 
+        if (togglePauseAction.WasPerformedThisFrame()) {
+            // handle toggling of ui
+            if (uiController.pauseState.isPaused) {
+                uiController.SwitchToGameplay();
+            } else {
+                uiController.SwitchToPause();
+            }
+        }
+
         if (toggleUIAction.WasPerformedThisFrame()) {
             // handle toggling of ui
             if (uiController.upgradesOpen || uiController.inventoryOpen) {
