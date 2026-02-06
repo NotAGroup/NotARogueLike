@@ -52,7 +52,7 @@ public class UserInput : MonoBehaviour
     // any state -> selected-ui -> gameplay
     private InputAction toggleUpgradesAction;
     private InputAction toggleInventoryAction;
-    private InputAction togglePauseAction;
+    private InputAction pauseAction;
 
     // ui actions
     private InputAction uiSelectAction;
@@ -106,7 +106,7 @@ public class UserInput : MonoBehaviour
 
 		toggleUpgradesAction = InputSystem.actions.FindAction("ToggleUpgrades", true);
 		toggleInventoryAction = InputSystem.actions.FindAction("ToggleInventory", true);
-		togglePauseAction = InputSystem.actions.FindAction("TogglePause", true);
+		pauseAction = InputSystem.actions.FindAction("Pause", true);
   
 		uiMoveAction = InputSystem.actions.FindAction("Navigate", true);
 		uiSelectAction = InputSystem.actions.FindAction("Submit", true);
@@ -237,11 +237,9 @@ public class UserInput : MonoBehaviour
             uiController.SwitchToGameplay();
         }
 
-        if (togglePauseAction.WasPerformedThisFrame()) {
+        if (pauseAction.WasPerformedThisFrame()) {
             // handle toggling of ui
-            if (uiController.pauseState.isPaused) {
-                uiController.SwitchToGameplay();
-            } else {
+            if (!uiController.pauseState.isPaused) {
                 uiController.SwitchToPause();
             }
         }
