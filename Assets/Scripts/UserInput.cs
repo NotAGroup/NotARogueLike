@@ -246,7 +246,7 @@ public class UserInput : MonoBehaviour
 
         if (toggleUIAction.WasPerformedThisFrame()) {
             // handle toggling of ui
-            if (uiController.upgradesOpen || uiController.inventoryOpen || uiController.pauseState.isPaused) {
+            if (uiController.upgradesOpen || uiController.inventoryOpen) {
                 uiController.SwitchToGameplay();
             } else {
                 uiController.SwitchToInventory();
