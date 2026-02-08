@@ -342,18 +342,18 @@ public class Overlord : Opponent
         {
             case Phase.One:
                 aggressionModifier = 1.25f;
-                //SpawnMeleeSkeletons(4);
+                SpawnMeleeSkeletons(4);
                 break;
 
             case Phase.Two:
                 aggressionModifier = 1.5f;
-                //SpawnRangedSkeletons(2);
+                SpawnRangedSkeletons(2);
                 break;
 
             case Phase.Three:
                 aggressionModifier = 1.75f;
-                //SpawnMeleeSkeletons(4);
-                //SpawnRangedSkeletons(2);
+                SpawnMeleeSkeletons(4);
+                SpawnRangedSkeletons(2);
                 break;
         }
 
