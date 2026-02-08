@@ -233,8 +233,8 @@ public class DungeonCreator : MonoBehaviour
                     continue;
             }
 
-            int enemyPosX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.BottomRightAreaCorner.x - 1);
-            int enemyPosY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopLeftAreaCorner.y - 1);
+            int enemyPosX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.TopRightAreaCorner.x - 1);
+            int enemyPosY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopRightAreaCorner.y - 1);
             Vector3 enemyPos = new Vector3(enemyPosX, 1, enemyPosY);
     
             GameObject foe = Instantiate(opponentDefinitions.classes[opponentClass].prefab, enemyPos, Quaternion.identity, dungeonSegments[index].area.transform);
@@ -456,9 +456,9 @@ public class DungeonCreator : MonoBehaviour
                 if (room.Type != "room") continue;
 
                 Vector3 currentPos = new Vector3(
-                    (room.BottomLeftAreaCorner.x + room.BottomRightAreaCorner.x) / 2,
+                    (room.BottomLeftAreaCorner.x + room.TopRightAreaCorner.x) / 2,
                     0,
-                    (room.BottomLeftAreaCorner.y + room.TopLeftAreaCorner.y) / 2);
+                    (room.BottomLeftAreaCorner.y + room.TopRightAreaCorner.y) / 2);
                 float dist = (player.position - currentPos).magnitude;
 
                 if (dist > maxDist)
@@ -577,7 +577,7 @@ public class DungeonCreator : MonoBehaviour
     {
         Node room = listOfRooms[index];
         int chestX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.TopRightAreaCorner.x - 1);
-        int chestY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopLeftAreaCorner.y - 1);
+        int chestY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopRightAreaCorner.y - 1);
         Vector3 chestPos = new Vector3(chestX, 0.35f, chestY);
 
         GameObject chest = Instantiate(chestPrefab, chestPos, Quaternion.identity, dungeonSegments[index].area.transform);
@@ -590,7 +590,7 @@ public class DungeonCreator : MonoBehaviour
     {
         Node room = listOfRooms[index];
         int chestX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.TopRightAreaCorner.x - 1);
-        int chestY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopLeftAreaCorner.y - 1);
+        int chestY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopRightAreaCorner.y - 1);
         Vector3 chestPos = new Vector3(chestX, 0.35f, chestY);
 
         GameObject chest = Instantiate(largeChestPrefab, chestPos, Quaternion.identity, dungeonSegments[index].area.transform);
@@ -937,7 +937,7 @@ public class DungeonCreator : MonoBehaviour
             int level = (int)(properties[DungeonPropertyKey.EnemyLevel]);
             
             int positionX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.TopRightAreaCorner.x - 1);
-            int positionY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopLeftAreaCorner.y - 1);
+            int positionY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopRightAreaCorner.y - 1);
             Vector3 position = new Vector3(positionX, 1, positionY);
 
             GameObject instance = Instantiate(opponentClass.prefab, position, Quaternion.identity, segment.area.transform);
