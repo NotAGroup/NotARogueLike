@@ -181,7 +181,7 @@ public class DungeonCreator : MonoBehaviour
     {
         Node room = listOfRooms.Find(r => r.Type == "starting_room");
         float playerPosX = (room.BottomLeftAreaCorner.x + room.TopRightAreaCorner.x) / 2f + UnityEngine.Random.Range(-2f, 2f);
-        float playerPosY = (room.BottomLeftAreaCorner.y + room.TopLeftAreaCorner.y) / 2f + UnityEngine.Random.Range(-2f, 2f);
+        float playerPosY = (room.BottomLeftAreaCorner.y + room.TopRightAreaCorner.y) / 2f + UnityEngine.Random.Range(-2f, 2f);
         Vector3 playerPos = new Vector3(
             playerPosX,
             2,
