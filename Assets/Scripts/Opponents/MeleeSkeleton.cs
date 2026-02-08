@@ -1,8 +1,11 @@
 using UnityEngine;
 using UnityEngine.AI;
 
+
 public class MeleeSkeleton : Opponent
 {
+    public AudioSource audioSource;
+
     [Header("Combat")]
     public OpponentHitZone hitZone;
 

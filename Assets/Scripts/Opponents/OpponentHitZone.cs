@@ -11,7 +11,11 @@ public class OpponentHitZone : HitZone<Opponent>
             {
                 player.TakeDamage(damage);
                 owner.playerGotHit = true;
-                owner.audioSource.Play();
+                if(owner.GetType() == typeof(MeleeSkeleton))
+                {
+                    MeleeSkeleton meleeSkeleton = (MeleeSkeleton)owner;
+                    meleeSkeleton.audioSource.Play();
+                }
             }
         }
     }

@@ -48,8 +48,6 @@ public abstract class Opponent : MonoBehaviour
 
     public float viewAngle;
 
-    public AudioSource audioSource;
-
     protected virtual void Start()
     {
         state = OpponentState.Idle;
@@ -59,7 +57,7 @@ public abstract class Opponent : MonoBehaviour
         navMeshAgent = GetComponent<NavMeshAgent>();
         navMeshAgent.speed = stats.movementSpeed;
         if(animator)
-            animator.SetFloat("movementSpeed", stats.movementSpeed);
+            animator.SetFloat("MovementSpeed", stats.movementSpeed);
 
         playerTransform = GameObject.Find("Player").transform;
         player = playerTransform?.GetComponent<Player>();
