@@ -18,6 +18,7 @@ public class RangedSkeleton : Opponent
     private Vector3 idlePosition;
     private bool setManually = false;
 
+    public AudioSource audioSource;
     public AudioClip drawSound;
     public AudioClip shootSound;
 
