@@ -582,7 +582,7 @@ public class Player : MonoBehaviour
         bowAnimator.SetTrigger("Release");
         bowAudioSource.PlayOneShot(shootSound);
 
-        items.ConsumeItem(bowAmmoSlot);
+        inventory.ConsumeItem(bowAmmoSlot);
 
         Vector3 position = cameraTransform.position + cameraTransform.forward * 1.0f;
         Quaternion rotation = cameraTransform.rotation;

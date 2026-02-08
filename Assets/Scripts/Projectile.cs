@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UIElements;
-using static UnityEditor.Progress;
 
 [RequireComponent(typeof(Rigidbody))]
 public class Projectile : MonoBehaviour
