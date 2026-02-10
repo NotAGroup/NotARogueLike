@@ -7,8 +7,8 @@ using TMPro;
 
 public class ItemHotbarSlot : MonoBehaviour
 {
-    public Color backgroundColor;
-    public Color backgroundColorSelected;
+    public Color backgroundColor, backgroundColorSelected, backgroundColorGrabbed;
+    public Sprite backgroundSprite, backgroundSpriteSelected, backgroundSpriteGrabbed;
 
     public GameObject itemText;
     public GameObject itemCount;
@@ -57,7 +57,19 @@ public class ItemHotbarSlot : MonoBehaviour
         }
     }
 
-    public void SetSelected(bool selected) {
-        GetComponent<Image>().color = selected ? backgroundColorSelected : backgroundColor;
+    public void SetUnselected() {
+        GetComponent<Image>().color = backgroundColor;
+        GetComponent<Image>().sprite = backgroundSprite;
+    }
+
+
+    public void SetSelected() {
+        GetComponent<Image>().color = backgroundColorSelected;
+        GetComponent<Image>().sprite = backgroundSpriteSelected;
+    }
+
+    public void SetGrabbed() {
+        GetComponent<Image>().color = backgroundColorGrabbed;
+        GetComponent<Image>().sprite = backgroundSpriteGrabbed;
     }
 }

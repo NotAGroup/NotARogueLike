@@ -17,6 +17,7 @@ public class InventoryUI : MonoBehaviour
     public TMP_Text itemBuffText;
     
     public int  numColumns;
+    private int numRows { get => numSlots / numColumns; }
     private int numSlots;
 
     // selection state
@@ -100,15 +101,27 @@ public class InventoryUI : MonoBehaviour
                 if (i == currentSlot)
                 {
                     slotToShow = inventory.items[grabbedSourceSlot];
+                    s.SetGrabbed();
                 }
                 else if (i == grabbedSourceSlot && currentSlot >= 0 && currentSlot < inventory.numItemSlots)
                 {
                     slotToShow = inventory.items[currentSlot];
+                    s.SetSelected();
                 }
+                else
+                {
+                    s.SetUnselected();
+                }
+            }
+            else
+            {
+                if (i == currentSlot)
+                    s.SetSelected();
+                else
+                    s.SetUnselected();
             }
 
             s.SetItem(slotToShow.storedItem, slotToShow.count);
-            s.SetSelected(i == currentSlot);
         }
 
         if (currentSlot >= 0 && currentSlot < inventory.numItemSlots)
@@ -132,9 +145,9 @@ public class InventoryUI : MonoBehaviour
     public void MoveSelection(Vector2 delta) {
         if (numSlots == 0) return;
 
-        int newSlot = (currentSlot + (int)Math.Round(delta.x) + numSlots) % numSlots;
-        newSlot = (newSlot + (int)Math.Round(delta.y) * numColumns + numSlots) % numSlots;
-        currentSlot = newSlot;
+        int y = (currentSlot / numColumns + (int)Mathf.Round(delta.y) + numRows) % numRows;
+        int x = (currentSlot + (int)Mathf.Round(delta.x) + numColumns) % numColumns;
+        currentSlot = (y * numColumns + x + numSlots) % numSlots;
 
         UpdateSlots();
     }

@@ -15,7 +15,7 @@ public class UserInput : MonoBehaviour
     private Vector2 rotation;
 
     private bool controlPlayer {
-        get => !uiController.upgradesOpen && !uiController.inventoryOpen && !player.isDead;
+        get => !uiController.upgradesOpen && !uiController.inventoryOpen && !uiController.pauseState.isPaused && !player.isDead;
     }
 
     // movement actions
@@ -52,7 +52,7 @@ public class UserInput : MonoBehaviour
     // any state -> selected-ui -> gameplay
     private InputAction toggleUpgradesAction;
     private InputAction toggleInventoryAction;
-    private InputAction togglePauseAction;
+    private InputAction pauseAction;
 
     // ui actions
     private InputAction uiSelectAction;
@@ -106,7 +106,7 @@ public class UserInput : MonoBehaviour
 
 		toggleUpgradesAction = InputSystem.actions.FindAction("ToggleUpgrades", true);
 		toggleInventoryAction = InputSystem.actions.FindAction("ToggleInventory", true);
-		togglePauseAction = InputSystem.actions.FindAction("TogglePause", true);
+		pauseAction = InputSystem.actions.FindAction("Pause", true);
   
 		uiMoveAction = InputSystem.actions.FindAction("Navigate", true);
 		uiSelectAction = InputSystem.actions.FindAction("Submit", true);
@@ -139,6 +139,8 @@ public class UserInput : MonoBehaviour
         {
             uiNavigateTimer -= Time.deltaTime;
 
+            player.Move(Vector2.zero);
+
             Vector2 uiDirection = uiMoveAction.ReadValue<Vector2>();
             if (uiDirection != Vector2.zero && uiNavigateTimer <= 0f) 
             {
@@ -155,6 +157,28 @@ public class UserInput : MonoBehaviour
 
             if (uiDirection == Vector2.zero)
                 uiNavigateTimer = 0f;
+
+            if (uiSelectAction.WasPerformedThisFrame()) {
+                if (uiController.TryGetFocusedWindow(out GameObject obj)) 
+                {
+                    if (obj.TryGetComponent<UINavigationReceiver>(out UINavigationReceiver receiver)) 
+                    {
+                        // control active ui
+                        receiver.Submit();
+                    }
+                }
+            }
+
+            if (uiCloseAction.WasPerformedThisFrame()) {
+                if (uiController.TryGetFocusedWindow(out GameObject obj)) 
+                {
+                    if (obj.TryGetComponent<UINavigationReceiver>(out UINavigationReceiver receiver)) 
+                    {
+                        // control active ui
+                        receiver.Cancel();
+                    }
+                }
+            }
         } 
 
         // items
@@ -201,17 +225,6 @@ public class UserInput : MonoBehaviour
         }
 
 
-        if (uiSelectAction.WasPerformedThisFrame()) {
-            if (uiController.TryGetFocusedWindow(out GameObject obj)) 
-            {
-                if (obj.TryGetComponent<UINavigationReceiver>(out UINavigationReceiver receiver)) 
-                {
-                    // control active ui
-                    receiver.Submit();
-                }
-            }
-        }
-
         if (switchUIAction.WasPerformedThisFrame()) {
             // handle switching between UIs
             if (uiController.upgradesOpen) {
@@ -224,6 +237,13 @@ public class UserInput : MonoBehaviour
         if (uiCloseAction.WasPerformedThisFrame()) {
             // handle closing of ui
             uiController.SwitchToGameplay();
+        }
+
+        if (pauseAction.WasPerformedThisFrame()) {
+            // handle toggling of ui
+            if (!uiController.pauseState.isPaused) {
+                uiController.SwitchToPause();
+            }
         }
 
         if (toggleUIAction.WasPerformedThisFrame()) {

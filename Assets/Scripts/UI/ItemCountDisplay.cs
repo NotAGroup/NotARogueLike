@@ -58,7 +58,7 @@ public class ItemCountDisplay : MonoBehaviour
             {
                 slot.SetActive(true);
                 s.SetItem(def, count);
-                s.SetSelected(false);
+                s.SetUnselected();
                 slotIndex++;
             }
         }
