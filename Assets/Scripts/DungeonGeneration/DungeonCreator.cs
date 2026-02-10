@@ -47,6 +47,10 @@ public class DungeonCreator : MonoBehaviour
     [Range(0, 2)]
     public float torchWallOffset;
 
+    [Header("Decoration Placement")]
+    public GameObject[] floorDecorationPrefabs;
+    public float floorDecorationDensity;
+
     public GameObject wallPrefab, pillarPrefab, playerPrefab, chestPrefab, largeChestPrefab, shopPrefab, torchPrefab, trapDoorPrefab, bossDoorPrefab, navPointPrefab;
 
     private Dictionary<Vector3Int, DungeonSegment> horizontalWallOwners;
@@ -167,6 +171,7 @@ public class DungeonCreator : MonoBehaviour
 
             CreateLoot(listOfRooms);
             CreateShop(listOfRooms);
+            CreateDecoration(listOfRooms);
 
             navMeshSurface.BuildNavMesh();
         }
@@ -689,6 +694,46 @@ public class DungeonCreator : MonoBehaviour
                 bool large = (UnityEngine.Random.Range(0f, 1f) < fractionOfEmptyLargeChests);
                 GameObject chest = large ? PlaceLargeChest(listOfRooms, i) : PlaceChest(listOfRooms, i);
             }
+        }
+    }
+
+    private Quaternion RandomOrientation()
+    {
+	return Quaternion.AngleAxis(UnityEngine.Random.Range(-180f,180f), Vector3.up);
+    }
+
+    private void PlaceDecoration(List<Node> listOfRooms, int index, GameObject prefab) 
+    {
+        Node room = listOfRooms[index];
+
+	    // sample position twice and take the mean so the distributions are more centered in the middle of the room
+        int x = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.TopRightAreaCorner.x - 1);
+        x    += UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.TopRightAreaCorner.x - 1);
+        int y = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopRightAreaCorner.y - 1);
+        y    += UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopRightAreaCorner.y - 1);
+	    x /= 2;
+	    y /= 2;
+        Vector3 pos = new Vector3(x, 0f, y);
+
+        GameObject deco = Instantiate(prefab, pos, RandomOrientation(), dungeonSegments[index].area.transform);
+        deco.name = prefab.name;
+    }
+
+    private void CreateDecoration(List<Node> listOfRooms)
+    {
+        float amount = properties[DungeonPropertyKey.Size];
+        amount *= amount;
+        amount *= floorDecorationDensity;
+        int count = (int) amount;
+
+        for (int j = 0; j < count; j++)
+        {
+            // randomly select a dungeon segment
+            int i = UnityEngine.Random.Range(0, listOfRooms.Count());
+            Node room = listOfRooms[i];
+            
+	        int selection = UnityEngine.Random.Range(0, floorDecorationPrefabs.Length);
+	        PlaceDecoration(listOfRooms, i, floorDecorationPrefabs[selection]);
         }
     }
 
