@@ -144,10 +144,6 @@ public class Player : MonoBehaviour
         SwingAnimSpeed = stats.hitRate;
         animator.SetFloat("SwingAnimSpeed", SwingAnimSpeed);
 
-        float moveX = Input.GetAxisRaw("Horizontal");
-        float moveZ = Input.GetAxisRaw("Vertical");
-        animator.SetFloat("MoveX", moveX, 0.1f, Time.deltaTime);
-        animator.SetFloat("MoveZ", moveZ, 0.1f, Time.deltaTime);
 
         if (!grounded)
         {
@@ -257,6 +253,14 @@ public class Player : MonoBehaviour
         constitution.RegenerateMana();
         bool idle = motion.x >= -0.1f && motion.x <= 0.1f && motion.y >= -0.1f && motion.y <= 0.1f && motion.z >= -0.1f && motion.z <= 0.1f;
         constitution.RegenerateStamina(idle);
+
+        // reset movement animation
+        if (idle)
+        {
+            animator.SetFloat("MoveX", 0, 0.1f, Time.deltaTime);
+            animator.SetFloat("MoveZ", 0, 0.1f, Time.deltaTime);
+        }
+
 
         // give interaction hint that stays for a fixed amount of time
         interactionTimer -= Time.deltaTime;
@@ -506,6 +510,9 @@ public class Player : MonoBehaviour
 
         motion.x = movement.x * speed;
         motion.z = movement.z * speed;
+
+        animator.SetFloat("MoveX", direction.x * speed, 0.1f, Time.deltaTime);
+        animator.SetFloat("MoveZ", direction.y * speed, 0.1f, Time.deltaTime);
     }
 
     public void Run(bool value)
