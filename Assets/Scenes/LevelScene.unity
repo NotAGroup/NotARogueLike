@@ -195,34 +195,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Definitions
       objectReference: {fileID: 0}
-    - target: {fileID: 8785196659807477998, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
-      propertyPath: data.definitions.Array.data[6].def.points.Array.size
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 8785196659807477998, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
-      propertyPath: data.definitions.Array.data[6].def.points.Array.data[0].value
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8785196659807477998, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
-      propertyPath: data.definitions.Array.data[6].def.points.Array.data[1].value
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8785196659807477998, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
-      propertyPath: data.definitions.Array.data[6].def.points.Array.data[2].value
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8785196659807477998, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
-      propertyPath: data.definitions.Array.data[6].def.points.Array.data[3].value
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8785196659807477998, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
-      propertyPath: data.definitions.Array.data[6].def.points.Array.data[4].level
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 8785196659807477998, guid: 61894679d4d1cdc45bf55da6b032d215, type: 3}
-      propertyPath: data.definitions.Array.data[6].def.points.Array.data[4].value
-      value: 5
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -764,6 +736,10 @@ PrefabInstance:
     - target: {fileID: 4364760115977151773, guid: d519ae4777708f2458fe963b8dba475b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5408861311225402296, guid: d519ae4777708f2458fe963b8dba475b, type: 3}
+      propertyPath: m_StepOffset
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8439484915624340096, guid: d519ae4777708f2458fe963b8dba475b, type: 3}
       propertyPath: onInventoryChanged.m_PersistentCalls.m_Calls.Array.size
