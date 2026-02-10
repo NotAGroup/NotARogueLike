@@ -684,7 +684,6 @@ public class DungeonCreator : MonoBehaviour
         Vector3 pos = new Vector3(x, 0f, y);
 
         GameObject deco = Instantiate(prefab, pos, RandomOrientation(), dungeonSegments[index].area.transform);
-	    deco.transform.localScale *= UnityEngine.Random.Range(0.75f, 1.3f);
         deco.name = prefab.name;
     }
 
