@@ -139,6 +139,8 @@ public class UserInput : MonoBehaviour
         {
             uiNavigateTimer -= Time.deltaTime;
 
+            player.Move(Vector2.zero);
+
             Vector2 uiDirection = uiMoveAction.ReadValue<Vector2>();
             if (uiDirection != Vector2.zero && uiNavigateTimer <= 0f) 
             {
