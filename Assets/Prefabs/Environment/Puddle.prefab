@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8474621948125536562}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Puddle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 5874554521178093614}
   - component: {fileID: 4518210450632898049}
   - component: {fileID: 534856704381732061}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: SubEmitter0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4987,6 +4987,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7265770021969680394, guid: 93f3dac102df2b8cfb5dad8e45de4a02, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: -1933921341846653883, guid: 93f3dac102df2b8cfb5dad8e45de4a02, type: 3}
       propertyPath: m_CastShadows
       value: 0
@@ -5002,6 +5006,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 93f3dac102df2b8cfb5dad8e45de4a02, type: 3}
       propertyPath: m_Name
       value: CeilingPuddle
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 93f3dac102df2b8cfb5dad8e45de4a02, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 7932622073072098819, guid: 93f3dac102df2b8cfb5dad8e45de4a02, type: 3}
       propertyPath: m_LocalPosition.y
@@ -9941,6 +9949,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7265770021969680394, guid: 93f3dac102df2b8cfb5dad8e45de4a02, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: -1933921341846653883, guid: 93f3dac102df2b8cfb5dad8e45de4a02, type: 3}
       propertyPath: m_CastShadows
       value: 0
@@ -9956,6 +9968,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 93f3dac102df2b8cfb5dad8e45de4a02, type: 3}
       propertyPath: m_Name
       value: Puddle
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 93f3dac102df2b8cfb5dad8e45de4a02, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 7932622073072098819, guid: 93f3dac102df2b8cfb5dad8e45de4a02, type: 3}
       propertyPath: m_LocalPosition.y
