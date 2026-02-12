@@ -47,6 +47,7 @@ public class Overlord : Opponent
     private string selectedAttack;
     private float smallerDistance = 0.0f;
 
+    private float jumpCooldown;
     private float jumpForwardForce = 12.0f;
     private float jumpUpForce = 5.0f;
 
@@ -84,6 +85,21 @@ public class Overlord : Opponent
 
         SetBlending(1.0f);
         TryGetIdlePosition(1.0f);
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+
+        if (jumpCooldown > 0.0f)
+        {
+            jumpCooldown -= Time.deltaTime;
+
+            if (jumpCooldown <= 0.0f)
+            {
+                jumpCooldown = 0.0f;
+            }
+        }
     }
 
     protected override System.Collections.IEnumerator AttackRoutine()
@@ -141,10 +157,18 @@ public class Overlord : Opponent
                 Vector3 jumpForce = (jumpDirection.normalized * jumpForwardForce) + (Vector3.up * jumpUpForce);
                 rigidBody.AddForce(jumpForce, ForceMode.Impulse);
 
+                float length = animator.GetCurrentAnimatorStateInfo(0).length;
+                float gravity = Mathf.Abs(Physics.gravity.y);
+                float jumpTime = (2 * jumpUpForce) / gravity;
+
+                animator.SetFloat("jumpSpeed", length / jumpTime);
+
                 yield return new WaitForSeconds(0.5f);
                 hitZone.gameObject.SetActive(true);
 
-                yield return new WaitUntil(IsGrounded);
+                yield return new WaitForSeconds(jumpTime);
+
+                animator.SetFloat("jumpSpeed", 1.0f);
 
                 rigidBody.angularVelocity = Vector3.zero;
                 rigidBody.linearVelocity = Vector3.zero;
@@ -153,6 +177,7 @@ public class Overlord : Opponent
                 hitZone.gameObject.SetActive(false);
                 
                 playerGotHit = false;
+                jumpCooldown = 3.0f;
 
                 navMeshAgent.enabled = true;
             }
@@ -446,7 +471,7 @@ public class Overlord : Opponent
             }
         }
 
-        if (distance <= medium)
+        if (distance > close && distance <= medium)
         {
             if (currentPhase == Phase.Two || currentPhase == Phase.Three)
             {
@@ -454,10 +479,10 @@ public class Overlord : Opponent
             }
         }
 
-        if (distance <= far)
+        if (distance > medium  && distance <= far)
         {
             if ((currentPhase == Phase.Two || currentPhase == Phase.Three)
-                 && ClearPathToPlayer())
+                 && ClearPathToPlayer() && jumpCooldown == 0.0f)
             {
                 selectedAttack = "jumpAttack";
             }
