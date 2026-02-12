@@ -135,7 +135,10 @@ public class Overlord : Opponent
                 rigidBody.linearVelocity = Vector3.zero;
                 rigidBody.constraints = RigidbodyConstraints.FreezeRotation;
 
-                Vector3 jumpForce = (transform.forward * jumpForwardForce) + (Vector3.up * jumpUpForce);
+                Vector3 jumpDirection = (playerTransform.position - transform.position);
+                jumpDirection.y = 0f;
+
+                Vector3 jumpForce = (jumpDirection.normalized * jumpForwardForce) + (Vector3.up * jumpUpForce);
                 rigidBody.AddForce(jumpForce, ForceMode.Impulse);
 
                 yield return new WaitForSeconds(0.5f);
@@ -188,9 +191,12 @@ public class Overlord : Opponent
             playerPosition.z > bottomLeftAreaCorner.y && playerPosition.z < topRightAreaCorner.y);
 
         Vector3 direction = playerTransform.position - transform.position;
+        float distance = direction.magnitude;
+
+        bool alerted = (distance < stats.alertRange && !player.isSneaking());
         bool inSight = (Vector3.Angle(transform.forward, direction.normalized) < viewAngle);
 
-        return inRoom && inSight;
+        return alerted || (inRoom && inSight);
     }
 
     protected override void Combat()
@@ -320,6 +326,26 @@ public class Overlord : Opponent
             base.TakeDamage(damage, direction);
         }
     }
+
+    private bool ClearPathToPlayer(float height = 1.0f, float radius = 0.5f)
+    {
+        Vector3 origin = transform.position + Vector3.up * height;
+        Vector3 target = playerTransform.position + Vector3.up * height;
+
+        Vector3 direction = target - origin;
+        float distance = direction.magnitude;
+
+        if (Physics.SphereCast(origin, radius, direction.normalized, out RaycastHit hit, distance))
+        {
+            if (!hit.collider.CompareTag("Player"))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private void DestroyAllMinions()
     {
         foreach (GameObject minion in minions)
@@ -405,13 +431,16 @@ public class Overlord : Opponent
         if (distance <= close)
         {
             float attackChoice = Random.Range(0.0f, 1.0f);
-            if(attackChoice < 0.33f)
+
+            if (attackChoice <= 0.33f)
             {
                 selectedAttack = "grab";
-            } else if(attackChoice < 0.67f)
+            }
+            else if (attackChoice <= 0.66f)
             {
                 selectedAttack = "punch";
-            } else
+            }
+            else
             {
                 selectedAttack = "swiping";
             }
@@ -427,8 +456,10 @@ public class Overlord : Opponent
 
         if (distance <= far)
         {
-            if (currentPhase == Phase.Two || currentPhase == Phase.Three)
+            if ((currentPhase == Phase.Two || currentPhase == Phase.Three)
+                 && ClearPathToPlayer())
             {
+                selectedAttack = "jumpAttack";
             }
         }
     }
