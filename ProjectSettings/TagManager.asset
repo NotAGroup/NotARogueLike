@@ -3,18 +3,20 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Opponent
+  - Boss
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Lighting
   - Water
   - UI
   - Player
   - Wall
-  - 
-  - 
+  - Weapon
+  - Decoration
   - 
   - 
   - 

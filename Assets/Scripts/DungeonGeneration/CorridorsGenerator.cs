@@ -8,7 +8,8 @@ public class CorridorsGenerator
         List<Node> corridorList = new List<Node>();
         Queue<RoomNode> structuresToCheck = new Queue<RoomNode>(
             allNodesCollection.OrderByDescending(node => node.TreeLayerIndex).ToList());
-        while (structuresToCheck.Count > 0)
+        int iterations = 0;
+        while (iterations++ < 100 && structuresToCheck.Count > 0)
         {
             var node = structuresToCheck.Dequeue();
             if (node.ChildrenNodeList.Count == 0)

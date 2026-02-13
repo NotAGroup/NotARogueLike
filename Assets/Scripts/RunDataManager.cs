@@ -2,11 +2,19 @@ using UnityEngine;
 
 public class RunDataManager : MonoBehaviour
 {
-    public void InitializeOrLoad()
+    public void TryLoad()
     {
         if (!RunData.Instance.Initialized) {
-            RunData.Instance.NewGame();
-        }
-        GameSaver.load();
+            Debug.Log("Rundata not initialized yet, loading");
+            RunData.Instance.NewRun();
+            GameSaver.subscribe(RunData.Instance.currencies);
+            GameSaver.subscribe(RunData.Instance.upgrades);
+            GameSaver.load();
+        } 
+    }
+
+    public void TrySave()
+    {
+        GameSaver.save();
     }
 }

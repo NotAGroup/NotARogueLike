@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System;
 using System.Text;
 
@@ -8,34 +9,54 @@ public class UpgradeUI : MonoBehaviour
 {
     [Header("Rendering")]
     public GameObject statUIPrefab;
-    public Vector2 origin;
-    public Vector2 offset;
+    public bool upgradeEffectsRelative;
+
+    // transforms that define slot positions
+    public RectTransform statTransformStart;
+    public RectTransform statTransformEnd;
 
     [Header("Stat information")]
     public TMP_Text statNameText;
     public TMP_Text statInfoText;
 
     private int selectedIndex;
-    public BaseStatKey selectedStat { get => (BaseStatKey)stats.GetValue(selectedIndex); }
+    public BaseStatKey selectedStat { get => stats[selectedIndex]; }
 
     private GameObject[] uiInstances;
     private UpgradeCostDefinitions defs;
     private StatScalingDefinitions scalingDefs;
+    private Strings strings;
     private PlayerUpgrades upgrades;
     private GameObject player;
 
-    // get array of stats
-    private Array stats = Enum.GetValues(typeof(BaseStatKey));
+    [Tooltip("array of stats to show (in this order)")]
+    public BaseStatKey[] stats;
+    
 
     // 
     public void MoveSelection(Vector2 delta) 
     {
         selectedIndex = (selectedIndex - (int)delta.y + stats.Length) % stats.Length;
+        UpdateUpgrades();
     }
 
     public void TryUpgrade() 
     {  
         upgrades.TryUpgrade(selectedStat);
+        UpdateUpgrades();
+    }
+
+    public void OnClickUpgrade(int index)
+    {
+        selectedIndex = index;
+        upgrades.TryUpgrade(selectedStat);
+        UpdateUpgrades();
+    }
+
+    public void OnClick(int index)
+    {
+        selectedIndex = index;
+        UpdateUpgrades();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -43,33 +64,52 @@ public class UpgradeUI : MonoBehaviour
     {
         defs = GameObject.Find("Definitions").GetComponent<UpgradeCostDefinitions>();
         scalingDefs = GameObject.Find("Definitions").GetComponent<StatScalingDefinitions>();
+        strings = GameObject.Find("Canvas").GetComponent<Strings>();
         player = GameObject.Find("Player");
         upgrades = player.GetComponent<PlayerUpgrades>();
+    }
 
+    void InitUpgrades()
+    {
         // clear old ui objects
-        if (uiInstances != null) {
-            foreach (var i in uiInstances) 
-                GameObject.Destroy(i);
-        } else {
+        if (uiInstances == null) {
             uiInstances = new GameObject[stats.Length];
         }
 
-        // 
+        // create ui element for each stat
         int index = 0;
+        UIGrid grid = GetComponent<UIGrid>();
         foreach(BaseStatKey key in stats) {
-            var obj = Instantiate(statUIPrefab, transform);
-            obj.transform.localPosition = origin + offset * index;
+            if (uiInstances[index] != null) continue;
+
+            var obj = grid.InstantiateGridEntry(0, index, 1, stats.Length);
+
+            // onclick callback
+            object boxedIndex = index;
+            obj.transform.Find("UpgradeButton").GetComponent<Button>().onClick.AddListener(() => OnClickUpgrade((int)boxedIndex));
+
+            obj.GetComponent<Button>().onClick.AddListener(() => OnClick((int)boxedIndex));
 
             uiInstances[index] = obj;
             index++;
         }
+        grid.Commit();
+
+        selectedIndex = -1;
+
+        UpdateUpgrades();
+    }
+
+    void OnEnable() 
+    {
+        InitUpgrades();
     }
 
     public void UpdateUpgrades() {
         int index = 0;
         foreach (GameObject i in uiInstances) {
             var disp = i.GetComponent<StatDisplay>();
-            var stat = (BaseStatKey)stats.GetValue(index);
+            var stat = stats[index];
             int currentLevel = player.GetComponent<PlayerUpgrades>()[stat];
             int maxLevel = defs.MaxLevel(stat);
             int[] costs = defs[stat];
@@ -83,9 +123,16 @@ public class UpgradeUI : MonoBehaviour
             index++;
         }
 
-        BaseStatKey selection = selectedStat;
-        statNameText.text = Enum.GetName(typeof(BaseStatKey), selection);
-        statInfoText.text = ComputeUpgradeDescription(selection);
+        if (selectedIndex >= 0)
+        {
+            statNameText.text = strings.baseStats[selectedStat];
+            statInfoText.text = ComputeUpgradeDescription(selectedStat);
+        } 
+        else 
+        {
+            statNameText.text = "...";
+            statInfoText.text = "Nothing selected";
+        }
     }
     
     private string ComputeUpgradeDescription(BaseStatKey baseStat) {
@@ -101,14 +148,17 @@ public class UpgradeUI : MonoBehaviour
             if (current == upgraded) continue;
 
             // show relative change if upgraded
-            builder.AppendFormat("x{1:0.00} {0,-20}\n", key.ToString(), current / upgraded); 
+            string name = strings.stats[key];
+            if (upgradeEffectsRelative)
+            {
+                builder.AppendFormat("{0,-18}\t x{1:0.00}\n", name, upgraded / current); 
+            }
+            else
+            {
+                builder.AppendFormat("{0,-18}\t {1:0.00}->{2:0.00}\n", name, current, upgraded); 
+            }
         }
 
         return builder.ToString();
-    }
-
-    void Update() {
-        // TODO: extract to player script
-        UpdateUpgrades();
     }
 }

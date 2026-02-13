@@ -6,14 +6,15 @@ using UnityEngine.InputSystem;
 // can switch between gameplay/inventory/death-screen (/pause-screen)
 public class UIManager : MonoBehaviour
 {
-    public static UIManager Instance;
-
     // ui elements (convenient accessors for other scripts)
     public GameObject playerStats { get; private set; }
     public GameObject hotbar { get; private set; }
     public GameObject inventoryUI { get; private set; }
     public GameObject upgradesUI { get; private set; }
     public GameObject deathScreen { get; private set; }
+    public GameObject pauseScreen { get; private set; }
+
+    public Pausing pauseState { get; private set; }
 
     public bool inventoryOpen { get => inventoryUI != null && inventoryUI.activeInHierarchy; }
     public bool upgradesOpen { get => upgradesUI != null && upgradesUI.activeInHierarchy; }
@@ -30,6 +31,8 @@ public class UIManager : MonoBehaviour
     public UiElementConfig[] uiElements;
     [Header("Cursor")]
     public UIState cursorUnlocked;
+    [Header("Gameplay Pause")]
+    public UIState paused;
 
     // for configuring action map toggling
     [System.Serializable]
@@ -81,6 +84,8 @@ public class UIManager : MonoBehaviour
                 gameObject = deathScreen;
                 return true;
             case UIState.Pause:
+                gameObject = pauseScreen;
+                return true;
             default: 
                 gameObject = null;
                 return false;
@@ -89,6 +94,11 @@ public class UIManager : MonoBehaviour
 
     public void SwitchToGameplay() {
         currentState = UIState.Gameplay;
+        ApplyState();
+    }
+
+    public void SwitchToPause() {
+        currentState = UIState.Pause;
         ApplyState();
     }
 
@@ -112,14 +122,24 @@ public class UIManager : MonoBehaviour
         ApplyState();
     }
 
-    void Awake() {
-        Instance = this;
+    public void RedrawCurrentUI()
+    {
+        for (int i = 0; i < uiElements.Length; i++) {
+            uiElements[i].uiElement.SetActive(false);
+        }
 
+        ApplyState();
+    }
+
+    void Awake() {
         playerStats = GameObject.Find("Player Stats");
         hotbar = GameObject.Find("Hotbar");
         inventoryUI = GameObject.Find("Inventory");
         upgradesUI = GameObject.Find("Upgrades");
         deathScreen = GameObject.Find("Death Screen");
+        pauseScreen = GameObject.Find("Pause Screen");
+
+        pauseState = GetComponent<Pausing>();
 
         // get actions/maps from names
         for (int i = 0; i < actionMaps.Length; i++) {
@@ -129,13 +149,21 @@ public class UIManager : MonoBehaviour
             actions[i].action = InputSystem.actions.FindAction(actions[i].name, true);
         }
 
-        SwitchToGameplay();
     }
-
 
     private void ApplyState() {
         UpdateVisibility();
         UpdateInputSystem();
+
+        bool p = (paused & currentState) != 0;
+        if (p != pauseState.isPaused)
+        {
+            if (p)
+                pauseState.Pause();
+            else
+                pauseState.Resume();
+        }
+
     }
 
     private void UpdateVisibility () {

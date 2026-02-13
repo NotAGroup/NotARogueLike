@@ -31,7 +31,7 @@ public class AttachedObjectsToBones : AttachedObjects
             offsets[idx] *= boneSnappingFactor;
     }
 
-    void Update() {
+    void FixedUpdate() {
         if (visible)
             base.UpdatePositions();
     }

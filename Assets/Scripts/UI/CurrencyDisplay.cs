@@ -4,12 +4,7 @@ public class CurrencyDisplay : MonoBehaviour
 {
     private GameObject player;
     private Inventory playerInventory;
-
-    [Header("Rendering")]
-    public GameObject slotPrefab;
-
-    public Vector2 slotPositionLeft;
-    public Vector2 slotPositionRight;
+    private CurrencyDefinitions currencyDefinitions;
 
     // 
     private GameObject[] slots;
@@ -18,33 +13,37 @@ public class CurrencyDisplay : MonoBehaviour
         int numSlots = playerInventory.numCurrencySlots;
         slots = new GameObject[numSlots];
 
+        UIGrid grid = GetComponent<UIGrid>();
         for (int i = 0; i < numSlots; i++) {
-            slots[i] = Instantiate(slotPrefab, transform);
-            slots[i].transform.localPosition = Vector2.Lerp(slotPositionLeft, slotPositionRight, (float)i / numSlots);
+            slots[i] = grid.InstantiateGridEntry(i, 0, numSlots, 1);
         }
+
+        grid.Commit();
     }
 
-    void UpdateSlots() {
+    public void UpdateSlots() {
+        if (playerInventory == null || playerInventory.currency == null) return;
+
+        // check if slot count has changed
+        if (slots == null || playerInventory.numCurrencySlots != slots.Length)
+            InitializeSlots();
+
         for (int i = 0; i < slots.Length; i++) {
             GameObject slot = slots[i];
             ItemHotbarSlot s = slot.GetComponent<ItemHotbarSlot>();
-            s.SetCurrency((Currency)i, playerInventory.currency[(Currency)i]);
-            s.SetSelected(false);
+            s.SetCurrency(currencyDefinitions[(Currency)i], playerInventory.currency[(Currency)i]);
+            s.SetUnselected();
         }
+    }
+
+    void OnEnable()
+    {
+        UpdateSlots();
     }
 
     void Awake() {
         player = GameObject.Find("Player");
         playerInventory = player.GetComponent<Inventory>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        // check if slot count has changed
-        if (slots == null || playerInventory.numCurrencySlots != slots.Length)
-            InitializeSlots();
-
-        UpdateSlots();
+        currencyDefinitions = GameObject.Find("Definitions").GetComponent<CurrencyDefinitions>();
     }
 }

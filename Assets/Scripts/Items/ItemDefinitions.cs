@@ -1,11 +1,7 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 using System;
 using System.Collections.Generic;
-
-public enum Currency {
-    Gold = 0,
-    XP = 1
-}
 
 [System.Serializable]
 public class ItemDefinition {
@@ -18,8 +14,8 @@ public class ItemDefinition {
     public string description;
     // prefab for displaying item in scene (e.g. shop, loot drops)
     public GameObject itemModel;
-    // prefab for displaying item in ui (e.g. hotbar)
-    public GameObject itemModelUI;
+    // texture for displaying item in ui (e.g. hotbar)
+    public Sprite itemSprite;
 
     [Header("Loot")]
     [Range(0f,1f)]
@@ -50,6 +46,16 @@ public class ItemDefinitions : MonoBehaviour
 {
     public ItemDefinition this[int i] {
         get => definitions[i];
+    }
+
+    public ItemDefinition this[string name] {
+        get {
+            foreach(ItemDefinition def in definitions)
+            {
+                if (def.name == name) return def;
+            }
+            throw new KeyNotFoundException();
+        }
     }
 
     // 

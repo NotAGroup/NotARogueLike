@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 public class FloorClearing : MonoBehaviour
@@ -6,21 +7,33 @@ public class FloorClearing : MonoBehaviour
     // reduce Find calls
     private GameObject cachedOpponent;
 
-    // gameobject to activate when the level is cleared
-    public GameObject trapDoor;
+    public UnityEvent onCleared;
+    public string[] opponentTags;
 
+    bool cleared = false;
 
     public bool CheckClearingCondition() {
         if (cachedOpponent != null && cachedOpponent.activeInHierarchy) return false;
 
-        cachedOpponent = GameObject.Find("Opponent(Clone)");
+        // check all tags
+        if (opponentTags != null)
+        {
+            foreach(string tag in opponentTags)
+            {
+                if (cachedOpponent != null) break;
+                cachedOpponent = GameObject.FindWithTag(tag);
+            }
+        }
+
         return cachedOpponent == null;
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        if (CheckClearingCondition()) {
-            trapDoor.GetComponent<TrapDoor>().Enable();
+        if (!cleared && CheckClearingCondition()) {
+            cleared = true;
+
+            onCleared.Invoke();
         }
     }
 }

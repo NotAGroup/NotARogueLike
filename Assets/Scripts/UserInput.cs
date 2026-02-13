@@ -15,12 +15,13 @@ public class UserInput : MonoBehaviour
     private Vector2 rotation;
 
     private bool controlPlayer {
-        get => !uiController.upgradesOpen && !uiController.inventoryOpen && !player.isDead;
+        get => !uiController.upgradesOpen && !uiController.inventoryOpen && !uiController.pauseState.isPaused && !player.isDead;
     }
 
     // movement actions
     private InputAction moveAction;
     private InputAction rotateAction;
+    private InputAction rotateSinceLastFrameAction;
 
     // movement modifiers
     private InputAction sneakAction;
@@ -51,7 +52,7 @@ public class UserInput : MonoBehaviour
     // any state -> selected-ui -> gameplay
     private InputAction toggleUpgradesAction;
     private InputAction toggleInventoryAction;
-    private InputAction togglePauseAction;
+    private InputAction pauseAction;
 
     // ui actions
     private InputAction uiSelectAction;
@@ -65,7 +66,7 @@ public class UserInput : MonoBehaviour
     [Tooltip("How fast the ui should be navigated (in Hz)")]
     public float uiNavigateRepeatRate;
 
-    void Awake()
+    void Start()
     {
         player = GameObject.Find("Player").GetComponent<Player>();
         playerUpgrades = GameObject.Find("Player").GetComponent<PlayerUpgrades>();
@@ -82,6 +83,7 @@ public class UserInput : MonoBehaviour
         // find input actions
 		moveAction = InputSystem.actions.FindAction("Move", true);
 		rotateAction = InputSystem.actions.FindAction("Look", true);
+		rotateSinceLastFrameAction = InputSystem.actions.FindAction("LookSinceLastFrame", true);
 
 		jumpAction = InputSystem.actions.FindAction("Jump", true);
 		sneakAction = InputSystem.actions.FindAction("Crouch", true);
@@ -104,7 +106,7 @@ public class UserInput : MonoBehaviour
 
 		toggleUpgradesAction = InputSystem.actions.FindAction("ToggleUpgrades", true);
 		toggleInventoryAction = InputSystem.actions.FindAction("ToggleInventory", true);
-		togglePauseAction = InputSystem.actions.FindAction("TogglePause", true);
+		pauseAction = InputSystem.actions.FindAction("Pause", true);
   
 		uiMoveAction = InputSystem.actions.FindAction("Navigate", true);
 		uiSelectAction = InputSystem.actions.FindAction("Submit", true);
@@ -125,7 +127,9 @@ public class UserInput : MonoBehaviour
             player.Aim(aimAction.IsPressed());
 
             Vector2 direction = moveAction.ReadValue<Vector2>();
-            Vector2 rotation  = lookSensitivity * rotateAction.ReadValue<Vector2>();
+
+            Vector2 rotation  = lookSensitivity * rotateAction.ReadValue<Vector2>() * Time.deltaTime;
+            rotation         += lookSensitivity * rotateSinceLastFrameAction.ReadValue<Vector2>();
 
             player.Rotate(rotation);
             player.Move(direction);
@@ -134,6 +138,8 @@ public class UserInput : MonoBehaviour
         if (!controlPlayer) 
         {
             uiNavigateTimer -= Time.deltaTime;
+
+            player.Move(Vector2.zero);
 
             Vector2 uiDirection = uiMoveAction.ReadValue<Vector2>();
             if (uiDirection != Vector2.zero && uiNavigateTimer <= 0f) 
@@ -151,6 +157,28 @@ public class UserInput : MonoBehaviour
 
             if (uiDirection == Vector2.zero)
                 uiNavigateTimer = 0f;
+
+            if (uiSelectAction.WasPerformedThisFrame()) {
+                if (uiController.TryGetFocusedWindow(out GameObject obj)) 
+                {
+                    if (obj.TryGetComponent<UINavigationReceiver>(out UINavigationReceiver receiver)) 
+                    {
+                        // control active ui
+                        receiver.Submit();
+                    }
+                }
+            }
+
+            if (uiCloseAction.WasPerformedThisFrame()) {
+                if (uiController.TryGetFocusedWindow(out GameObject obj)) 
+                {
+                    if (obj.TryGetComponent<UINavigationReceiver>(out UINavigationReceiver receiver)) 
+                    {
+                        // control active ui
+                        receiver.Cancel();
+                    }
+                }
+            }
         } 
 
         // items
@@ -165,29 +193,37 @@ public class UserInput : MonoBehaviour
 
         // input using selected attack
         if (changeAttackAction.WasPerformedThisFrame()) {player.ChangeAttack(); }
-        if (attackAction.WasPerformedThisFrame()) {player.Attack(); }
+
+        if (attackAction.WasPressedThisFrame()) {
+            if(player.attackType == Player.AttackType.Shoot) {
+                player.DrawBow();
+            } else
+            {
+                player.Attack();
+            }
+        }
+
+        if(attackAction.WasReleasedThisFrame()) {
+            if(player.attackType == Player.AttackType.Shoot) {
+                player.Shoot();
+            }
+        }
 
         // attack-type-specific inputs 
         if (strikeAction.WasPerformedThisFrame()) {
             player.ChangeAttack(Player.AttackType.Hit);
             player.Attack();
         }
-        if (shootAction.WasPerformedThisFrame()) {
+        if (shootAction.WasPressedThisFrame()) {
             player.ChangeAttack(Player.AttackType.Shoot);
-            player.Attack();
+            player.DrawBow();
         }
 
-
-        if (uiSelectAction.WasPerformedThisFrame()) {
-            if (uiController.TryGetFocusedWindow(out GameObject obj)) 
-            {
-                if (obj.TryGetComponent<UINavigationReceiver>(out UINavigationReceiver receiver)) 
-                {
-                    // control active ui
-                    receiver.Submit();
-                }
-            }
+        if(shootAction.WasReleasedThisFrame())
+        {
+            player.Shoot();
         }
+
 
         if (switchUIAction.WasPerformedThisFrame()) {
             // handle switching between UIs
@@ -201,6 +237,13 @@ public class UserInput : MonoBehaviour
         if (uiCloseAction.WasPerformedThisFrame()) {
             // handle closing of ui
             uiController.SwitchToGameplay();
+        }
+
+        if (pauseAction.WasPerformedThisFrame()) {
+            // handle toggling of ui
+            if (!uiController.pauseState.isPaused) {
+                uiController.SwitchToPause();
+            }
         }
 
         if (toggleUIAction.WasPerformedThisFrame()) {

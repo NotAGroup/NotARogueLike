@@ -1,51 +1,32 @@
 using UnityEngine;
 
-public class HitZone : MonoBehaviour
+public abstract class HitZone<Owner> : MonoBehaviour
+    where Owner : MonoBehaviour
 {
-    private float damage;
-    private Opponent opponent;
+    protected float damage;
+    protected Owner owner;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    protected virtual void Awake()
     {
-        opponent = GetComponentInParent<Opponent>();
+        owner = GetComponentInParent<Owner>();
     }
-
-    private void OnTriggerEnter(Collider other)
+    protected virtual void OnTriggerEnter(Collider other)
     {
-        string name = other.gameObject.name;
+        GameObject otherObject = other.gameObject;
 
-        if (name == "Opponent")
+        if (IsSelf(otherObject))
         {
             // Ignore self triggers
             return;
         }
+        
+        //Debug.Log($"{GetType().Name} hit: {otherObject.name}");
 
-        Debug.Log("Zone hit: " + name);
-
-        if (name.Contains("chest"))
-        {
-            Transform parent = other.gameObject.transform.parent;
-            DestroyableObject destroyableObject = parent.GetComponent<DestroyableObject>();
-
-            if (destroyableObject != null)
-            {
-                Debug.Log("Zone dealing " + damage + " damage to " + parent.name);
-                destroyableObject.TakeDamage(damage);
-            }
-        }
-
-        if (name.Contains("Player"))
-        {
-            Player player = other.gameObject.GetComponent<Player>();
-            Debug.Log("Zone dealing " + damage + " damage to " + name);
-            if (!opponent.playerGotHit)
-            {
-                player.TakeDamage(damage);
-                opponent.playerGotHit = true;
-            }
-        }
+        DealDamage(otherObject);
     }
+
+    protected abstract void DealDamage(GameObject other);
+    protected abstract bool IsSelf(GameObject other);
 
     public void SetDamage(float damage)
     {

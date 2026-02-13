@@ -11,11 +11,17 @@ public class Constitution : MonoBehaviour
     public float Stamina { get => state.stamina; set => state.stamina = value; }
     public float Mana { get => state.mana; set => state.mana = value; }
 
-    void Start()
+    void Awake()
     {
         stats = GetComponent<PlayerStats>();
-
         state = RunData.Instance.constitution;
+    }
+
+    public void Reset() 
+    {
+        state.health = stats.maxHealth;
+        state.mana = stats.maxMana;
+        state.stamina = stats.maxStamina;
     }
 
     public void RegenerateHealth()

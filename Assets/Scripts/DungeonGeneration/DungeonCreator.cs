@@ -8,6 +8,8 @@ struct DungeonSegment
 {
     public GameObject area;
 
+    public HashSet<Vector3Int> corridorOpenings;
+
     public HashSet<Vector3Int> horizontalWallPositions;
     public HashSet<Vector3Int> verticalWallPositions;
 }
@@ -16,7 +18,7 @@ struct DungeonSegment
 public class DungeonCreator : MonoBehaviour
 {
     private GameObject dungeonLevel;
-    private List<DungeonSegment> dungeonSegments;
+    private DungeonSegment[] dungeonSegments;
     private NavMeshSurface navMeshSurface;
 
     public int dungeonWidth, dungeonLength;
@@ -24,7 +26,6 @@ public class DungeonCreator : MonoBehaviour
     public int maxIterations;
     public int corridorWidth;
     public int enemyAmount;
-    public float lootProb, shopProb;
 
     [Header("Materials")]
     public Material floorMaterial;
@@ -36,7 +37,7 @@ public class DungeonCreator : MonoBehaviour
     public float roomTopCornerMidifier;
     [Range(0, 2)]
     public int roomOffset;
-    
+
     [Header("Torch Placement")]
     public float pillarThickness;
     [Range(0, 6)]
@@ -46,7 +47,11 @@ public class DungeonCreator : MonoBehaviour
     [Range(0, 2)]
     public float torchWallOffset;
 
-    public GameObject wallPrefab, pillarPrefab, playerPrefab, chestPrefab, shopPrefab, torchPrefab, trapDoorPrefab, navPointPrefab;
+    [Header("Decoration Placement")]
+    public GameObject[] floorDecorationPrefabs;
+    public float floorDecorationDensity;
+
+    public GameObject wallPrefab, pillarPrefab, playerPrefab, chestPrefab, largeChestPrefab, shopPrefab, torchPrefab, trapDoorPrefab, bossDoorPrefab, navPointPrefab;
 
     private Dictionary<Vector3Int, DungeonSegment> horizontalWallOwners;
     private Dictionary<Vector3Int, DungeonSegment> verticalWallOwners;
@@ -58,7 +63,13 @@ public class DungeonCreator : MonoBehaviour
 
     // current level
     int level;
+    int opponents;
     DungeonProperties properties;
+    bool hasBossRoom;
+
+    // temporary inventory for loot placement
+    ItemContainer availableLootItems;
+    CurrencyContainer availableLootCurrencies;
 
     void Awake()
     {
@@ -72,87 +83,129 @@ public class DungeonCreator : MonoBehaviour
 
     public void CreateDungeon()
     {
-        level = RunData.Instance.level;
-        if (level < 0) { 
-            Debug.LogWarning("rundata has not been initialized yet, assuming level = 0");
-            level = 0; 
-        }
-
-        properties = dungeonPropertyDefinitions.ComputeFrom(level);
-        int size = (int) properties[DungeonPropertyKey.Size];
-        Debug.Log("Generating dungeon with parameters: " + properties.ToString());
-
-        DestroyAllChildren();
-
-        DugeonGenerator generator = new DugeonGenerator(size * dungeonWidth, size * dungeonLength);
-        var listOfRooms = generator.CalculateDungeon((int)Math.Clamp(Math.Log(size), 1, 5) * maxIterations,
-            roomWidthMin,
-            roomLengthMin,
-            roomBottomCornerModifier,
-            roomTopCornerMidifier,
-            roomOffset,
-            corridorWidth);
-
-        dungeonLevel = new GameObject("DungeonLevel");
-        dungeonLevel.transform.parent = transform;
-
-        dungeonSegments = new List<DungeonSegment>();
-
-        horizontalWallOwners = new Dictionary<Vector3Int, DungeonSegment>();
-        verticalWallOwners = new Dictionary<Vector3Int, DungeonSegment>();
-
-        for (int i = 0; i < listOfRooms.Count; i++)
+        try 
         {
-            Vector2Int bottomLeftAreaCorner = listOfRooms[i].BottomLeftAreaCorner;
-            Vector2Int topRightAreaCorner = listOfRooms[i].TopRightAreaCorner;
-            String type = listOfRooms[i].Type;
+            level = RunData.Instance.level;
+            if (level < 0)
+            {
+                Debug.LogWarning("rundata has not been initialized yet, assuming level = 0");
+                level = 0;
+            }
 
-            Vector2Int areaCenter = (bottomLeftAreaCorner + topRightAreaCorner) / 2;
+            properties = dungeonPropertyDefinitions.ComputeFrom(level);
+            int size = (int)properties[DungeonPropertyKey.Size];
+            hasBossRoom = UnityEngine.Random.Range(0f,1f) <= properties[DungeonPropertyKey.HasBoss];
+            Debug.Log("Generating dungeon with parameters: " + properties.ToString());
 
-            DungeonSegment segment = new DungeonSegment();
+            DestroyAllChildren();
 
-            segment.area = new GameObject(char.ToUpper(type[0]) + type.Substring(1) + " " + areaCenter);
-            segment.area.transform.parent = dungeonLevel.transform;
-            segment.area.transform.position = new Vector3(areaCenter.x, 0, areaCenter.y);
+            DugeonGenerator generator = new DugeonGenerator(size * dungeonWidth, size * dungeonLength);
+            var listOfRooms = generator.CalculateDungeon((int)Math.Clamp(Math.Log(size), 1, 5) * maxIterations,
+                roomWidthMin,
+                roomLengthMin,
+                roomBottomCornerModifier,
+                roomTopCornerMidifier,
+                roomOffset,
+                corridorWidth,
+                hasBossRoom
+                );
 
-            segment.horizontalWallPositions = new HashSet<Vector3Int>();
-            segment.verticalWallPositions = new HashSet<Vector3Int>();
+            dungeonLevel = new GameObject("DungeonLevel");
+            dungeonLevel.transform.parent = transform;
 
-            dungeonSegments.Add(segment);
+            dungeonSegments = new DungeonSegment[listOfRooms.Count];
 
-            CreateMesh(bottomLeftAreaCorner, topRightAreaCorner, segment, type);
+            horizontalWallOwners = new Dictionary<Vector3Int, DungeonSegment>();
+            verticalWallOwners = new Dictionary<Vector3Int, DungeonSegment>();
+
+            for (int i = listOfRooms.Count - 1; i >= 0; i--)
+            {
+                Vector2Int bottomLeftAreaCorner = listOfRooms[i].BottomLeftAreaCorner;
+                Vector2Int topRightAreaCorner = listOfRooms[i].TopRightAreaCorner;
+                string type = listOfRooms[i].Type;
+
+                Vector2Int areaCenter = (bottomLeftAreaCorner + topRightAreaCorner) / 2;
+
+                DungeonSegment segment = new DungeonSegment();
+                string segmentName;
+
+                if (type.Contains('_'))
+                {
+                    string[] name = type.Split('_');
+                    segmentName = char.ToUpper(name[0][0]) + name[0].Substring(1) + " " +
+                        char.ToUpper(name[1][0]) + name[1].Substring(1) + " " + areaCenter;
+                }
+                else
+                {
+                    segmentName = char.ToUpper(type[0]) + type.Substring(1) + " " + areaCenter;
+                }
+
+                segment.area = new GameObject(segmentName);
+                segment.area.transform.parent = dungeonLevel.transform;
+                segment.area.transform.position = new Vector3(areaCenter.x, 0, areaCenter.y);
+
+                segment.corridorOpenings = new HashSet<Vector3Int>();
+
+                segment.horizontalWallPositions = new HashSet<Vector3Int>();
+                segment.verticalWallPositions = new HashSet<Vector3Int>();
+
+                CreateMesh(bottomLeftAreaCorner, topRightAreaCorner, segment);
+                StoreOnlyOpeningCentres(segment);
+
+                dungeonSegments[i] = segment;
+            }
+
+            SampleLoot();
+            CreatePlayer(listOfRooms);
+            CreateTrapDoor(listOfRooms);
+            CreateWalls();
+            CreatePillars(listOfRooms);
+            CreateNavPoints(listOfRooms);
+            CreateEnemy(listOfRooms);
+
+            if (hasBossRoom)
+            {
+                CreateBoss(listOfRooms);
+                CreateBossDoor(listOfRooms);
+            }
+
+            CreateLoot(listOfRooms);
+            CreateShop(listOfRooms);
+            CreateDecoration(listOfRooms);
+
+            navMeshSurface.BuildNavMesh();
         }
-
-        CreatePlayer(listOfRooms);
-        CreateTrapDoor(listOfRooms);
-        CreateWalls();
-        CreatePillars(listOfRooms);
-        CreateLoot(listOfRooms);
-        CreateEnemy(listOfRooms);
-        CreateNavPoints(listOfRooms);
-        CreateShop(listOfRooms);
-
-        navMeshSurface.BuildNavMesh();
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+        }
     }
 
     private void CreatePlayer(List<Node> listOfRooms)
     {
-        Node room = listOfRooms[UnityEngine.Random.Range(0, listOfRooms.Count)];
-
-        int playerPosX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.TopRightAreaCorner.x - 1);
-        int playerPosY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopRightAreaCorner.y - 1);
-        Vector3 playerPos = new Vector3(playerPosX, 2, playerPosY);
+        Node room = listOfRooms.Find(r => r.Type == "starting_room");
+        float playerPosX = (room.BottomLeftAreaCorner.x + room.TopRightAreaCorner.x) / 2f + UnityEngine.Random.Range(-2f, 2f);
+        float playerPosY = (room.BottomLeftAreaCorner.y + room.TopRightAreaCorner.y) / 2f + UnityEngine.Random.Range(-2f, 2f);
+        Vector3 playerPos = new Vector3(
+            playerPosX,
+            2,
+            playerPosY
+            );
 
         Player player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        CharacterController cc = player.GetComponent<CharacterController>();
+        cc.enabled = false;
+
         player.transform.SetPositionAndRotation(playerPos, Quaternion.identity);
         player.name = "Player";
-        player.StartGame();
+
+        cc.enabled = true;
     }
 
     // selects opponent class randomly
     private int SelectRandomOpponentClass()
     {
-        float sample = UnityEngine.Random.Range(0,1f);
+        float sample = UnityEngine.Random.Range(0, 1f);
         int opponentClass = 0;
         for (int index = 0; index < opponentDefinitions.classes.Length; index++)
         {
@@ -166,59 +219,121 @@ public class DungeonCreator : MonoBehaviour
         return opponentClass;
     }
 
-    private void CreateEnemy(List<Node> listOfRooms)
+    private void CreateEncounter(List<Node> listOfRooms, int index, int enemyCount, int totalEnemyCount) 
     {
-        int actualEnemyAmount = (int) (enemyAmount * properties[DungeonPropertyKey.EnemyCount]);
+	    Node room = listOfRooms[index];
+        int cornerCount = room.GetCorners().Count;
 
-        bool isEnoughEnemies = false;
-        int counter = 0;
+        int meleeEnemies = 0;
+        int rangedEnemies = 0;
 
-        while (!isEnoughEnemies)
-        {
-            for (int i = 0; i < listOfRooms.Count; i++)
+	    for (int i = 0; i < enemyCount; ) {
+            int opponentClass = SelectRandomOpponentClass();
+
+            // ensure ranged enemies constraint is fulfilled
+            if (opponentDefinitions.classes[opponentClass].className == "Ranged Skeleton") 
             {
-                Node room = listOfRooms[i];
+                rangedEnemies += 1;
+                if (rangedEnemies > properties[DungeonPropertyKey.EnemyMaxRangedCount])
+                    continue;
+            }
 
-                if (room.Type == "room")
-                {
-                    if (UnityEngine.Random.Range(0.0f, 1.0f) > 0.5f)
-                    {
-                        int opponentClass = SelectRandomOpponentClass();
+            int enemyPosX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.TopRightAreaCorner.x - 1);
+            int enemyPosY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopRightAreaCorner.y - 1);
+            Vector3 enemyPos = new Vector3(enemyPosX, 1, enemyPosY);
+    
+            GameObject foe = Instantiate(opponentDefinitions.classes[opponentClass].prefab, enemyPos, Quaternion.identity, dungeonSegments[index].area.transform);
+            foe.name = opponentDefinitions.classes[opponentClass].prefab.name;
 
-                        int enemyPosX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.BottomRightAreaCorner.x - 1);
-                        int enemyPosY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopLeftAreaCorner.y - 1);
-                        Vector3 enemyPos = new Vector3(enemyPosX, 1, enemyPosY);
+            // ensures that not all skeletons want to go to the same NavPoint
+            if (opponentDefinitions.classes[opponentClass].className == "Melee Skeleton")
+            {
+                foe.GetComponent<MeleeSkeleton>().SetNavPointID(meleeEnemies);
+                meleeEnemies = (meleeEnemies + 1) % cornerCount;
+            }
 
-                        GameObject foe = Instantiate(opponentDefinitions.classes[opponentClass].prefab, enemyPos, Quaternion.identity, dungeonSegments[i].area.transform);
-                        foe.name = opponentDefinitions.classes[opponentClass].prefab.name;
-                        Opponent opponent = foe.GetComponent<Opponent>();
-                        opponent.spawnRoom = room;
+            // assign spawn room
+            if (foe.TryGetComponent<Opponent>(out Opponent opponent))
+            {
+                opponent.spawnRoom = room;
+            }
 
-                        OpponentStats stats = foe.GetComponent<OpponentStats>();
-                        stats.ComputeFrom(opponentDefinitions.classes[opponentClass], (int)properties[DungeonPropertyKey.EnemyLevel]);
+            // assign level
+            if (foe.TryGetComponent<OpponentStats>(out OpponentStats stats))
+            {
+                int level = (int)(properties[DungeonPropertyKey.EnemyLevel]);
+                stats.ComputeFrom(opponentDefinitions.classes[opponentClass], level);
+            }
 
-                        counter++;
-                    }
-
-                    if (counter >= actualEnemyAmount)
-                    {
-                        break;
-                    }
+            // add loot
+            if (foe.TryGetComponent<Rewards>(out Rewards enemyRewards)) {
+                int type = UnityEngine.Random.Range(0, 3);
+                switch (type) {
+                case 0:
+                    enemyRewards.AddItem(RandomItemFrom(availableLootItems));
+                    break;
+                case 1:
+                    enemyRewards.xp = XpFrom(availableLootCurrencies, (int)(properties[DungeonPropertyKey.AvailableXP] / totalEnemyCount));
+                    break;
+                case 2:
+                    enemyRewards.gold = GoldFrom(availableLootCurrencies, (int)(properties[DungeonPropertyKey.AvailableGold] / totalEnemyCount));
+                    break;
                 }
             }
 
-            isEnoughEnemies = counter >= actualEnemyAmount;
+            i++;
         }
     }
 
-    private void AddNavPoint(Node room, GameObject area, int x, int y)
+    private void CreateEnemy(List<Node> listOfRooms)
+    {
+        // expectation values
+	    float encounters = properties[DungeonPropertyKey.EncounterCount] * properties[DungeonPropertyKey.Size] * properties[DungeonPropertyKey.Size];
+        float enemiesPerEncounter = properties[DungeonPropertyKey.EnemyCount];
+        opponents = enemyAmount * (int)(properties[DungeonPropertyKey.EnemyCount] * properties[DungeonPropertyKey.EncounterCount] *
+            properties[DungeonPropertyKey.Size] * properties[DungeonPropertyKey.Size]); 
+
+        if (hasBossRoom)
+        {
+            opponents++;
+        }
+
+        enemiesPerEncounter = Math.Clamp(enemiesPerEncounter, 1f, 3f);
+        encounters = Math.Clamp(encounters, 2f, 10f);
+
+        Debug.Log("Expecting " + encounters + " encounters of expected " + enemiesPerEncounter + "enemies each");
+
+        // number of encounters follows poisson distribution
+        int actualEncounters = (int)(Distributions.Poisson.Sample(8f) / 8f * encounters);
+        for (int j = 0; j < actualEncounters; )
+        {
+            int i = UnityEngine.Random.Range(0, listOfRooms.Count());
+            Node room = listOfRooms[i];
+
+            if (room.Type == "room")
+            {
+	    	    int num = (int)(Distributions.Poisson.Sample(16f) / 16f * enemiesPerEncounter);
+
+                Debug.Log("Creating encounter with " + num + " opponents in room " + i);
+	    	    CreateEncounter(listOfRooms, i, num, opponents);
+
+                j++;
+            }
+
+        }
+    }
+
+    private void AddNavPoint(Node room, GameObject area, string type, int x, int y)
     {
         Vector3 navPointPos = new Vector3(x, 0.5f, y);
 
-        GameObject navPoint = Instantiate(navPointPrefab, navPointPos, Quaternion.identity, area.transform);
-        navPoint.name = navPointPrefab.name;
+        GameObject instance = Instantiate(navPointPrefab, navPointPos, Quaternion.identity, area.transform);
+        instance.name = navPointPrefab.name;
 
-        room.navPointList.Add(navPoint.GetComponent<NavPoint>());
+        NavPoint navPoint = instance.GetComponent<NavPoint>();
+        navPoint.type = type;
+
+        room.navPointList.Add(navPoint);
     }
 
     private void CreateNavPoints(List<Node> listOfRooms)
@@ -227,141 +342,398 @@ public class DungeonCreator : MonoBehaviour
         {
             Node room = listOfRooms[i];
 
-            if (room.Type == "room")
+            if (room.Type == "room" || room.Type == "starting_room" || room.Type == "boss_room")
             {
-                GameObject area = dungeonSegments[i].area;
+                DungeonSegment segment = dungeonSegments[i];
 
-                AddNavPoint(room, area, room.BottomLeftAreaCorner.x + 5, room.BottomLeftAreaCorner.y + 5);
-                AddNavPoint(room, area, room.TopLeftAreaCorner.x + 5, room.TopLeftAreaCorner.y - 5);
-                AddNavPoint(room, area, room.TopRightAreaCorner.x - 5, room.TopRightAreaCorner.y - 5);
-                AddNavPoint(room, area, room.BottomRightAreaCorner.x - 5, room.BottomRightAreaCorner.y + 5);
+                AddNavPoint(room, segment.area, "corner", room.BottomLeftAreaCorner.x + 5, room.BottomLeftAreaCorner.y + 5);
+                AddNavPoint(room, segment.area, "corner", room.TopLeftAreaCorner.x + 5, room.TopLeftAreaCorner.y - 5);
+                AddNavPoint(room, segment.area, "corner", room.TopRightAreaCorner.x - 5, room.TopRightAreaCorner.y - 5);
+                AddNavPoint(room, segment.area, "corner", room.BottomRightAreaCorner.x - 5, room.BottomRightAreaCorner.y + 5);
+
+                foreach (var opening in segment.corridorOpenings)
+                {
+                    AddNavPoint(room, segment.area, "opening", opening.x, opening.z);
+                }
             }
         }
     }
 
+    // selects random shop items, using probabilities raised to the given exponent
+    // 0 corresponds to a uniform distribution on the items meaning that otherwise 
+    // rare items appear more frequently
+    private void SetRandomShopItems(ItemContainer items, float probabilityExponent)
+    {
+        float[] adjustedProbabilities = new float[itemDefinitions.definitions.Length];
+        float adjustedProbabilitySum = 0;
+        int index = 0;
+        foreach (ItemDefinition def in itemDefinitions.definitions)
+        {
+            adjustedProbabilities[index] = Mathf.Pow(def.shopProbability, probabilityExponent);
+            adjustedProbabilitySum += adjustedProbabilities[index];
+            index++;
+        }
 
-    private void SetRandomShopItems(ItemContainer items) {
-        foreach (ItemSlot slot in items.slots) {
+        // normalize adjusted probabilities
+        for (int i = 0; i < adjustedProbabilities.Length; i++)
+        {
+            adjustedProbabilities[i] /= adjustedProbabilitySum;
+        }
+        
+        foreach (ItemSlot slot in items.slots)
+        {
             slot.storedItem = null;
 
             // select random definition
-            float random = UnityEngine.Random.Range(0f,1f);
-            foreach (ItemDefinition def in itemDefinitions.definitions) {
-                if (random <= def.shopProbability) {
+            float random = UnityEngine.Random.Range(0f, 1f);
+            index = 0;
+            foreach (ItemDefinition def in itemDefinitions.definitions)
+            {
+                if (random <= adjustedProbabilities[index])
+                {
                     slot.storedItem = def;
-                    slot.count = 1;
+                    slot.count = UnityEngine.Random.Range(1, def.maxPerShopSlot + 1);
                     break;
                 }
-                random -= def.shopProbability;
+                random -= adjustedProbabilities[index];
+                index++;
             }
-        }
-    }
-
-    private void SetRandomDroppedItem(ItemSlot slot) {
-        slot.storedItem = null;
-
-        // select random definition
-        var random = UnityEngine.Random.Range(0f,1f);
-        foreach (ItemDefinition def in itemDefinitions.definitions) {
-            if (random <= def.dropProbability) {
-                slot.storedItem = def;
-                slot.count = 1;
-                break;
-            }
-            random -= def.dropProbability;
         }
     }
 
     private void CreateShop(List<Node> listOfRooms)
     {
-        for (int i = 0; i < listOfRooms.Count(); i++)
+        float shopProb = properties[DungeonPropertyKey.ShopsPerLevel];
+        int shopCount = 0;
+        shopCount = (int)Distributions.Bates.Sample(shopProb, shopProb, 4);
+
+        for (int j = 0; j < shopCount; /*j only incremented on sucessful spawn*/)
         {
+            // randomly select a dungeon segment
+            int i = UnityEngine.Random.Range(0, listOfRooms.Count());
             Node room = listOfRooms[i];
+            
+            if (room.Type != "room") continue;
 
-            if (room.Type == "room")
-            {
-                // use center of room
-                int shopX = (room.BottomLeftAreaCorner.x + 1 + room.BottomRightAreaCorner.x) / 2;
-                int shopY = (room.BottomLeftAreaCorner.y + 1 + room.TopLeftAreaCorner.y) / 2;
-                Vector3 shopPos = new Vector3(
-                    shopX,
-                    0f,
-                    shopY);
+            // use center of room
+            int shopX = (room.BottomLeftAreaCorner.x + 1 + room.TopRightAreaCorner.x) / 2;
+            int shopY = (room.BottomLeftAreaCorner.y + 1 + room.TopRightAreaCorner.y) / 2;
+            Vector3 shopPos = new Vector3(
+                shopX,
+                0f,
+                shopY);
 
-                if (UnityEngine.Random.Range(0f,1f) < shopProb)
-                {
-                    GameObject shop = Instantiate(shopPrefab, shopPos, Quaternion.identity, dungeonSegments[i].area.transform);
-                    shop.name = shopPrefab.name;
+            GameObject shop = Instantiate(shopPrefab, shopPos, Quaternion.identity, dungeonSegments[i].area.transform);
+            shop.name = shopPrefab.name;
 
-                    // compute random inventory of shop
-                    ItemContainer items = new();
-                    items.Resize(3);
-                    SetRandomShopItems(items);
+            // compute random inventory of shop
+            ItemContainer items = new();
+            items.Resize(3);
+            SetRandomShopItems(items, 1f / ((level + 4) / 4));
 
-                    shop.GetComponent<ShopRenderer>().SetItems(items);
-                }
-            }
+            shop.GetComponent<ShopRenderer>().SetItems(items);
+            Debug.Log("Spawned shop with items " + items);
+
+            j++;
         }
     }
 
     // places the trapdoor in the room the furthest away from player
-    private void CreateTrapDoor(List<Node> listOfRooms) {
-        Transform player = GameObject.FindGameObjectWithTag("Player").transform;
-
-        float maxDist = 0f;
+    private void CreateTrapDoor(List<Node> listOfRooms)
+    {
         Node selectedRoom = null;
         GameObject selectedAera = null;
 
-        for (int i = 0; i < listOfRooms.Count(); i++) {
-            Node room = listOfRooms[i];
+        if (hasBossRoom)
+        {
+            selectedRoom = listOfRooms.Find(r => r.Type == "boss_room");
+            selectedAera = dungeonSegments[listOfRooms.IndexOf(selectedRoom)].area;
+        }
+        else
+        {
+            Transform player = GameObject.FindGameObjectWithTag("Player").transform;
+            float maxDist = 0f;
 
-            if (room.Type != "room") continue;
+            for (int i = 0; i < listOfRooms.Count(); i++)
+            {
+                Node room = listOfRooms[i];
 
-            Vector3 currentPos = new Vector3(
-                (room.BottomLeftAreaCorner.x + room.BottomRightAreaCorner.x) / 2,
-                0,
-                (room.BottomLeftAreaCorner.y + room.TopLeftAreaCorner.y) / 2);
-            float dist = (player.position - currentPos).magnitude;
+                if (room.Type != "room") continue;
 
-            if (dist > maxDist) {
-                maxDist = dist;
-                selectedAera = dungeonSegments[i].area;
-                selectedRoom = room;
+                Vector3 currentPos = new Vector3(
+                    (room.BottomLeftAreaCorner.x + room.TopRightAreaCorner.x) / 2,
+                    0,
+                    (room.BottomLeftAreaCorner.y + room.TopRightAreaCorner.y) / 2);
+                float dist = (player.position - currentPos).magnitude;
+
+                if (dist > maxDist)
+                {
+                    maxDist = dist;
+                    selectedAera = dungeonSegments[i].area;
+                    selectedRoom = room;
+                }
             }
         }
 
         // place in center of the selected room
         Vector3 pos = new Vector3(
-            (selectedRoom.BottomLeftAreaCorner.x + selectedRoom.BottomRightAreaCorner.x) / 2,
+            (selectedRoom.BottomLeftAreaCorner.x + selectedRoom.TopRightAreaCorner.x) / 2,
             0,
-            (selectedRoom.BottomLeftAreaCorner.y + selectedRoom.TopLeftAreaCorner.y) / 2);
+            (selectedRoom.BottomLeftAreaCorner.y + selectedRoom.TopRightAreaCorner.y) / 2);
         GameObject trapdoor = Instantiate(trapDoorPrefab, pos, Quaternion.identity, selectedAera.transform);
         trapdoor.name = trapDoorPrefab.name;
     }
 
+    // creates a budget of loot based on the dungeon properties
+    private void SampleLoot() 
+    {
+        availableLootItems = new();
+        availableLootCurrencies = new();
+
+        // compute amount of arrows from enemies
+        int numArrows = (int)properties[DungeonPropertyKey.AvailableAmmoPerEnemy];
+        numArrows *= (int)properties[DungeonPropertyKey.EnemyCount];
+        if (numArrows > 0)
+        {
+            availableLootItems.Resize(1);
+            availableLootItems.slots[0].storedItem = itemDefinitions["BowAmmo"];
+            availableLootItems.slots[0].count = numArrows;
+        }
+
+        // items
+        int size = (int) properties[DungeonPropertyKey.Size];   
+        int itemCount = (int)(properties[DungeonPropertyKey.AvailableItemsPerArea] * size * size);
+        availableLootItems.Resize(itemCount + 1);
+
+        // 
+        FillWithRandomItems(availableLootItems);
+        FillWithCurrency(availableLootCurrencies);
+
+        // print available loot
+        Debug.Log("DungeonCreator has a budget of items: " +  availableLootItems);
+        Debug.Log("DungeonCreator has a budget of currencies: " + availableLootCurrencies[Currency.Gold] + " gold and " + availableLootCurrencies[Currency.XP] + " xp");
+    }
+    
+    void FillWithCurrency(CurrencyContainer container)
+    {
+        // gold
+        {
+            float exp = Distributions.Bates.Sample(0.75f, 1.25f, 3) * properties[DungeonPropertyKey.AvailableGold];
+            container[Currency.Gold] += (int)exp;
+        }
+
+        // xp
+        {
+            float exp = Distributions.Bates.Sample(0.75f, 1.25f, 3) * properties[DungeonPropertyKey.AvailableGold];
+            container[Currency.XP] += (int)exp;
+        }
+    }
+
+    private void FillWithRandomItems(ItemContainer items)
+    {
+        foreach (ItemSlot slot in items.slots)
+        {
+            // if slot contains something, keep it
+            if(slot.storedItem != null && slot.count != 0) continue;
+
+            // select random definition
+            var random = UnityEngine.Random.Range(0f, 1f);
+            foreach (ItemDefinition def in itemDefinitions.definitions)
+            {
+                if (random <= def.shopProbability)
+                {
+                    slot.storedItem = def;
+                    slot.count = 1;
+                    break;
+                }
+                random -= def.dropProbability;
+            }
+        }
+    }
+
+    private ItemSlot RandomItemFrom(ItemContainer budget) 
+    {
+        ItemSlot result = new ItemSlot();
+        if (budget.Count < 1) return result;
+        
+        int slot = UnityEngine.Random.Range(0, budget.Count);
+        result.storedItem = availableLootItems[slot].storedItem;
+        result.count      = availableLootItems[slot].count;
+        budget.ConsumeItem(slot);
+        budget.Shrink();
+        return result;
+    }
+
+    private int GoldFrom(CurrencyContainer budget, int expectedAmount) 
+    {
+        int amount = (int)(Distributions.Bates.Sample(0.6f, 1.4f, 3) * properties[DungeonPropertyKey.AvailableGold]);
+        availableLootCurrencies[Currency.Gold] -= amount;
+        return amount;
+    }
+
+    private int XpFrom(CurrencyContainer budget, int expectedAmount) 
+    {
+        int amount = (int)(Distributions.Bates.Sample(0.6f, 1.4f, 3) * properties[DungeonPropertyKey.AvailableXP]);
+        availableLootCurrencies[Currency.XP] -= amount;
+        return amount;
+    }
+
+    private GameObject PlaceChest(List<Node> listOfRooms, int index) 
+    {
+        Node room = listOfRooms[index];
+        int chestX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.TopRightAreaCorner.x - 1);
+        int chestY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopRightAreaCorner.y - 1);
+        Vector3 chestPos = new Vector3(chestX, 0.35f, chestY);
+
+        GameObject chest = Instantiate(chestPrefab, chestPos, Quaternion.identity, dungeonSegments[index].area.transform);
+        chest.name = chestPrefab.name;
+    
+        return chest;
+    }
+
+    private GameObject PlaceLargeChest(List<Node> listOfRooms, int index) 
+    {
+        Node room = listOfRooms[index];
+        int chestX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.TopRightAreaCorner.x - 1);
+        int chestY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopRightAreaCorner.y - 1);
+        Vector3 chestPos = new Vector3(chestX, 0.35f, chestY);
+
+        GameObject chest = Instantiate(largeChestPrefab, chestPos, Quaternion.identity, dungeonSegments[index].area.transform);
+        chest.name = largeChestPrefab.name;
+    
+        return chest;
+    }
 
     private void CreateLoot(List<Node> listOfRooms)
     {
-        for(int i = 0; i < listOfRooms.Count(); i++)
+        // large chest, contains a larger portion of the available loot
+        int i = UnityEngine.Random.Range(0, listOfRooms.Count());
+        Node room = listOfRooms[i];
+        if (room.Type == "room")
         {
-            Node room = listOfRooms[i];
+            GameObject chest = PlaceLargeChest(listOfRooms, i);
 
+            // add an item
+            if (availableLootItems.Count > 0)
+            {
+                chest.GetComponent<Rewards>().AddItem(RandomItemFrom(availableLootItems));
+            }
+
+            // for currencies use an exponential distribution
+            // add some xp
+            if (properties[DungeonPropertyKey.AvailableXP] > 0)
+            {
+                int amount = (int)(Distributions.Exponential.Sample(1f) * properties[DungeonPropertyKey.AvailableXP]);
+                availableLootCurrencies[Currency.XP] -= amount;
+                chest.GetComponent<Rewards>().xp = amount;
+            }
+
+            // add some gold
+            if (properties[DungeonPropertyKey.AvailableGold] > 0)
+            {
+                int amount = (int)(Distributions.Exponential.Sample(1f) * properties[DungeonPropertyKey.AvailableGold]);
+                availableLootCurrencies[Currency.Gold] -= amount;
+                chest.GetComponent<Rewards>().gold = amount;
+            }
+        }
+
+        // 
+        float size = properties[DungeonPropertyKey.Size];
+        int numberOfChests = (int)(properties[DungeonPropertyKey.ChestsPerArea] * size * size);
+
+        // items
+        availableLootItems.Shrink();
+        int itemChestCount = availableLootItems.Count; // lambda for poisson distribution
+        for (float time = 0f; time < 1f && availableLootItems.Count > 0; time += Distributions.Exponential.Sample(itemChestCount))
+        {
+            i = UnityEngine.Random.Range(0, listOfRooms.Count());
+            room = listOfRooms[i];
             if (room.Type == "room")
             {
-                int chestX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.BottomRightAreaCorner.x - 1);
-                int chestY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopLeftAreaCorner.y - 1);
-                Vector3 chestPos = new Vector3(chestX, 0.35f, chestY);
-
-                if (UnityEngine.Random.Range(0f,1f) > lootProb)
-                {
-                    GameObject chest = Instantiate(chestPrefab, chestPos, Quaternion.identity, dungeonSegments[i].area.transform);
-                    chest.name = chestPrefab.name;
-
-                    ItemSlot tmpSlot = new();
-                    SetRandomDroppedItem(tmpSlot);
-                    chest.GetComponent<DestroyableObject>().SetItem(tmpSlot.storedItem, tmpSlot.count);
-                }
+                GameObject chest = PlaceChest(listOfRooms, i);
+                chest.GetComponent<Rewards>().AddItem(RandomItemFrom(availableLootItems));
             }
+        }
+
+        // xp
+        int xpChestCount = (int)(numberOfChests - itemChestCount) / 2;
+        for (float time = Distributions.Exponential.Sample(xpChestCount); time < 1f && availableLootCurrencies[Currency.XP] > 0; time += Distributions.Exponential.Sample(xpChestCount))
+        {
+            i = UnityEngine.Random.Range(0, listOfRooms.Count());
+            room = listOfRooms[i];
+            if (room.Type == "room")
+            {
+                GameObject chest = PlaceChest(listOfRooms, i);
+                chest.GetComponent<Rewards>().xp = GoldFrom(availableLootCurrencies, (int)(properties[DungeonPropertyKey.AvailableXP] / xpChestCount));
+            }
+        }
+
+        // gold
+        int goldChestCount = (int)(numberOfChests - itemChestCount) / 2;
+        for (float time = Distributions.Exponential.Sample(goldChestCount); time < 1f && availableLootCurrencies[Currency.Gold] > 0; time += Distributions.Exponential.Sample(goldChestCount))
+        {
+            i = UnityEngine.Random.Range(0, listOfRooms.Count());
+            room = listOfRooms[i];
+            if (room.Type == "room")
+            {
+                GameObject chest = PlaceChest(listOfRooms, i);
+                chest.GetComponent<Rewards>().gold = XpFrom(availableLootCurrencies, (int)(properties[DungeonPropertyKey.AvailableGold] / goldChestCount));
+            }
+        }
+
+        // empty chests
+        float fractionOfEmptyChests = 0.1f;
+        float fractionOfEmptyLargeChests = 0.1f;
+        int emptyChests = (int)(fractionOfEmptyChests * numberOfChests);
+        for (float time = Distributions.Exponential.Sample(emptyChests); time < 1f; time += Distributions.Exponential.Sample(emptyChests))
+        {
+            i = UnityEngine.Random.Range(0, listOfRooms.Count());
+            room = listOfRooms[i];
+            if (room.Type == "room")
+            {
+                bool large = (UnityEngine.Random.Range(0f, 1f) < fractionOfEmptyLargeChests);
+                GameObject chest = large ? PlaceLargeChest(listOfRooms, i) : PlaceChest(listOfRooms, i);
+            }
+        }
+    }
+
+    private Quaternion RandomOrientation()
+    {
+	return Quaternion.AngleAxis(UnityEngine.Random.Range(-180f,180f), Vector3.up);
+    }
+
+    private void PlaceDecoration(List<Node> listOfRooms, int index, GameObject prefab) 
+    {
+        Node room = listOfRooms[index];
+
+	    // sample position twice and take the mean so the distributions are more centered in the middle of the room
+        int x = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.TopRightAreaCorner.x - 1);
+        x    += UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.TopRightAreaCorner.x - 1);
+        int y = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopRightAreaCorner.y - 1);
+        y    += UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopRightAreaCorner.y - 1);
+	    x /= 2;
+	    y /= 2;
+        Vector3 pos = new Vector3(x, 0f, y);
+
+        GameObject deco = Instantiate(prefab, pos, RandomOrientation(), dungeonSegments[index].area.transform);
+        deco.name = prefab.name;
+    }
+
+    private void CreateDecoration(List<Node> listOfRooms)
+    {
+        float amount = properties[DungeonPropertyKey.Size];
+        amount *= amount;
+        amount *= floorDecorationDensity;
+        int count = (int) amount;
+
+        for (int j = 0; j < count; j++)
+        {
+            // randomly select a dungeon segment
+            int i = UnityEngine.Random.Range(0, listOfRooms.Count());
+            Node room = listOfRooms[i];
+            
+	        int selection = UnityEngine.Random.Range(0, floorDecorationPrefabs.Length);
+	        PlaceDecoration(listOfRooms, i, floorDecorationPrefabs[selection]);
         }
     }
 
@@ -381,16 +753,38 @@ public class DungeonCreator : MonoBehaviour
             Vector3 topRightCorner = new Vector3(room.TopRightAreaCorner.x, 0, room.TopRightAreaCorner.y);
             CreatePillar(topRightCorner, area);
         }
+
+        if (hasBossRoom)
+        {
+            Node room = listOfRooms.Find(r => r.Type == "boss_room");
+            GameObject area = dungeonSegments[listOfRooms.IndexOf(room)].area;
+
+            float height = room.TopRightAreaCorner.y - room.BottomLeftAreaCorner.y;
+            float width = room.TopRightAreaCorner.x - room.BottomLeftAreaCorner.x;
+
+            Vector3 pillarOne = new Vector3(room.BottomLeftAreaCorner.x + width / 4, 0, room.BottomLeftAreaCorner.y + height / 4);
+            PlaceTorchesBossRoom(CreatePillar(pillarOne, area), area);
+            Vector3 pillarTwo = new Vector3(room.TopRightAreaCorner.x - width / 4, 0, room.BottomLeftAreaCorner.y + height / 4);
+            PlaceTorchesBossRoom(CreatePillar(pillarTwo, area), area);
+            Vector3 pillarThree = new Vector3(room.BottomLeftAreaCorner.x + width / 4, 0, room.TopRightAreaCorner.y - height / 4);
+            PlaceTorchesBossRoom(CreatePillar(pillarThree, area), area);
+            Vector3 pillarFour = new Vector3(room.TopRightAreaCorner.x - width / 4, 0, room.TopRightAreaCorner.y - height / 4);
+            PlaceTorchesBossRoom(CreatePillar(pillarFour, area), area);
+        }
     }
 
-    private void CreatePillar(Vector3 position, GameObject parent)
+    private GameObject CreatePillar(Vector3 position, GameObject parent)
     {
         if (position != Vector3.zero)
         {
             Quaternion rotation = Quaternion.Euler(0.0f, UnityEngine.Random.Range(0, 4) * 90.0f, 0.0f);
 
-            GameObject pillar = Instantiate(pillarPrefab, position, Quaternion.identity, parent.transform);
+            GameObject pillar = Instantiate(pillarPrefab, position, rotation, parent.transform);
             pillar.name = pillarPrefab.name;
+            return pillar;
+        } else
+        {
+            return null;
         }
     }
 
@@ -571,6 +965,123 @@ public class DungeonCreator : MonoBehaviour
         }
     }
 
+    private void CreateBoss(List<Node> listOfRooms)
+    {
+        Node room = listOfRooms.Find(r => r.Type == "boss_room");
+        DungeonSegment segment = dungeonSegments[listOfRooms.IndexOf(room)];
+
+        OpponentClassDefinition opponentClass = opponentDefinitions["Overlord"];
+
+        if (opponentClass == null)
+        {
+            return;
+        }
+
+        if (opponentClass.bossEnemy)
+        {
+            int level = (int)(properties[DungeonPropertyKey.EnemyLevel]);
+            
+            int positionX = UnityEngine.Random.Range(room.BottomLeftAreaCorner.x + 2, room.TopRightAreaCorner.x - 1);
+            int positionY = UnityEngine.Random.Range(room.BottomLeftAreaCorner.y + 2, room.TopRightAreaCorner.y - 1);
+            Vector3 position = new Vector3(positionX, 1, positionY);
+
+            GameObject instance = Instantiate(opponentClass.prefab, position, Quaternion.identity, segment.area.transform);
+            instance.name = opponentClass.prefab.name;
+
+            if (instance.TryGetComponent<Overlord>(out Overlord overlord))
+            {
+                overlord.SetArea(segment.area.transform);
+                overlord.SetLevel(level);
+            }
+
+            // assign spawn room
+            if (instance.TryGetComponent<Opponent>(out Opponent opponent))
+            {
+                opponent.spawnRoom = room;
+            }
+
+            // assign level
+            if (instance.TryGetComponent<OpponentStats>(out OpponentStats stats))
+            {
+                stats.ComputeFrom(opponentClass, level);
+            }
+
+            // add loot
+            if (instance.TryGetComponent<Rewards>(out Rewards enemyRewards))
+            {
+                int type = UnityEngine.Random.Range(0, 3);
+                switch (type)
+                {
+                    case 0:
+                        enemyRewards.AddItem(RandomItemFrom(availableLootItems));
+                        break;
+                    case 1:
+                        enemyRewards.xp = XpFrom(availableLootCurrencies, (int)(properties[DungeonPropertyKey.AvailableXP] / opponents));
+                        break;
+                    case 2:
+                        enemyRewards.gold = GoldFrom(availableLootCurrencies, (int)(properties[DungeonPropertyKey.AvailableGold] / opponents));
+                        break;
+                }
+            }
+        }
+    }
+
+    private void CreateBossDoor(List<Node> listOfRooms)
+    {
+        Node preBossRoom = listOfRooms.Find(r => r.name == "PreBossRoom");
+        Node bossRoom = listOfRooms.Find(r => r.Type == "boss_room");
+        RelativePosition relativePosition = StructureHelper.CheckPositionStructure2AgainstStructure1(bossRoom, preBossRoom);
+        Node room = listOfRooms.Find(c => c.name == "BossCorridor");
+        DungeonSegment segment = dungeonSegments[listOfRooms.IndexOf(room)];
+
+        Vector3 doorPosition = new Vector3(
+            (room.BottomLeftAreaCorner.x + room.TopRightAreaCorner.x) / 2f,
+            0f,
+            (room.BottomLeftAreaCorner.y + room.TopRightAreaCorner.y) / 2f
+        );
+        Vector3 leftTorchPos; 
+        Vector3 rightTorchPos;
+        Quaternion rotation;
+        Quaternion torchRotation;
+        float torchWallOffset = 1.049f;
+        Debug.Log("Creating boss door at " + doorPosition + " with relative position " + relativePosition);
+        if (relativePosition == RelativePosition.Up)
+        {
+            rotation = Quaternion.identity;
+            leftTorchPos = new Vector3(room.BottomLeftAreaCorner.x, torchHeight, room.TopRightAreaCorner.y + torchWallOffset);
+            rightTorchPos = new Vector3(room.TopRightAreaCorner.x, torchHeight, room.TopRightAreaCorner.y + torchWallOffset);
+            torchRotation = Quaternion.Euler(0, 180, 0);
+        }
+        else if (relativePosition == RelativePosition.Down)
+        {
+            rotation = Quaternion.Euler(0, 180, 0);
+            leftTorchPos = new Vector3(room.TopRightAreaCorner.x, torchHeight, room.BottomLeftAreaCorner.y - torchWallOffset);
+            rightTorchPos = new Vector3(room.BottomLeftAreaCorner.x, torchHeight, room.BottomLeftAreaCorner.y - torchWallOffset);
+            torchRotation = Quaternion.identity;
+        }
+        else if (relativePosition == RelativePosition.Right)
+        {
+            rotation = Quaternion.Euler(0, 90, 0);
+            rightTorchPos = new Vector3(room.TopRightAreaCorner.x + torchWallOffset, torchHeight, room.TopRightAreaCorner.y);
+            leftTorchPos = new Vector3(room.TopRightAreaCorner.x + torchWallOffset, torchHeight, room.BottomLeftAreaCorner.y);
+            torchRotation = Quaternion.Euler(0, 270, 0);
+        }
+        else
+        {
+            rotation = Quaternion.Euler(0, 270, 0);
+            rightTorchPos = new Vector3(room.BottomLeftAreaCorner.x - torchWallOffset, torchHeight, room.TopRightAreaCorner.y);
+            leftTorchPos = new Vector3(room.BottomLeftAreaCorner.x - torchWallOffset, torchHeight, room.BottomLeftAreaCorner.y);
+            torchRotation = Quaternion.Euler(0, 90, 0);
+        }
+        GameObject door = Instantiate(bossDoorPrefab, doorPosition, rotation, segment.area.transform);
+        GameObject leftTorch = Instantiate(torchPrefab, leftTorchPos, torchRotation, segment.area.transform);
+        GameObject rightTorch = Instantiate(torchPrefab, rightTorchPos, torchRotation, segment.area.transform);
+        door.name = bossDoorPrefab.name;
+        leftTorch.name = "left_" + torchPrefab.name;
+        rightTorch.name = "right_" + torchPrefab.name;
+    }
+    
+
     private void CreatePlane(String name, Material material, GameObject parent, Vector3[] vertices)
     {
         GameObject plane = new GameObject(name);
@@ -609,7 +1120,7 @@ public class DungeonCreator : MonoBehaviour
         meshCollider.convex = false;
     }
 
-    private void CreateMesh(Vector2 bottomLeftCorner, Vector2 topRightCorner, DungeonSegment segment, String roomType)
+    private void CreateMesh(Vector2 bottomLeftCorner, Vector2 topRightCorner, DungeonSegment segment)
     {
         Vector3 bottomLeftV = new Vector3(bottomLeftCorner.x, 0, bottomLeftCorner.y);
         Vector3 bottomRightV = new Vector3(topRightCorner.x, 0, bottomLeftCorner.y);
@@ -675,6 +1186,7 @@ public class DungeonCreator : MonoBehaviour
                 owningSegment.verticalWallPositions.Remove(location);
             }
 
+            segment.corridorOpenings.Add(location);
             wallOwners.Remove(location);
         }
         else
@@ -686,9 +1198,9 @@ public class DungeonCreator : MonoBehaviour
 
     private void DestroyAllChildren()
     {
-        while(transform.childCount != 0)
+        while (transform.childCount != 0)
         {
-            foreach(Transform item in transform)
+            foreach (Transform item in transform)
             {
                 DestroyImmediate(item.gameObject);
             }
@@ -698,9 +1210,10 @@ public class DungeonCreator : MonoBehaviour
     private void PlaceTorches(Vector3 start, Vector3 end, GameObject parent)
     {
         float lenght = Vector3.Distance(start, end);
+        float spacing = parent.name.Contains("Boss Room") ? torchSpacing * 0.5f : torchSpacing;
         float visibleLength = lenght - 2.0f * pillarThickness;
 
-        float edgePadding = torchSpacing * 0.5f;
+        float edgePadding = spacing * 0.5f;
 
         if (visibleLength < edgePadding)
         {
@@ -722,7 +1235,7 @@ public class DungeonCreator : MonoBehaviour
             normal = -normal;
         }
 
-        int torchCount = usableLength < 0 ? 1 : Mathf.FloorToInt(visibleLength / torchSpacing) + 1;
+        int torchCount = usableLength < 0 ? 1 : Mathf.FloorToInt(visibleLength / spacing) + 1;
 
         if (torchCount == 1)
         {
@@ -736,12 +1249,12 @@ public class DungeonCreator : MonoBehaviour
             return;
         }
 
-        float placementLength = (torchCount - 1) * torchSpacing;
+        float placementLength = (torchCount - 1) * spacing;
         float startOffset = pillarThickness + edgePadding + (usableLength - placementLength) * 0.5f;
 
         for (int i = 0; i < torchCount; i++)
         {
-            float offset = startOffset + i * torchSpacing;
+            float offset = startOffset + i * spacing;
 
             Vector3 position = start + direction * offset;
             position += normal * torchWallOffset;
@@ -749,6 +1262,45 @@ public class DungeonCreator : MonoBehaviour
 
             GameObject torch = Instantiate(torchPrefab, position, Quaternion.LookRotation(-normal), parent.transform);
             torch.name = torchPrefab.name;
+        }
+    }
+
+    private void PlaceTorchesBossRoom(GameObject Pillar, GameObject parent)
+    {
+        Vector3 position = new Vector3(Pillar.transform.position.x, torchHeight, Pillar.transform.position.z - 1.25f);
+        Quaternion rotation = Quaternion.identity;
+        GameObject torch = Instantiate(torchPrefab, position, rotation, parent.transform);
+        torch.name = torchPrefab.name;
+        position = new Vector3(Pillar.transform.position.x, torchHeight, Pillar.transform.position.z + 1.25f);
+        rotation = Quaternion.Euler(0, 180, 0);
+        GameObject torch2 = Instantiate(torchPrefab, position, rotation, parent.transform);
+        torch2.name = torchPrefab.name;
+        position = new Vector3(Pillar.transform.position.x - 1.25f, torchHeight, Pillar.transform.position.z);
+        rotation = Quaternion.Euler(0, 90, 0);
+        GameObject torch3 = Instantiate(torchPrefab, position, rotation, parent.transform);
+        torch3.name = torchPrefab.name;
+        position = new Vector3(Pillar.transform.position.x + 1.25f, torchHeight, Pillar.transform.position.z);
+        rotation = Quaternion.Euler(0, 270, 0);
+        GameObject torch4 = Instantiate(torchPrefab, position, rotation, parent.transform);
+        torch4.name = torchPrefab.name;
+    }
+
+    void StoreOnlyOpeningCentres(DungeonSegment segment)
+    {
+        List<Vector3Int[]> openings = new List<Vector3Int[]>();
+        int width = 6;
+        int count = segment.corridorOpenings.Count / width;
+
+        for (int i = 0; i < count; i++)
+        {
+            openings.Add(new Vector3Int[2] { segment.corridorOpenings.ElementAt(i * width), segment.corridorOpenings.ElementAt(i * width + (width - 1)) });
+        }
+
+        segment.corridorOpenings.Clear();
+
+        foreach (var opening in openings)
+        {
+            segment.corridorOpenings.Add((opening[0] + opening[1]) / 2);
         }
     }
 }
